@@ -20,6 +20,22 @@ var (
 	rxOgpNsNonPrefixValue = regexp.MustCompile(`(?i)^http:\/\/ogp.me\/ns(\/\w+)*#`)
 )
 
+// Parser recognizes and parses the Open Graph Protocol markup tags and returns the properties
+// that matter to distilled content.
+//
+// First, it extracts the prefix and/or xmlns attributes from the HTML or HEAD tags to determine the
+// prefixes that will be used for the protocol. If no prefix is specified, we fall back to the
+// commonly used ones, e.g. "og". Then, it scans the OpenGraph Protocol <meta> elements that we
+// care about, extracts their content, and stores them semantically, i.e. taking into consideration
+// arrays, structures, and object types. Callers call get* to access these properties.
+//
+// The properties we care about are:
+// - 4 required properties: title, type, image, url.
+// - 2 optional properties: description, site_name.
+// - image structured properties: image:url, image:secure_url, image:type, image:width, image:height
+// - profile object properties: first_name, last_name
+// - article object properties: section, published_time, modified_time, expiration_time, author;
+//                              each author is a URL to the author's profile.
 type Parser struct {
 	prefixes      PrefixNameList
 	propertyTable map[string]string
