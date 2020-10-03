@@ -170,8 +170,6 @@ func (ps *Parser) parseMetaTags(root *html.Node) {
 			if addProperty {
 				ps.propertyTable[importantProperty.Name] = content
 			}
-
-			break
 		}
 	}
 }
