@@ -26,20 +26,12 @@ func NewAccessor(root *html.Node, timingInfo *model.TimingInfo) (*Accessor, erro
 
 // Title returns the required "title" of the document.
 func (a *Accessor) Title() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	return a.parser.propertyTable[TitleProp]
 }
 
 // Type returns the required "type" of the document if it's an
 // article, empty string otherwise.
 func (a *Accessor) Type() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	objType := a.parser.propertyTable[TypeProp]
 	if strings.ToLower(objType) == ArticleObjtype {
 		return "Article"
@@ -50,10 +42,6 @@ func (a *Accessor) Type() string {
 
 // URL returns the required "url" of the document.
 func (a *Accessor) URL() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	return a.parser.propertyTable[URLProp]
 }
 
@@ -61,28 +49,16 @@ func (a *Accessor) URL() string {
 // structures. Each "image" structure consists of image, image:url,
 // image:secure_url, image:type, image:width, and image:height.
 func (a *Accessor) Images() []model.MarkupImage {
-	if a.parser == nil {
-		return nil
-	}
-
 	return a.parser.Images()
 }
 
 // Description returns the optional "description" of the document.
 func (a *Accessor) Description() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	return a.parser.propertyTable[DescriptionProp]
 }
 
 // Publisher returns the optional "site_name" of the document.
 func (a *Accessor) Publisher() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	return a.parser.propertyTable[SiteNameProp]
 }
 
@@ -95,10 +71,6 @@ func (a *Accessor) Copyright() string {
 // (delimited by a whitespace) of the "profile" object when
 // value of "og:type" is "profile".
 func (a *Accessor) Author() string {
-	if a.parser == nil {
-		return ""
-	}
-
 	return a.parser.FullName()
 }
 
@@ -107,10 +79,6 @@ func (a *Accessor) Author() string {
 // modified_time and expiration_time, section, and a list of URLs
 // to each author's profile.
 func (a *Accessor) Article() *model.MarkupArticle {
-	if a.parser == nil {
-		return nil
-	}
-
 	article := model.MarkupArticle{
 		PublishedTime:  a.parser.propertyTable[ArticlePublishedTimeProp],
 		ModifiedTime:   a.parser.propertyTable[ArticleModifiedTimeProp],
