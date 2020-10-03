@@ -1,4 +1,4 @@
-// ORIGINAL: Part of StringUtil.java
+// ORIGINAL: Part of java/StringUtil.java
 
 package internal
 
