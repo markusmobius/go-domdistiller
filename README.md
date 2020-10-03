@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 148 files with 17,016 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 145 files with 16,179 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -14,5 +14,6 @@ This package is still in development and the port process is still not finished.
 
 - Porting process started
 - Port `WordCounter` interface from `StringUtil.java`
+- Port `OpenGraphParser` and `OpenGraphParserAccessor` from `OpenGraphParser.java`
 
 [0]: https://chromium.googlesource.com/chromium/dom-distiller

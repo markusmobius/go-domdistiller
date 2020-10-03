@@ -114,12 +114,4 @@ public class LogUtil {
         }
         $wnd.console.log(str);
     }-*/;
-
-    public static void addTimingInfo(double startTime, TimingInfo timinginfo, String name) {
-        if (timinginfo != null) {
-            TimingEntry entry =  timinginfo.addOtherTimes();
-            entry.setName(name);
-            entry.setTime(DomUtil.getTime() - startTime);
-        }
-    }
 }

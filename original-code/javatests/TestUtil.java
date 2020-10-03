@@ -101,14 +101,6 @@ public class TestUtil {
         return l;
     }
 
-    public static MetaElement createMetaProperty(String property,
-            String content) {
-        MetaElement m = Document.get().createMetaElement();
-        m.setAttribute("property", property);
-        m.setContent(content);
-        return m;
-    }
-
     public static MetaElement createMetaName(String name, String content) {
         MetaElement m = Document.get().createMetaElement();
         m.setName(name);
