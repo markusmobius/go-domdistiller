@@ -213,15 +213,6 @@ public class DomUtil {
         return visibleElements;
     }
 
-    /*
-     * We want to use jsni for direct access to javascript's innerText.  This avoids GWT's
-     * implementation of Element::getInnerText(), which is intentionally different to mimic an old
-     * IE behaviour, which returns text within <script> tags.
-     */
-    public static native String getInnerText(Node node) /*-{
-        return node.innerText;
-    }-*/;
-
     public static native double getTime() /*-{
         // window.performance is unavailable in Gwt's dev environment and even referencing it on iOS
         // causes a crash.

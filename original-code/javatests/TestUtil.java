@@ -61,15 +61,6 @@ public class TestUtil {
         return divs;
     }
 
-    /**
-     * Creates a div with the integer id as its id.
-     */
-    public static Element createDiv(int id) {
-        Element e = Document.get().createDivElement();
-        e.setId(Integer.toString(id));
-        return e;
-    }
-
     public static Text createText(String value) {
         return Document.get().createTextNode(value);
     }
@@ -82,30 +73,11 @@ public class TestUtil {
         return Document.get().createIFrameElement();
     }
 
-    public static TitleElement createTitle(String value) {
-        TitleElement t = Document.get().createTitleElement();
-        t.setInnerHTML(value);
-        return t;
-    }
-
-    public static HeadingElement createHeading(int n, String value) {
-        HeadingElement h = Document.get().createHElement(n);
-        h.setInnerHTML(value);
-        return h;
-    }
-
     public static AnchorElement createAnchor(String href, String text) {
         AnchorElement l = Document.get().createAnchorElement();
         l.setHref(href);
         l.setInnerHTML(text);
         return l;
-    }
-
-    public static MetaElement createMetaName(String name, String content) {
-        MetaElement m = Document.get().createMetaElement();
-        m.setName(name);
-        m.setContent(content);
-        return m;
     }
 
     public static Element createSpan(String value) {

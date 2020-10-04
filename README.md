@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 145 files with 16,179 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 143 files with 15,639 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 4 October 2020
+
+- Port `IEReadingViewParser` from `IEReadingViewParser.java`
 
 ### 3 October 2020
 
