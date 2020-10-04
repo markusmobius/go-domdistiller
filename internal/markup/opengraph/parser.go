@@ -80,14 +80,6 @@ func NewParser(root *html.Node, timingInfo *model.TimingInfo) (*Parser, error) {
 	return ps, nil
 }
 
-func (ps *Parser) FullName() string {
-	return ps.profileParser.GetFullName(ps.propertyTable)
-}
-
-func (ps *Parser) Authors() []string {
-	return ps.articleParser.Authors
-}
-
 func (ps *Parser) findPrefixes(root *html.Node) {
 	strPrefixes := ""
 

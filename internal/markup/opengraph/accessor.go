@@ -55,7 +55,7 @@ func (ps *Parser) Copyright() string {
 // (delimited by a whitespace) of the "profile" object when
 // value of "og:type" is "profile".
 func (ps *Parser) Author() string {
-	return ps.FullName()
+	return ps.profileParser.GetFullName(ps.propertyTable)
 }
 
 // Article returns the properties of the "article" object when
@@ -68,7 +68,7 @@ func (ps *Parser) Article() *model.MarkupArticle {
 		ModifiedTime:   ps.propertyTable[ArticleModifiedTimeProp],
 		ExpirationTime: ps.propertyTable[ArticleExpirationTimeProp],
 		Section:        ps.propertyTable[ArticleSectionProp],
-		Authors:        ps.Authors(),
+		Authors:        ps.articleParser.Authors,
 	}
 
 	if article.Section == "" &&
