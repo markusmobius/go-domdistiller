@@ -80,10 +80,6 @@ func NewParser(root *html.Node, timingInfo *model.TimingInfo) (*Parser, error) {
 	return ps, nil
 }
 
-func (ps *Parser) Images() []model.MarkupImage {
-	return ps.imageParser.ImageList
-}
-
 func (ps *Parser) FullName() string {
 	return ps.profileParser.GetFullName(ps.propertyTable)
 }

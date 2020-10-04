@@ -1,12 +1,13 @@
 // ORIGINAL: javatest/OpenGraphProtocolParserAccessorTest.java
 
-package opengraph
+package opengraph_test
 
 import (
 	"testing"
 
 	"github.com/alecthomas/assert"
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/markup/opengraph"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
 	"golang.org/x/net/html"
 )
@@ -26,15 +27,15 @@ func Test_RequiredPropertiesAndDescriptionAndSiteName(t *testing.T) {
 	createMeta(root, "og:description", expectedDescr)
 	createMeta(root, "og:site_name", expectedSiteName)
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	images := accessor.Images()
-	assert.Equal(t, expectedTitle, accessor.Title())
-	assert.Equal(t, "", accessor.Type())
-	assert.Equal(t, expectedURL, accessor.URL())
-	assert.Equal(t, expectedDescr, accessor.Description())
-	assert.Equal(t, expectedSiteName, accessor.Publisher())
+	images := parser.Images()
+	assert.Equal(t, expectedTitle, parser.Title())
+	assert.Equal(t, "", parser.Type())
+	assert.Equal(t, expectedURL, parser.URL())
+	assert.Equal(t, expectedDescr, parser.Description())
+	assert.Equal(t, expectedSiteName, parser.Publisher())
 	assert.Equal(t, 1, len(images))
 	assert.Equal(t, expectedImage, images[0].URL)
 	assert.Equal(t, "", images[0].SecureURL)
@@ -52,7 +53,7 @@ func Test_NoRequiredImage(t *testing.T) {
 	// Set an image structured property but not the root property.
 	createMeta(root, "og:image:url", "http://test/image.jpeg")
 
-	parser, _ := NewParser(root, nil)
+	parser, _ := opengraph.NewParser(root, nil)
 	assert.Nil(t, parser)
 }
 
@@ -73,10 +74,10 @@ func Test_OneImage(t *testing.T) {
 	createMeta(root, "og:image:width", "600")
 	createMeta(root, "og:image:height", "400")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	images := accessor.Images()
+	images := parser.Images()
 	assert.Equal(t, 1, len(images))
 	assert.Equal(t, expectedURL, images[0].URL)
 	assert.Equal(t, expectedSecureURL, images[0].SecureURL)
@@ -112,10 +113,10 @@ func Test_CompleteMultipleImages(t *testing.T) {
 	createMeta(root, "og:image:width", "1024")
 	createMeta(root, "og:image:height", "900")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	images := accessor.Images()
+	images := parser.Images()
 	assert.Equal(t, 2, len(images))
 
 	image := images[0]
@@ -155,10 +156,10 @@ func Test_IncompleteMultipleImages(t *testing.T) {
 	createMeta(root, "og:image:width", "600")
 	createMeta(root, "og:image:height", "400")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	images := accessor.Images()
+	images := parser.Images()
 	assert.Equal(t, 2, len(images))
 
 	image := images[0]
@@ -183,10 +184,10 @@ func Test_NoObjects(t *testing.T) {
 	createDefaultURL(root)
 	createDefaultImage(root)
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "", accessor.Author())
-	assert.Nil(t, accessor.Article())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "", parser.Author())
+	assert.Nil(t, parser.Article())
 }
 
 func Test_Profile(t *testing.T) {
@@ -201,9 +202,9 @@ func Test_Profile(t *testing.T) {
 	createMeta(root, "profile:first_name", "Jane")
 	createMeta(root, "profile:last_name", "Doe")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "Jane Doe", accessor.Author())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "Jane Doe", parser.Author())
 }
 
 func Test_Article(t *testing.T) {
@@ -228,10 +229,10 @@ func Test_Article(t *testing.T) {
 	createMeta(root, "article:author", expectedAuthor1)
 	createMeta(root, "article:author", expectedAuthor2)
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	article := accessor.Article()
+	article := parser.Article()
 	assert.NotNil(t, article)
 	assert.Equal(t, expectedPublishedTime, article.PublishedTime)
 	assert.Equal(t, expectedModifiedTime, article.ModifiedTime)
@@ -274,22 +275,22 @@ func Test_OGAndProfilePrefixesInHtmlTag(t *testing.T) {
 	createMeta(root, "tstpf:first_name", "Jane")
 	createMeta(root, "tstpf:last_name", "Doe")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	images := accessor.Images()
-	assert.Equal(t, expectedTitle, accessor.Title())
-	assert.Equal(t, "", accessor.Type())
-	assert.Equal(t, expectedURL, accessor.URL())
-	assert.Equal(t, expectedDescr, accessor.Description())
-	assert.Equal(t, expectedSiteName, accessor.Publisher())
+	images := parser.Images()
+	assert.Equal(t, expectedTitle, parser.Title())
+	assert.Equal(t, "", parser.Type())
+	assert.Equal(t, expectedURL, parser.URL())
+	assert.Equal(t, expectedDescr, parser.Description())
+	assert.Equal(t, expectedSiteName, parser.Publisher())
 	assert.Equal(t, 1, len(images))
 	assert.Equal(t, expectedImage, images[0].URL)
 	assert.Equal(t, expectedSecureURL, images[0].SecureURL)
 	assert.Equal(t, expectedImageType, images[0].Type)
 	assert.Equal(t, 600, images[0].Width)
 	assert.Equal(t, 400, images[0].Height)
-	assert.Equal(t, "Jane Doe", accessor.Author())
+	assert.Equal(t, "Jane Doe", parser.Author())
 }
 
 func Test_ArticlePrefixInHeadTag(t *testing.T) {
@@ -318,11 +319,11 @@ func Test_ArticlePrefixInHeadTag(t *testing.T) {
 	createMeta(root, "tsta:author", expectedAuthor1)
 	createMeta(root, "tsta:author", expectedAuthor2)
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "Article", accessor.Type())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "Article", parser.Type())
 
-	article := accessor.Article()
+	article := parser.Article()
 	assert.Equal(t, expectedPublishedTime, article.PublishedTime)
 	assert.Equal(t, expectedModifiedTime, article.ModifiedTime)
 	assert.Equal(t, expectedExpirationTime, article.ExpirationTime)
@@ -348,9 +349,9 @@ func Test_IncorrectPrefix(t *testing.T) {
 	// of the customized "tstog" prefix.
 	createMeta(root, "og:description", "this description should be ignored")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "", accessor.Description())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "", parser.Description())
 }
 
 func Test_OGAndProfileXmlns(t *testing.T) {
@@ -386,17 +387,17 @@ func Test_OGAndProfileXmlns(t *testing.T) {
 	createMeta(root, "tstpf:first_name", "Jane")
 	createMeta(root, "tstpf:last_name", "Doe")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
 
-	assert.Equal(t, expectedTitle, accessor.Title())
-	assert.Equal(t, "", accessor.Type())
-	assert.Equal(t, expectedURL, accessor.URL())
-	assert.Equal(t, expectedDescr, accessor.Description())
-	assert.Equal(t, expectedSiteName, accessor.Publisher())
-	assert.Equal(t, "Jane Doe", accessor.Author())
+	assert.Equal(t, expectedTitle, parser.Title())
+	assert.Equal(t, "", parser.Type())
+	assert.Equal(t, expectedURL, parser.URL())
+	assert.Equal(t, expectedDescr, parser.Description())
+	assert.Equal(t, expectedSiteName, parser.Publisher())
+	assert.Equal(t, "Jane Doe", parser.Author())
 
-	images := accessor.Images()
+	images := parser.Images()
 	assert.Equal(t, 1, len(images))
 
 	image := images[0]
@@ -434,11 +435,11 @@ func Test_ArticleXmlns(t *testing.T) {
 	createMeta(root, "tsta:author", expectedAuthor1)
 	createMeta(root, "tsta:author", expectedAuthor2)
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "Article", accessor.Type())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "Article", parser.Type())
 
-	article := accessor.Article()
+	article := parser.Article()
 	assert.Equal(t, expectedPublishedTime, article.PublishedTime)
 	assert.Equal(t, expectedModifiedTime, article.ModifiedTime)
 	assert.Equal(t, expectedExpirationTime, article.ExpirationTime)
@@ -464,9 +465,9 @@ func Test_IncorrectXmlns(t *testing.T) {
 	// of the customized "tstog" prefix.
 	createMeta(root, "og:description", "this description should be ignored")
 
-	accessor, _ := NewAccessor(root, nil)
-	assert.NotNil(t, accessor)
-	assert.Equal(t, "", accessor.Description())
+	parser, _ := opengraph.NewParser(root, nil)
+	assert.NotNil(t, parser)
+	assert.Equal(t, "", parser.Description())
 }
 
 func createDefaultTitle(root *html.Node) {

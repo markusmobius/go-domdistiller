@@ -6,33 +6,17 @@ import (
 	"strings"
 
 	"github.com/markusmobius/go-domdistiller/internal/model"
-	"golang.org/x/net/html"
 )
 
-type Accessor struct {
-	parser *Parser
-}
-
-func NewAccessor(root *html.Node, timingInfo *model.TimingInfo) (*Accessor, error) {
-	parser, err := NewParser(root, timingInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Accessor{
-		parser: parser,
-	}, nil
-}
-
 // Title returns the required "title" of the document.
-func (a *Accessor) Title() string {
-	return a.parser.propertyTable[TitleProp]
+func (ps *Parser) Title() string {
+	return ps.propertyTable[TitleProp]
 }
 
 // Type returns the required "type" of the document if it's an
 // article, empty string otherwise.
-func (a *Accessor) Type() string {
-	objType := a.parser.propertyTable[TypeProp]
+func (ps *Parser) Type() string {
+	objType := ps.propertyTable[TypeProp]
 	if strings.ToLower(objType) == ArticleObjtype {
 		return "Article"
 	}
@@ -41,50 +25,50 @@ func (a *Accessor) Type() string {
 }
 
 // URL returns the required "url" of the document.
-func (a *Accessor) URL() string {
-	return a.parser.propertyTable[URLProp]
+func (ps *Parser) URL() string {
+	return ps.propertyTable[URLProp]
 }
 
 // Images returns the structured properties of all "image"
 // structures. Each "image" structure consists of image, image:url,
 // image:secure_url, image:type, image:width, and image:height.
-func (a *Accessor) Images() []model.MarkupImage {
-	return a.parser.Images()
+func (ps *Parser) Images() []model.MarkupImage {
+	return ps.imageParser.ImageList
 }
 
 // Description returns the optional "description" of the document.
-func (a *Accessor) Description() string {
-	return a.parser.propertyTable[DescriptionProp]
+func (ps *Parser) Description() string {
+	return ps.propertyTable[DescriptionProp]
 }
 
 // Publisher returns the optional "site_name" of the document.
-func (a *Accessor) Publisher() string {
-	return a.parser.propertyTable[SiteNameProp]
+func (ps *Parser) Publisher() string {
+	return ps.propertyTable[SiteNameProp]
 }
 
 // Copyright returns empty since OpenGraph not support it.
-func (a *Accessor) Copyright() string {
+func (ps *Parser) Copyright() string {
 	return ""
 }
 
 // Author returns the concatenated first_name and last_name
 // (delimited by a whitespace) of the "profile" object when
 // value of "og:type" is "profile".
-func (a *Accessor) Author() string {
-	return a.parser.FullName()
+func (ps *Parser) Author() string {
+	return ps.FullName()
 }
 
 // Article returns the properties of the "article" object when
 // value of "og:type" is "article". The properties are published_time,
 // modified_time and expiration_time, section, and a list of URLs
 // to each author's profile.
-func (a *Accessor) Article() *model.MarkupArticle {
+func (ps *Parser) Article() *model.MarkupArticle {
 	article := model.MarkupArticle{
-		PublishedTime:  a.parser.propertyTable[ArticlePublishedTimeProp],
-		ModifiedTime:   a.parser.propertyTable[ArticleModifiedTimeProp],
-		ExpirationTime: a.parser.propertyTable[ArticleExpirationTimeProp],
-		Section:        a.parser.propertyTable[ArticleSectionProp],
-		Authors:        a.parser.Authors(),
+		PublishedTime:  ps.propertyTable[ArticlePublishedTimeProp],
+		ModifiedTime:   ps.propertyTable[ArticleModifiedTimeProp],
+		ExpirationTime: ps.propertyTable[ArticleExpirationTimeProp],
+		Section:        ps.propertyTable[ArticleSectionProp],
+		Authors:        ps.Authors(),
 	}
 
 	if article.Section == "" &&
@@ -102,6 +86,6 @@ func (a *Accessor) Article() *model.MarkupArticle {
 // this is not directly supported, the page owner can simply
 // omit the required tags and init() will return a null
 // OpenGraphProtocolParser.
-func (a *Accessor) OptOut() bool {
+func (ps *Parser) OptOut() bool {
 	return false
 }
