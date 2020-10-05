@@ -73,13 +73,6 @@ public class TestUtil {
         return Document.get().createIFrameElement();
     }
 
-    public static AnchorElement createAnchor(String href, String text) {
-        AnchorElement l = Document.get().createAnchorElement();
-        l.setHref(href);
-        l.setInnerHTML(text);
-        return l;
-    }
-
     public static Element createSpan(String value) {
         Element s = Document.get().createElement("SPAN");
         s.setInnerHTML(value);

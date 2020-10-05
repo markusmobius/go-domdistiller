@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 143 files with 15,639 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 140 files with 14,556 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 5 October 2020
+
+- Port `SchemaOrgParser` and `SchemaOrgParserAccessor` from `SchemaOrg.java`
 
 ### 4 October 2020
 

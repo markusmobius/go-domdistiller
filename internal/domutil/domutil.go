@@ -30,8 +30,7 @@ var rxPunctuation = regexp.MustCompile(`\s+([.?!,:;])(\S+)`)
 //
 // Besides excluding text from hidden children, difference between this function and
 // `dom.TextContent` is the latter will skip <br> tag while this function will preserve
-// <br> as whitespace.
-// NEED-COMPUTE-CSS
+// <br> as whitespace. NEED-COMPUTE-CSS
 func InnerText(node *html.Node) string {
 	var buffer bytes.Buffer
 	var finder func(*html.Node)
@@ -59,4 +58,11 @@ func InnerText(node *html.Node) string {
 	text = strings.Join(strings.Fields(text), " ")
 	text = rxPunctuation.ReplaceAllString(text, "$1 $2")
 	return text
+}
+
+// GetArea in original code returns area of a node by multiplying
+// offsetWidth and offsetHeight. Since it's not possible in Go, we
+// simply return 0. NEED-COMPUTE-CSS
+func GetArea(node *html.Node) int {
+	return 0
 }

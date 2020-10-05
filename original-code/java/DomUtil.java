@@ -633,13 +633,6 @@ public class DomUtil {
         return nodes;
     }
 
-    public static int getArea(Element e) {
-        if (e != null) {
-            return e.getOffsetHeight() * e.getOffsetWidth();
-        }
-        return 0;
-    }
-
     /**
      * Clone and process a given node tree/subtree. This will ignore hidden
      * elements.

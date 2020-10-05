@@ -44,6 +44,13 @@ func CreateHeading(n int, value string) *html.Node {
 	return h
 }
 
+func CreateAnchor(href, text string) *html.Node {
+	anchor := dom.CreateElement("a")
+	dom.SetAttribute(anchor, "href", href)
+	dom.SetInnerHTML(anchor, text)
+	return anchor
+}
+
 func CreateMetaProperty(property string, content string) *html.Node {
 	meta := dom.CreateElement("meta")
 	dom.SetAttribute(meta, "property", property)
