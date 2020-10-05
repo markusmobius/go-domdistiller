@@ -66,3 +66,19 @@ func InnerText(node *html.Node) string {
 func GetArea(node *html.Node) int {
 	return 0
 }
+
+// =================================================================================
+// Functions below these point are functions that doesn't exist in original code of
+// Dom-Distiller, but useful for dom management.
+// =================================================================================
+
+// SomeNode iterates over a NodeList, return true if any of the
+// provided iterate function calls returns true, false otherwise.
+func SomeNode(nodeList []*html.Node, fn func(*html.Node) bool) bool {
+	for i := 0; i < len(nodeList); i++ {
+		if fn(nodeList[i]) {
+			return true
+		}
+	}
+	return false
+}
