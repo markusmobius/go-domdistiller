@@ -200,7 +200,7 @@ func (p *Parser) findAuthor() {
 	// Note that we ignore the order of this element for now.
 	elem := dom.QuerySelector(p.root, ".byline-name")
 	if elem != nil {
-		p.author = dom.TextContent(elem)
+		p.author = strings.TrimSpace(dom.TextContent(elem))
 	}
 }
 
@@ -211,7 +211,7 @@ func (p *Parser) findDate() {
 	// Get date from any element that includes the "dateline" class.
 	elem := dom.QuerySelector(p.root, ".dateline")
 	if elem != nil {
-		p.date = dom.TextContent(elem)
+		p.date = strings.TrimSpace(dom.TextContent(elem))
 		return
 	}
 
