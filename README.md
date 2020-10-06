@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 135 files with 14,108 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 134 files with 14,059 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 6 October 2020
+
+- Port `CreateDivTree` from `TestUtil.java`
 
 ### 5 October 2020
 

@@ -11,18 +11,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-// CreateHTML returns an <html> that consist of empty <head> and <body>.
-// This is an additional method and doesn't exist in original Java code.
-func CreateHTML() *html.Node {
-	rawHTML := `
-		<!DOCTYPE html>
-		<html lang="en">
-			<head></head>
-			<body></body>
-		</html>`
-
-	root, _ := html.Parse(strings.NewReader(rawHTML))
-	return root
+func CreateDivTree() []*html.Node {
+	divs := []*html.Node{CreateDiv(0)}
+	createDivTree(divs[0], 0, &divs)
+	return divs
 }
 
 // CreateDiv creates a div with the integer id as its id.
@@ -63,4 +55,36 @@ func CreateMetaName(name string, content string) *html.Node {
 	dom.SetAttribute(meta, "name", name)
 	dom.SetAttribute(meta, "content", content)
 	return meta
+}
+
+func createDivTree(e *html.Node, depth int, divs *[]*html.Node) {
+	if depth > 2 {
+		return
+	}
+
+	for i := 0; i < 2; i++ {
+		child := CreateDiv(len(*divs))
+		*divs = append(*divs, child)
+		dom.AppendChild(e, child)
+		createDivTree(child, depth+1, divs)
+	}
+}
+
+// =================================================================================
+// Functions below these point are functions that doesn't exist in original code of
+// Dom-Distiller, but useful for testing.
+// =================================================================================
+
+// CreateHTML returns an <html> that consist of empty <head> and <body>.
+// This is an additional method and doesn't exist in original Java code.
+func CreateHTML() *html.Node {
+	rawHTML := `
+		<!DOCTYPE html>
+		<html lang="en">
+			<head></head>
+			<body></body>
+		</html>`
+
+	root, _ := html.Parse(strings.NewReader(rawHTML))
+	return root
 }
