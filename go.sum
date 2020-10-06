@@ -13,6 +13,8 @@ github.com/go-shiori/dom v0.0.0-20200611094855-2cf8a4b8b9eb h1:5FBMhYfxBwcF5lnqj
 github.com/go-shiori/dom v0.0.0-20200611094855-2cf8a4b8b9eb/go.mod h1:1hriHNnZcHkxQI0fEv9gaiS15cQmExHlnnRpc/B4yNs=
 github.com/go-shiori/dom v0.0.0-20201004020641-8ad610c303c1 h1:AHC1k3Dujp9cTwmBZwftLlLN/03dyIpHka5CRB2o8H8=
 github.com/go-shiori/dom v0.0.0-20201004020641-8ad610c303c1/go.mod h1:1hriHNnZcHkxQI0fEv9gaiS15cQmExHlnnRpc/B4yNs=
+github.com/go-shiori/dom v0.0.0-20201006065316-9af9c5d81fb9 h1:GAQchKOndUgAKR0Cd4OUsCV7tSf9L2vwunhS00gdPI8=
+github.com/go-shiori/dom v0.0.0-20201006065316-9af9c5d81fb9/go.mod h1:1hriHNnZcHkxQI0fEv9gaiS15cQmExHlnnRpc/B4yNs=
 github.com/kr/pretty v0.1.0 h1:L/CwN0zerZDmRFUapSPitk6f+Q3+0za1rQkzVuMiMFI=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
