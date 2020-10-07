@@ -2,7 +2,24 @@
 
 package stringutil
 
-import "unicode/utf8"
+import (
+	"regexp"
+	"unicode"
+	"unicode/utf8"
+)
+
+var (
+	rxNonWhitespace = regexp.MustCompile(`(?i)\S`)
+)
+
+func IsStringAllWhitespace(str string) bool {
+	for _, char := range str {
+		if !unicode.IsSpace(char) {
+			return false
+		}
+	}
+	return true
+}
 
 // =================================================================================
 // Functions below these point are functions that doesn't exist in original code of

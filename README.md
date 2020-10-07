@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 132 files with 13,937 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 130 files with 13,174 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 7 October 2020
+
+- Port `TableClassifier` from `TableClassifier.java`
 
 ### 6 October 2020
 
