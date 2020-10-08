@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 102 files with 10,315 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 96 files with 10,061 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -21,6 +21,9 @@ This package is still in development and the port process is still not finished.
 - Port `WebTextBuilder` from `webdocument/WebTextBuilder.java`
 - Port `ElementAction` from `webdocument/ElementAction.java`
 - Port `DomWalker` from `DomWalker.java`
+- Remove `NodeListExpander` since it has identical result as `TreeCloneBuilder` and we already port the latter (even their unit tests are similar).
+- Remove `NodeTree` since it's only used in `NodeListExpander`. Besides that, it also requires us to compute stylesheet which is impossible to implement right now.
+- Remove `OrderedNodeMatcher` since it's only used in `NodeListExpander` and `TreeCloneBuilder` and our implementation of `TreeCloneBuilder` doesn't require it.
 
 ### 7 October 2020
 
