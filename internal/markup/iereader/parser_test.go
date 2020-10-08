@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_Title(t *testing.T) {
+func Test_IEReader_Title(t *testing.T) {
 	root := testutil.CreateHTML()
 	head := dom.QuerySelector(root, "head")
 	body := dom.QuerySelector(root, "body")
@@ -26,7 +26,7 @@ func Test_Title(t *testing.T) {
 	assert.Equal(t, expectedTitle, parser.Title())
 }
 
-func Test_DateInOneElemWithOneClass(t *testing.T) {
+func Test_IEReader_DateInOneElemWithOneClass(t *testing.T) {
 	expectedDate := "Monday January 1st 2011 01:01"
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "class", "dateline")
@@ -39,7 +39,7 @@ func Test_DateInOneElemWithOneClass(t *testing.T) {
 	assert.Equal(t, expectedDate, parser.Article().PublishedTime)
 }
 
-func Test_DateInSubstringClassName(t *testing.T) {
+func Test_IEReader_DateInSubstringClassName(t *testing.T) {
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "class", "b4datelineaft")
 	dom.SetInnerHTML(div, "Monday January 1st 2011 01:01")
@@ -51,7 +51,7 @@ func Test_DateInSubstringClassName(t *testing.T) {
 	assert.Equal(t, "", parser.Article().PublishedTime)
 }
 
-func Test_DateInOneElemWithMultiClasses(t *testing.T) {
+func Test_IEReader_DateInOneElemWithMultiClasses(t *testing.T) {
 	expectedDate := "Tuesday February 2nd 2012 02:02"
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "class", "blah1 dateline blah2")
@@ -64,7 +64,7 @@ func Test_DateInOneElemWithMultiClasses(t *testing.T) {
 	assert.Equal(t, expectedDate, parser.Article().PublishedTime)
 }
 
-func Test_DateInOneBranch(t *testing.T) {
+func Test_IEReader_DateInOneBranch(t *testing.T) {
 	expectedDate := "Wednesday Mar 3rd 2013 03:03"
 	div1 := testutil.CreateDiv(1)
 	div2 := testutil.CreateDiv(2)
@@ -85,7 +85,7 @@ func Test_DateInOneBranch(t *testing.T) {
 	assert.Equal(t, expectedDate, parser.Article().PublishedTime)
 }
 
-func Test_DateInMultiBranches(t *testing.T) {
+func Test_IEReader_DateInMultiBranches(t *testing.T) {
 	expectedDate := "Thursday Apr 4th 2014 04:04"
 	div1 := testutil.CreateDiv(1)
 	div2 := testutil.CreateDiv(2)
@@ -108,7 +108,7 @@ func Test_DateInMultiBranches(t *testing.T) {
 	assert.Equal(t, expectedDate, parser.Article().PublishedTime)
 }
 
-func Test_DateInMeta(t *testing.T) {
+func Test_IEReader_DateInMeta(t *testing.T) {
 	root := testutil.CreateHTML()
 	expectedDate := "Friday Apr 5th 2015 05:05"
 	createMeta(root, "displaydate", expectedDate)
@@ -117,7 +117,7 @@ func Test_DateInMeta(t *testing.T) {
 	assert.Equal(t, expectedDate, parser.Article().PublishedTime)
 }
 
-func Test_AuthorInSiblings(t *testing.T) {
+func Test_IEReader_AuthorInSiblings(t *testing.T) {
 	expectedAuthor := "Jane Doe"
 	div1 := testutil.CreateDiv(1)
 	div2 := testutil.CreateDiv(2)
@@ -138,7 +138,7 @@ func Test_AuthorInSiblings(t *testing.T) {
 	assert.Equal(t, expectedAuthor, authors[0])
 }
 
-func Test_AuthorInBranch(t *testing.T) {
+func Test_IEReader_AuthorInBranch(t *testing.T) {
 	expectedAuthor := "Jane Doe"
 	div2 := testutil.CreateDiv(2)
 	dom.SetAttribute(div2, "class", "byline-name")
@@ -160,7 +160,7 @@ func Test_AuthorInBranch(t *testing.T) {
 	assert.Equal(t, expectedAuthor, authors[0])
 }
 
-func Test_PublisherFromPublisherAttr(t *testing.T) {
+func Test_IEReader_PublisherFromPublisherAttr(t *testing.T) {
 	expectedPublisher := "Publisher Attribute"
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "publisher", expectedPublisher)
@@ -173,7 +173,7 @@ func Test_PublisherFromPublisherAttr(t *testing.T) {
 	assert.Equal(t, expectedPublisher, parser.Publisher())
 }
 
-func Test_PublisherFromSourceOrganizationrAttr(t *testing.T) {
+func Test_IEReader_PublisherFromSourceOrganizationrAttr(t *testing.T) {
 	expectedPublisher := "Source Organization Attribute"
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "source_organization", expectedPublisher)
@@ -186,7 +186,7 @@ func Test_PublisherFromSourceOrganizationrAttr(t *testing.T) {
 	assert.Equal(t, expectedPublisher, parser.Publisher())
 }
 
-func Test_CopyrightInMeta(t *testing.T) {
+func Test_IEReader_CopyrightInMeta(t *testing.T) {
 	expectedCopyright := "Friday Apr 5th 2015 05:05"
 
 	root := testutil.CreateHTML()
@@ -196,7 +196,7 @@ func Test_CopyrightInMeta(t *testing.T) {
 	assert.Equal(t, expectedCopyright, parser.Copyright())
 }
 
-func Test_UncaptionedDominantImage(t *testing.T) {
+func Test_IEReader_UncaptionedDominantImage(t *testing.T) {
 	expectedUrl := "http://example.com/dominant_without_caption.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -219,7 +219,7 @@ func Test_UncaptionedDominantImage(t *testing.T) {
 	assert.Equal(t, 400, image.Height)
 }
 
-func Test_UncaptionedDominantImageWithInvalidSize(t *testing.T) {
+func Test_IEReader_UncaptionedDominantImageWithInvalidSize(t *testing.T) {
 	expectedUrl := "http://example.com/dominant_without_caption.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -234,7 +234,7 @@ func Test_UncaptionedDominantImageWithInvalidSize(t *testing.T) {
 	assert.Equal(t, 0, len(images))
 }
 
-func Test_CaptionedDominantImageWithSmallestAR(t *testing.T) {
+func Test_IEReader_CaptionedDominantImageWithSmallestAR(t *testing.T) {
 	expectedUrl := "http://example.com/captioned_smallest_dominant.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -261,7 +261,7 @@ func Test_CaptionedDominantImageWithSmallestAR(t *testing.T) {
 	assert.Equal(t, 307, image.Height)
 }
 
-func Test_CaptionedDominantImageWithBiggestAR(t *testing.T) {
+func Test_IEReader_CaptionedDominantImageWithBiggestAR(t *testing.T) {
 	expectedUrl := "http://example.com/captioned_biggest_dominant.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -288,7 +288,7 @@ func Test_CaptionedDominantImageWithBiggestAR(t *testing.T) {
 	assert.Equal(t, 134, image.Height)
 }
 
-func Test_CaptionedDominantImageWithInvalidSize(t *testing.T) {
+func Test_IEReader_CaptionedDominantImageWithInvalidSize(t *testing.T) {
 	expectedUrl := "http://example.com/captioned_dominant_with_wrong_dimensions.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -315,7 +315,7 @@ func Test_CaptionedDominantImageWithInvalidSize(t *testing.T) {
 	assert.Equal(t, 100, image.Height)
 }
 
-func Test_UncaptionedInlineImageWithSmallestAR(t *testing.T) {
+func Test_IEReader_UncaptionedInlineImageWithSmallestAR(t *testing.T) {
 	expectedUrl := "http://example.com/inline_without_caption.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -339,7 +339,7 @@ func Test_UncaptionedInlineImageWithSmallestAR(t *testing.T) {
 	assert.Equal(t, 307, image.Height)
 }
 
-func Test_UncaptionedInlineImageWithBiggestAR(t *testing.T) {
+func Test_IEReader_UncaptionedInlineImageWithBiggestAR(t *testing.T) {
 	expectedUrl := "http://example.com/inline_without_caption.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -363,7 +363,7 @@ func Test_UncaptionedInlineImageWithBiggestAR(t *testing.T) {
 	assert.Equal(t, 134, image.Height)
 }
 
-func Test_CaptionedInlineImageWithInvalidSize(t *testing.T) {
+func Test_IEReader_CaptionedInlineImageWithInvalidSize(t *testing.T) {
 	expectedUrl := "http://example.com/captioned_smallest_inline.jpeg"
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", expectedUrl)
@@ -391,7 +391,7 @@ func Test_CaptionedInlineImageWithInvalidSize(t *testing.T) {
 	assert.Equal(t, 400, image.Height)
 }
 
-func Test_OptOut(t *testing.T) {
+func Test_IEReader_OptOut(t *testing.T) {
 	root := testutil.CreateHTML()
 	createMeta(root, "IE_RM_OFF", "true")
 
@@ -399,7 +399,7 @@ func Test_OptOut(t *testing.T) {
 	assert.True(t, parser.OptOut())
 }
 
-func Test_OptIn(t *testing.T) {
+func Test_IEReader_OptIn(t *testing.T) {
 	root := testutil.CreateHTML()
 	createMeta(root, "IE_RM_OFF", "false")
 

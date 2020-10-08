@@ -9,7 +9,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 )
 
-func Test_FullWordCounter(t *testing.T) {
+func Test_StringUtil_FullWordCounter(t *testing.T) {
 	counter := stringutil.FullWordCounter{}
 	// One Chinese sentence, or a series of Japanese glyphs should not be treated
 	// as a single word.
@@ -40,7 +40,7 @@ func Test_FullWordCounter(t *testing.T) {
 	assert.Equal(t, 2, counter.Count("word 字"))
 }
 
-func Test_LetterWordCounter(t *testing.T) {
+func Test_StringUtil_LetterWordCounter(t *testing.T) {
 	counters := []stringutil.WordCounter{
 		stringutil.LetterWordCounter{},
 		stringutil.FullWordCounter{},
@@ -55,7 +55,7 @@ func Test_LetterWordCounter(t *testing.T) {
 	}
 }
 
-func Test_FastWordCounter(t *testing.T) {
+func Test_StringUtil_FastWordCounter(t *testing.T) {
 	counters := []stringutil.WordCounter{
 		stringutil.FastWordCounter{},
 		stringutil.LetterWordCounter{},
@@ -84,7 +84,7 @@ func Test_FastWordCounter(t *testing.T) {
 	}
 }
 
-func Test_SelectWordCounter(t *testing.T) {
+func Test_StringUtil_SelectWordCounter(t *testing.T) {
 	counter := stringutil.SelectWordCounter("abc")
 	if _, ok := counter.(stringutil.FastWordCounter); !ok {
 		t.Errorf("abc should use FastWordCounter")

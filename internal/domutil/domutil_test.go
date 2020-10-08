@@ -16,9 +16,9 @@ import (
 // NEED-COMPUTE-CSS
 // There are some unit tests in original dom-distiller that can't be
 // implemented because they require to compute the stylesheets :
-// - Test_GetOutputNodesWithHiddenChildren
+// - Test_DomUtil_GetOutputNodesWithHiddenChildren
 
-func Test_NearestCommonAncestor(t *testing.T) {
+func Test_DomUtil_NearestCommonAncestor(t *testing.T) {
 	// The tree graph is
 	// 1 - 2 - 3
 	//		 \ 4 - 5
@@ -44,7 +44,7 @@ func Test_NearestCommonAncestor(t *testing.T) {
 	assert.Equal(t, div2, domutil.GetNearestCommonAncestor(nodeList...))
 }
 
-func Test_NearestCommonAncestorIsRoot(t *testing.T) {
+func Test_DomUtil_NearestCommonAncestorIsRoot(t *testing.T) {
 	// The tree graph is
 	// 1 - 2 - 3
 	doc := testutil.CreateHTML()
@@ -64,7 +64,7 @@ func Test_NearestCommonAncestorIsRoot(t *testing.T) {
 	assert.Equal(t, div1, domutil.GetNearestCommonAncestor(nodeList...))
 }
 
-func Test_MakeAllLinksAbsolute(t *testing.T) {
+func Test_DomUtil_MakeAllLinksAbsolute(t *testing.T) {
 	baseURL, _ := nurl.ParseRequestURI("http://example.com/")
 
 	html := `<a href="link"></a>` +
@@ -91,7 +91,7 @@ func Test_MakeAllLinksAbsolute(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_GetSrcSetURLs(t *testing.T) {
+func Test_DomUtil_GetSrcSetURLs(t *testing.T) {
 	html := `<img src="http://example.com/image" ` +
 		`srcset="http://example.com/image200 200w, http://example.com/image400 400w"/>`
 
@@ -105,7 +105,7 @@ func Test_GetSrcSetURLs(t *testing.T) {
 	assert.Equal(t, "http://example.com/image400", srcsetURLs[1])
 }
 
-func Test_GetAllSrcSetURLs(t *testing.T) {
+func Test_DomUtil_GetAllSrcSetURLs(t *testing.T) {
 	html := `<picture>` +
 		`<source srcset="image200 200w, //example.org/image400 400w"/>` +
 		`<source srcset="image100 100w, //example.org/image300 300w"/>` +
@@ -123,7 +123,7 @@ func Test_GetAllSrcSetURLs(t *testing.T) {
 	assert.Equal(t, "//example.org/image300", srcsetURLs[3])
 }
 
-func Test_StripImageElements(t *testing.T) {
+func Test_DomUtil_StripImageElements(t *testing.T) {
 	html := `<img id="a" alt="alt" dir="rtl" title="t" style="typo" align="left"` +
 		`src="image" class="a" srcset="image200 200w" data-dummy="a"/>` +
 		`<img mulformed="nothing" data-empty data-dup="1" data-dup="2" src="image" src="second"/>`
@@ -146,7 +146,7 @@ func Test_StripImageElements(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_StripTableBackgroundColorAttributes(t *testing.T) {
+func Test_DomUtil_StripTableBackgroundColorAttributes(t *testing.T) {
 	html := `<table bgcolor="red">` +
 		`<tbody>` +
 		`<tr bgcolor="red">` +
@@ -179,7 +179,7 @@ func Test_StripTableBackgroundColorAttributes(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_StripStyleAttributes(t *testing.T) {
+func Test_DomUtil_StripStyleAttributes(t *testing.T) {
 	html := `<div style="font-weight: folder">text</div>` +
 		`<table style="position: absolute">` +
 		`<tbody style="font-size: 2">` +
@@ -221,7 +221,7 @@ func Test_StripStyleAttributes(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_StripUnwantedClassNames(t *testing.T) {
+func Test_DomUtil_StripUnwantedClassNames(t *testing.T) {
 	html := `<br class="iscaptiontxt"/>` +
 		`<br id="a"/>` +
 		`<br class=""/>` +
@@ -253,7 +253,7 @@ func Test_StripUnwantedClassNames(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_StripAllUnsafeAttributes(t *testing.T) {
+func Test_DomUtil_StripAllUnsafeAttributes(t *testing.T) {
 	unsafeHTML := `<h1 class='foo' onclick='alert(123);'>Foo</h1>` +
 		`<img alt='bar' invalidattr='alert("Stop");'/>` +
 		`<div tabIndex=0 onScroll='alert("Unsafe");'>Baz</div>`
@@ -274,7 +274,7 @@ func Test_StripAllUnsafeAttributes(t *testing.T) {
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
-func Test_GetOutputNodes(t *testing.T) {
+func Test_DomUtil_GetOutputNodes(t *testing.T) {
 	div := dom.CreateElement("div")
 	dom.SetInnerHTML(div, `<p>`+
 		`<span>Some content</span>`+
@@ -305,7 +305,7 @@ func Test_GetOutputNodes(t *testing.T) {
 	assert.Equal(t, "img", dom.TagName(node))
 }
 
-func Test_GetOutputNodesNestedTable(t *testing.T) {
+func Test_DomUtil_GetOutputNodesNestedTable(t *testing.T) {
 	div := dom.CreateElement("div")
 	dom.SetInnerHTML(div, `<table>`+
 		`<tbody><tr>`+

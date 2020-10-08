@@ -16,14 +16,14 @@ import (
 // NEED-COMPUTE-CSS
 // There are some unit tests in original dom-distiller that can't be
 // implemented because they require to compute the stylesheets :
-// - Test_DocumentWidth
-// - Test_WideTable
-// - Test_BorderAroundCells
-// - Test_NoBorderAroundCells
-// - Test_DifferentlyColoredRows
-// - Test_TallTable
+// - Test_TableClass_DocumentWidth
+// - Test_TableClass_WideTable
+// - Test_TableClass_BorderAroundCells
+// - Test_TableClass_NoBorderAroundCells
+// - Test_TableClass_DifferentlyColoredRows
+// - Test_TableClass_TallTable
 
-func Test_InputElement(t *testing.T) {
+func Test_TableClass_InputElement(t *testing.T) {
 	input := dom.CreateElement("input")
 	dom.SetAttribute(input, "type", "text")
 
@@ -35,7 +35,7 @@ func Test_InputElement(t *testing.T) {
 	assert.Equal(t, tableclass.InsideEditableArea, reason)
 }
 
-func Test_ContentEditableAttribute(t *testing.T) {
+func Test_TableClass_ContentEditableAttribute(t *testing.T) {
 	div := testutil.CreateDiv(0)
 	dom.SetAttribute(div, "contenteditable", "true")
 
@@ -47,7 +47,7 @@ func Test_ContentEditableAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.InsideEditableArea, reason)
 }
 
-func Test_RolePresentation(t *testing.T) {
+func Test_TableClass_RolePresentation(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.SetAttribute(table, "role", "presentation")
 
@@ -56,7 +56,7 @@ func Test_RolePresentation(t *testing.T) {
 	assert.Equal(t, tableclass.RoleTable, reason)
 }
 
-func Test_RoleGrid(t *testing.T) {
+func Test_TableClass_RoleGrid(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "grid")
 
@@ -65,7 +65,7 @@ func Test_RoleGrid(t *testing.T) {
 	assert.Equal(t, tableclass.RoleTable, reason)
 }
 
-func Test_RoleGridNested(t *testing.T) {
+func Test_TableClass_RoleGridNested(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	nestedTable := createDefaultNestedTableWithNoTH(table)
 	dom.SetAttribute(nestedTable, "role", "grid")
@@ -79,7 +79,7 @@ func Test_RoleGridNested(t *testing.T) {
 	assert.Equal(t, tableclass.RoleTable, reason)
 }
 
-func Test_RoleTreeGrid(t *testing.T) {
+func Test_TableClass_RoleTreeGrid(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "treegrid")
 
@@ -88,7 +88,7 @@ func Test_RoleTreeGrid(t *testing.T) {
 	assert.Equal(t, tableclass.RoleTable, reason)
 }
 
-func Test_RoleGridCell(t *testing.T) {
+func Test_TableClass_RoleGridCell(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "td", "gridcell")
 
@@ -97,7 +97,7 @@ func Test_RoleGridCell(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleGridCellNested(t *testing.T) {
+func Test_TableClass_RoleGridCellNested(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	nestedTable := createDefaultNestedTableWithNoTH(table)
 	setRoleForFirstElement(nestedTable, "td", "gridcell")
@@ -111,7 +111,7 @@ func Test_RoleGridCellNested(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleColumnHeader(t *testing.T) {
+func Test_TableClass_RoleColumnHeader(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "td", "columnheader")
 
@@ -120,7 +120,7 @@ func Test_RoleColumnHeader(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleRow(t *testing.T) {
+func Test_TableClass_RoleRow(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tr", "row")
 
@@ -129,7 +129,7 @@ func Test_RoleRow(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleRowGroup(t *testing.T) {
+func Test_TableClass_RoleRowGroup(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tbody", "rowgroup")
 
@@ -138,7 +138,7 @@ func Test_RoleRowGroup(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleRowHeader(t *testing.T) {
+func Test_TableClass_RoleRowHeader(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tr", "rowheader")
 
@@ -147,7 +147,7 @@ func Test_RoleRowHeader(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_RoleLandmark(t *testing.T) {
+func Test_TableClass_RoleLandmark(t *testing.T) {
 	// Test landmark role in <table> element.
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "application")
@@ -168,7 +168,7 @@ func Test_RoleLandmark(t *testing.T) {
 	assert.Equal(t, tableclass.RoleDescendant, reason)
 }
 
-func Test_DatatableAttribute(t *testing.T) {
+func Test_TableClass_DatatableAttribute(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.SetAttribute(table, "datatable", "0")
 
@@ -177,7 +177,7 @@ func Test_DatatableAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.Datatable0, reason)
 }
 
-func Test_CaptionTag(t *testing.T) {
+func Test_TableClass_CaptionTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	caption := dom.CreateElement("caption")
 	dom.SetInnerHTML(caption, "Testing Caption")
@@ -188,7 +188,7 @@ func Test_CaptionTag(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_EmptyCaptionTag(t *testing.T) {
+func Test_TableClass_EmptyCaptionTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	caption := dom.CreateElement("caption")
 	dom.PrependChild(table, caption)
@@ -198,7 +198,7 @@ func Test_EmptyCaptionTag(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq10Cells, reason)
 }
 
-func Test_AllWhitespacedCaptionTag(t *testing.T) {
+func Test_TableClass_AllWhitespacedCaptionTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	caption := dom.CreateElement("caption")
 	dom.SetInnerHTML(caption, "&nbsp;  &nbsp;")
@@ -209,7 +209,7 @@ func Test_AllWhitespacedCaptionTag(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq10Cells, reason)
 }
 
-func Test_THeadTag(t *testing.T) {
+func Test_TableClass_THeadTag(t *testing.T) {
 	th1 := dom.CreateElement("th")
 	th2 := dom.CreateElement("th")
 	dom.SetInnerHTML(th1, "heading 1")
@@ -230,7 +230,7 @@ func Test_THeadTag(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_TFootTag(t *testing.T) {
+func Test_TableClass_TFootTag(t *testing.T) {
 	td1 := dom.CreateElement("td")
 	td2 := dom.CreateElement("td")
 	dom.SetInnerHTML(td1, "total 1")
@@ -251,7 +251,7 @@ func Test_TFootTag(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_ColGroupTag(t *testing.T) {
+func Test_TableClass_ColGroupTag(t *testing.T) {
 	col1 := dom.CreateElement("col")
 	col2 := dom.CreateElement("col")
 	dom.SetAttribute(col1, "span", "2")
@@ -269,7 +269,7 @@ func Test_ColGroupTag(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_ColTag(t *testing.T) {
+func Test_TableClass_ColTag(t *testing.T) {
 	col := dom.CreateElement("col")
 	dom.SetAttribute(col, "span", "2")
 
@@ -281,14 +281,14 @@ func Test_ColTag(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_THTag(t *testing.T) {
+func Test_TableClass_THTag(t *testing.T) {
 	table := createDefaultTableWithTH()
 	tableType, reason := tableclass.Classify(table)
 	assert.Equal(t, tableclass.Data, tableType)
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_THTagNested(t *testing.T) {
+func Test_TableClass_THTagNested(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	nestedTable := createDefaultNestedTableWithTH(table)
 
@@ -301,7 +301,7 @@ func Test_THTagNested(t *testing.T) {
 	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
 }
 
-func Test_EmptyTHTag(t *testing.T) {
+func Test_TableClass_EmptyTHTag(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -323,7 +323,7 @@ func Test_EmptyTHTag(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq10Cells, reason)
 }
 
-func Test_AllWhitespacedTHTag(t *testing.T) {
+func Test_TableClass_AllWhitespacedTHTag(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -345,7 +345,7 @@ func Test_AllWhitespacedTHTag(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq10Cells, reason)
 }
 
-func Test_AbbrAttribute(t *testing.T) {
+func Test_TableClass_AbbrAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "abbr", "HTML")
 
@@ -354,7 +354,7 @@ func Test_AbbrAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
 }
 
-func Test_HeadersAttribute(t *testing.T) {
+func Test_TableClass_HeadersAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "headers", "heading1")
 
@@ -363,7 +363,7 @@ func Test_HeadersAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
 }
 
-func Test_ScopeAttribute(t *testing.T) {
+func Test_TableClass_ScopeAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "scope", "colgroup")
 
@@ -372,7 +372,7 @@ func Test_ScopeAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
 }
 
-func Test_SingleAbbrTag(t *testing.T) {
+func Test_TableClass_SingleAbbrTag(t *testing.T) {
 	abbr := dom.CreateElement("abbr")
 	dom.SetInnerHTML(abbr, "html")
 
@@ -388,7 +388,7 @@ func Test_SingleAbbrTag(t *testing.T) {
 	assert.Equal(t, tableclass.OnlyHasAbbr, reason)
 }
 
-func Test_SummaryAttribute(t *testing.T) {
+func Test_TableClass_SummaryAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "summary", "Testing summary attribute")
 
@@ -397,7 +397,7 @@ func Test_SummaryAttribute(t *testing.T) {
 	assert.Equal(t, tableclass.Summary, reason)
 }
 
-func Test_EmptyTable(t *testing.T) {
+func Test_TableClass_EmptyTable(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<p>empty table</p>
@@ -408,7 +408,7 @@ func Test_EmptyTable(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq1Row, reason)
 }
 
-func Test_1Row(t *testing.T) {
+func Test_TableClass_1Row(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -422,7 +422,7 @@ func Test_1Row(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq1Row, reason)
 }
 
-func Test_1ColInSameCols(t *testing.T) {
+func Test_TableClass_1ColInSameCols(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -438,7 +438,7 @@ func Test_1ColInSameCols(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq1Col, reason)
 }
 
-func Test_1ColInDifferentCols(t *testing.T) {
+func Test_TableClass_1ColInDifferentCols(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -455,7 +455,7 @@ func Test_1ColInDifferentCols(t *testing.T) {
 	assert.Equal(t, tableclass.LessEq10Cells, reason)
 }
 
-func Test_5Cols(t *testing.T) {
+func Test_TableClass_5Cols(t *testing.T) {
 	table := createTable(`
 	<tbody>
 		<tr>
@@ -479,7 +479,7 @@ func Test_5Cols(t *testing.T) {
 	assert.Equal(t, tableclass.MoreEq5Cols, reason)
 }
 
-func Test_20Rows(t *testing.T) {
+func Test_TableClass_20Rows(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	tbody := dom.QuerySelector(table, "tbody")
 
@@ -498,7 +498,7 @@ func Test_20Rows(t *testing.T) {
 	assert.Equal(t, tableclass.MoreEq20Rows, reason)
 }
 
-func Test_EmbedElement(t *testing.T) {
+func Test_TableClass_EmbedElement(t *testing.T) {
 	table := createBigDefaultTableWithNoTH()
 	embed := dom.CreateElement("embed")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
@@ -508,7 +508,7 @@ func Test_EmbedElement(t *testing.T) {
 	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
 }
 
-func Test_ObjectElement(t *testing.T) {
+func Test_TableClass_ObjectElement(t *testing.T) {
 	table := createBigDefaultTableWithNoTH()
 	embed := dom.CreateElement("object")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
@@ -518,7 +518,7 @@ func Test_ObjectElement(t *testing.T) {
 	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
 }
 
-func Test_AppletElement(t *testing.T) {
+func Test_TableClass_AppletElement(t *testing.T) {
 	table := createBigDefaultTableWithNoTH()
 	embed := dom.CreateElement("applet")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
@@ -528,7 +528,7 @@ func Test_AppletElement(t *testing.T) {
 	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
 }
 
-func Test_IframeElement(t *testing.T) {
+func Test_TableClass_IframeElement(t *testing.T) {
 	table := createBigDefaultTableWithNoTH()
 	embed := dom.CreateElement("iframe")
 	dom.AppendChild(getFirstElement(table, "td"), embed)

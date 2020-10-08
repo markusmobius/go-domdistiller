@@ -15,17 +15,17 @@ import (
 // NEED-COMPUTE-CSS
 // There are some unit tests in original dom-distiller that can't be
 // implemented because they require to compute the stylesheets :
-// - Test_Flush, in our case Flush will always true because we cant compute CSS.
-// - Test_ChangesTagLevel, in our case ChangeTagLevel will always true.
+// - Test_WebDoc_Flush, in our case Flush will always true because we cant compute CSS.
+// - Test_WebDoc_ChangesTagLevel, in our case ChangeTagLevel will always true.
 
-func Test_ElementAction_IsAnchor(t *testing.T) {
+func Test_WebDoc_ElementAction_IsAnchor(t *testing.T) {
 	assert.False(t, actForHtml(`<span></span>`).IsAnchor)
 	assert.False(t, actForHtml(`<div></div>`).IsAnchor)
 	assert.False(t, actForHtml(`<a></a>`).IsAnchor)
 	assert.True(t, actForHtml(`<a href="http://example.com"></a>`).IsAnchor)
 }
 
-func Test_ElementAction_Labels(t *testing.T) {
+func Test_WebDoc_ElementAction_Labels(t *testing.T) {
 	assert.Len(t, actForHtml("<span></span>").Labels, 0)
 	assert.Len(t, actForHtml("<div></div>").Labels, 0)
 	assert.Len(t, actForHtml("<p></p>").Labels, 0)
@@ -43,7 +43,7 @@ func Test_ElementAction_Labels(t *testing.T) {
 	assert.True(t, actHasLabel(actForHtml("<aside></aside>"), label.StrictlyNotContent))
 }
 
-func Test_ElementAction_CommentsLabels(t *testing.T) {
+func Test_WebDoc_ElementAction_CommentsLabels(t *testing.T) {
 	assert.False(t, actHasLabel(actForHtml(`<span></span>`), label.StrictlyNotContent))
 	assert.False(t, actHasLabel(actForHtml(`<div></div>`), label.StrictlyNotContent))
 

@@ -11,7 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
 
-func Test_TextBuilder_SimpleBlocks(t *testing.T) {
+func Test_WebDoc_TextBuilder_SimpleBlocks(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 
@@ -42,7 +42,7 @@ func Test_TextBuilder_SimpleBlocks(t *testing.T) {
 	assert.Nil(t, builder.Build(0))
 }
 
-func Test_TextBuilder_BlockWithAnchors(t *testing.T) {
+func Test_WebDoc_TextBuilder_BlockWithAnchors(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 
@@ -72,7 +72,7 @@ func Test_TextBuilder_BlockWithAnchors(t *testing.T) {
 	assert.Equal(t, "one", block.Text)
 }
 
-func Test_TextBuilder_ComplicatedText(t *testing.T) {
+func Test_WebDoc_TextBuilder_ComplicatedText(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 
@@ -92,7 +92,7 @@ func Test_TextBuilder_ComplicatedText(t *testing.T) {
 	assert.Equal(t, 2, builder.Build(0).NumWords)
 }
 
-func Test_TextBuilder_WhitespaceAroundAnchor(t *testing.T) {
+func Test_WebDoc_TextBuilder_WhitespaceAroundAnchor(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 
@@ -105,7 +105,7 @@ func Test_TextBuilder_WhitespaceAroundAnchor(t *testing.T) {
 	assert.Equal(t, "The  Overview  is", tb.Text)
 }
 
-func Test_TextBuilder_WhitespaceNodes(t *testing.T) {
+func Test_WebDoc_TextBuilder_WhitespaceNodes(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 
@@ -128,7 +128,7 @@ func Test_TextBuilder_WhitespaceNodes(t *testing.T) {
 	assert.False(t, tb.GetFirstNonWhitespaceTextNode() == tb.GetLastNonWhitespaceTextNode())
 }
 
-func Test_TextBuilder_BrElement(t *testing.T) {
+func Test_WebDoc_TextBuilder_BrElement(t *testing.T) {
 	wc := stringutil.FastWordCounter{}
 	builder := webdoc.NewTextBuilder(wc)
 

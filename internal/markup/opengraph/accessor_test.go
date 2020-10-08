@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_RequiredPropertiesAndDescriptionAndSiteName(t *testing.T) {
+func Test_OpenGraph_RequiredPropertiesAndDescriptionAndSiteName(t *testing.T) {
 	expectedTitle := "Testing required OpenGraph Protocol properties and optional description of the document."
 	expectedImage := "http://test/image.jpeg"
 	expectedURL := "http://test/test.html"
@@ -44,7 +44,7 @@ func Test_RequiredPropertiesAndDescriptionAndSiteName(t *testing.T) {
 	assert.Equal(t, 0, images[0].Height)
 }
 
-func Test_NoRequiredImage(t *testing.T) {
+func Test_OpenGraph_NoRequiredImage(t *testing.T) {
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
 	createDefaultType(root)
@@ -57,7 +57,7 @@ func Test_NoRequiredImage(t *testing.T) {
 	assert.Nil(t, parser)
 }
 
-func Test_OneImage(t *testing.T) {
+func Test_OpenGraph_OneImage(t *testing.T) {
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
 	createDefaultType(root)
@@ -86,7 +86,7 @@ func Test_OneImage(t *testing.T) {
 	assert.Equal(t, 400, images[0].Height)
 }
 
-func Test_CompleteMultipleImages(t *testing.T) {
+func Test_OpenGraph_CompleteMultipleImages(t *testing.T) {
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
 	createDefaultType(root)
@@ -134,7 +134,7 @@ func Test_CompleteMultipleImages(t *testing.T) {
 	assert.Equal(t, 900, image.Height)
 }
 
-func Test_IncompleteMultipleImages(t *testing.T) {
+func Test_OpenGraph_IncompleteMultipleImages(t *testing.T) {
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
 	createDefaultType(root)
@@ -177,7 +177,7 @@ func Test_IncompleteMultipleImages(t *testing.T) {
 	assert.Equal(t, 400, image.Height)
 }
 
-func Test_NoObjects(t *testing.T) {
+func Test_OpenGraph_NoObjects(t *testing.T) {
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
 	createDefaultType(root)
@@ -190,7 +190,7 @@ func Test_NoObjects(t *testing.T) {
 	assert.Nil(t, parser.Article())
 }
 
-func Test_Profile(t *testing.T) {
+func Test_OpenGraph_Profile(t *testing.T) {
 	// Create the required properties except for "type".
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
@@ -207,7 +207,7 @@ func Test_Profile(t *testing.T) {
 	assert.Equal(t, "Jane Doe", parser.Author())
 }
 
-func Test_Article(t *testing.T) {
+func Test_OpenGraph_Article(t *testing.T) {
 	// Create the required properties except for "type".
 	root := testutil.CreateHTML()
 	createDefaultTitle(root)
@@ -243,7 +243,7 @@ func Test_Article(t *testing.T) {
 	assert.Equal(t, expectedAuthor2, article.Authors[1])
 }
 
-func Test_OGAndProfilePrefixesInHtmlTag(t *testing.T) {
+func Test_OpenGraph_OGAndProfilePrefixesInHtmlTag(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
 	htmlNode := dom.QuerySelector(root, "html")
@@ -293,7 +293,7 @@ func Test_OGAndProfilePrefixesInHtmlTag(t *testing.T) {
 	assert.Equal(t, "Jane Doe", parser.Author())
 }
 
-func Test_ArticlePrefixInHeadTag(t *testing.T) {
+func Test_OpenGraph_ArticlePrefixInHeadTag(t *testing.T) {
 	// Set prefix attribute in head tag.
 	root := testutil.CreateHTML()
 	headNode := dom.QuerySelector(root, "head")
@@ -333,7 +333,7 @@ func Test_ArticlePrefixInHeadTag(t *testing.T) {
 	assert.Equal(t, expectedAuthor2, article.Authors[1])
 }
 
-func Test_IncorrectPrefix(t *testing.T) {
+func Test_OpenGraph_IncorrectPrefix(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
 	htmlNode := dom.QuerySelector(root, "html")
@@ -354,7 +354,7 @@ func Test_IncorrectPrefix(t *testing.T) {
 	assert.Equal(t, "", parser.Description())
 }
 
-func Test_OGAndProfileXmlns(t *testing.T) {
+func Test_OpenGraph_OGAndProfileXmlns(t *testing.T) {
 	// Set xmlns attribute in HTML tag.
 	root := testutil.CreateHTML()
 	htmlNode := dom.QuerySelector(root, "html")
@@ -408,7 +408,7 @@ func Test_OGAndProfileXmlns(t *testing.T) {
 	assert.Equal(t, 400, image.Height)
 }
 
-func Test_ArticleXmlns(t *testing.T) {
+func Test_OpenGraph_ArticleXmlns(t *testing.T) {
 	// Set xmlns attribute in HTML tag.
 	root := testutil.CreateHTML()
 	htmlNode := dom.QuerySelector(root, "html")
@@ -449,7 +449,7 @@ func Test_ArticleXmlns(t *testing.T) {
 	assert.Equal(t, expectedAuthor2, article.Authors[1])
 }
 
-func Test_IncorrectXmlns(t *testing.T) {
+func Test_OpenGraph_IncorrectXmlns(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
 	htmlNode := dom.QuerySelector(root, "html")

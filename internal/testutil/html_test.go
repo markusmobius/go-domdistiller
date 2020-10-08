@@ -16,7 +16,7 @@ var (
 	rxNewlines         = regexp.MustCompile(`(?i)\n`)
 )
 
-func Test_CreateDivTree(t *testing.T) {
+func Test_TestUtil_CreateDivTree(t *testing.T) {
 	expectedHTML := `
 		<div id="0">
 			<div id="1">

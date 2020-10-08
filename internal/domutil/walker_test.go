@@ -13,7 +13,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_WalkNodes_TopNodeHasNextSiblingAndParent(t *testing.T) {
+func Test_DomUtil_WalkNodes_TopNodeHasNextSiblingAndParent(t *testing.T) {
 	root := testutil.CreateDiv(0)
 	firstChild := testutil.CreateDiv(1)
 	secondChild := testutil.CreateDiv(2)
@@ -26,7 +26,7 @@ func Test_WalkNodes_TopNodeHasNextSiblingAndParent(t *testing.T) {
 	})
 }
 
-func Test_WalkNodes_DivTree(t *testing.T) {
+func Test_DomUtil_WalkNodes_DivTree(t *testing.T) {
 	root := testutil.CreateDivTree()[0]
 
 	runWalkerTest(t, root, []walkVisitData{

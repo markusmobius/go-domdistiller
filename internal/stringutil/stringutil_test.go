@@ -10,7 +10,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 )
 
-func Test_IsStringAllWhitespace(t *testing.T) {
+func Test_StringUtil_IsStringAllWhitespace(t *testing.T) {
 	assert.True(t, stringutil.IsStringAllWhitespace(""))
 	assert.True(t, stringutil.IsStringAllWhitespace(" \t\r\n"))
 	assert.True(t, stringutil.IsStringAllWhitespace(" \u00a0     \t\t\t"))
@@ -24,7 +24,7 @@ func Test_IsStringAllWhitespace(t *testing.T) {
 // Tests below these point are test for function that doesn't exist in original code
 // =================================================================================
 
-func Test_CreateAbsoluteURL(t *testing.T) {
+func Test_StringUtil_CreateAbsoluteURL(t *testing.T) {
 	relURL1 := "#here"
 	relURL2 := "/test/123"
 	relURL3 := "test/123"

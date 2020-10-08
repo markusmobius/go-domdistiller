@@ -12,7 +12,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
 
-func Test_Text_GenerateOutputMultipleContentNodes(t *testing.T) {
+func Test_WebDoc_Text_GenerateOutputMultipleContentNodes(t *testing.T) {
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	container := dom.CreateElement("div")
@@ -37,7 +37,7 @@ func Test_Text_GenerateOutputMultipleContentNodes(t *testing.T) {
 	assert.Equal(t, want, testutil.RemoveAllDirAttributes(got))
 }
 
-func Test_Text_GenerateOutputSingleContentNode(t *testing.T) {
+func Test_WebDoc_Text_GenerateOutputSingleContentNode(t *testing.T) {
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	container := dom.CreateElement("div")
@@ -61,7 +61,7 @@ func Test_Text_GenerateOutputSingleContentNode(t *testing.T) {
 	assert.Equal(t, want, testutil.RemoveAllDirAttributes(got))
 }
 
-func Test_Text_GenerateOutputBrElements(t *testing.T) {
+func Test_WebDoc_Text_GenerateOutputBrElements(t *testing.T) {
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	container := dom.CreateElement("div")
@@ -98,7 +98,7 @@ func Test_Text_GenerateOutputBrElements(t *testing.T) {
 	assert.Equal(t, want, got)
 }
 
-func Test_Text_StripUnsafeAttributes(t *testing.T) {
+func Test_WebDoc_Text_StripUnsafeAttributes(t *testing.T) {
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	container := dom.CreateElement("div")
@@ -120,7 +120,7 @@ func Test_Text_StripUnsafeAttributes(t *testing.T) {
 	assert.Equal(t, want, testutil.RemoveAllDirAttributes(got))
 }
 
-func Test_Text_GenerateOutputLiElements(t *testing.T) {
+func Test_WebDoc_Text_GenerateOutputLiElements(t *testing.T) {
 	container := dom.CreateElement("li")
 	dom.AppendChild(container, dom.CreateTextNode("Some text content 1."))
 

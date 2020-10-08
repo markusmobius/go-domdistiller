@@ -9,7 +9,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
 
-func Test_Tag_OLGenerateOutput(t *testing.T) {
+func Test_WebDoc_Tag_OLGenerateOutput(t *testing.T) {
 	olStartTag := webdoc.Tag{Name: "ol", Type: webdoc.TagStart}
 	olEndTag := webdoc.Tag{Name: "ol", Type: webdoc.TagEnd}
 	startResult := olStartTag.GenerateOutput(false)
@@ -18,7 +18,7 @@ func Test_Tag_OLGenerateOutput(t *testing.T) {
 	assert.Equal(t, "</ol>", endResult)
 }
 
-func Test_Tag_GenerateOutput(t *testing.T) {
+func Test_WebDoc_Tag_GenerateOutput(t *testing.T) {
 	startTag := webdoc.Tag{Name: "anytext", Type: webdoc.TagStart}
 	endTag := webdoc.Tag{Name: "anytext", Type: webdoc.TagEnd}
 	startResult := startTag.GenerateOutput(false)

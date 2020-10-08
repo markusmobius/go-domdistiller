@@ -12,7 +12,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
 
-func Test_Table_GenerateOutput(t *testing.T) {
+func Test_WebDoc_Table_GenerateOutput(t *testing.T) {
 	html := `<table><tbody>` +
 		`<tr>` +
 		`<td>row1col1</td>` +
@@ -37,7 +37,7 @@ func Test_Table_GenerateOutput(t *testing.T) {
 	assert.Equal(t, "http://example.com/table.png", imgURLs[0])
 }
 
-func Test_Table_GetImageURLs(t *testing.T) {
+func Test_WebDoc_Table_GetImageURLs(t *testing.T) {
 	div := dom.CreateElement("div")
 	dom.SetInnerHTML(div, `
 	<table>

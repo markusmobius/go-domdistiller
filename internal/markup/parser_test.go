@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_NullOpenGraphProtocolParser(t *testing.T) {
+func Test_Markup_NullOpenGraphProtocolParser(t *testing.T) {
 	expectedTitle := "Testing null OpenGraphProtocolParser."
 
 	doc := testutil.CreateHTML()
@@ -31,7 +31,7 @@ func Test_NullOpenGraphProtocolParser(t *testing.T) {
 // - which parser takes precedence
 // - how we merge the different values retrieved from the different parsers.
 
-func Test_CompleteInfoWithMultipleImages(t *testing.T) {
+func Test_Markup_CompleteInfoWithMultipleImages(t *testing.T) {
 	// Create the required properties for OpenGraphProtocol except for "image".
 	doc := testutil.CreateHTML()
 	createDefaultOGTitle(doc)
@@ -81,7 +81,7 @@ func Test_CompleteInfoWithMultipleImages(t *testing.T) {
 	assert.Equal(t, 900, markupImage.Height)
 }
 
-func Test_Article(t *testing.T) {
+func Test_Markup_Article(t *testing.T) {
 	// Create the required properties for OpenGraphProtocol except for "type".
 	doc := testutil.CreateHTML()
 	createDefaultOGTitle(doc)

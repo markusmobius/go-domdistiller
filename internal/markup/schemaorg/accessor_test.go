@@ -12,8 +12,8 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_ImageWithEmbeddedPublisher(t *testing.T) {
-	expectedURL := "http://dummy/test_image_with_embedded_item.html"
+func Test_SchemaOrg_ImageWithEmbeddedPublisher(t *testing.T) {
+	expectedURL := "http://dummy/Test_SchemaOrg_image_with_embedded_item.html"
 	expectedFormat := "jpeg"
 	expectedCaption := "A test for IMAGE with embedded publisher"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/ImageObject">` +
@@ -72,12 +72,12 @@ func Test_ImageWithEmbeddedPublisher(t *testing.T) {
 	assert.Equal(t, 400, image.Height)
 }
 
-func Test_2Images(t *testing.T) {
-	expectedURL1 := "http://dummy/test_1st image.html"
+func Test_SchemaOrg_2Images(t *testing.T) {
+	expectedURL1 := "http://dummy/Test_SchemaOrg_1st image.html"
 	expectedPublisher1 := "Whatever 1st Image Incorporated"
 	expectedFormat1 := "jpeg"
 	expectedCaption1 := "A test for 1st IMAGE"
-	expectedURL2 := "http://dummy/test_2nd image.html"
+	expectedURL2 := "http://dummy/Test_SchemaOrg_2nd image.html"
 	expectedFormat2 := "gif"
 	expectedCaption2 := "A test for 2nd IMAGE"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/ImageObject">` +
@@ -169,11 +169,11 @@ func Test_2Images(t *testing.T) {
 	assert.Equal(t, 300, image.Height)
 }
 
-func Test_ArticleWithEmbeddedAuthorAndPublisher(t *testing.T) {
+func Test_SchemaOrg_ArticleWithEmbeddedAuthorAndPublisher(t *testing.T) {
 	expectedTitle := "Testcase for ARTICLE"
 	expectedDescription := "Testing ARTICLE with embedded author and publisher"
-	expectedUrl := "http://dummy/test_article_with_embedded_items.html"
-	expectedImage := "http://dummy/test_article_with_embedded_items.jpeg"
+	expectedUrl := "http://dummy/Test_SchemaOrg_article_with_embedded_items.html"
+	expectedImage := "http://dummy/Test_SchemaOrg_article_with_embedded_items.jpeg"
 	expectedAuthor := "Whoever authored"
 	expectedPublisher := "Whatever Article Incorporated"
 	expectedDatePublished := "April 15, 2014"
@@ -242,14 +242,14 @@ func Test_ArticleWithEmbeddedAuthorAndPublisher(t *testing.T) {
 	assert.Equal(t, expectedAuthor, article.Authors[0])
 }
 
-func Test_ArticleWithEmbeddedAndTopLevelImages(t *testing.T) {
+func Test_SchemaOrg_ArticleWithEmbeddedAndTopLevelImages(t *testing.T) {
 	expectedTitle := "Testcase for ARTICLE with Embedded and Top-Level IMAGEs"
 	expectedDescription := "Testing ARTICLE with embedded and top-level images"
-	expectedUrl := "http://dummy/test_article_with_embedded_and_toplevel_images.html"
-	expectedImage1 := "http://dummy/test_toplevel image.html"
+	expectedUrl := "http://dummy/Test_SchemaOrg_article_with_embedded_and_toplevel_images.html"
+	expectedImage1 := "http://dummy/Test_SchemaOrg_toplevel image.html"
 	expectedFormat1 := "gif"
 	expectedCaption1 := "A test for top-level IMAGE"
-	expectedImage2 := "http://dummy/test_article_with_embedded_and_toplevel_images.html"
+	expectedImage2 := "http://dummy/Test_SchemaOrg_article_with_embedded_and_toplevel_images.html"
 	expectedFormat2 := "jpeg"
 	expectedCaption2 := "A test for embedded IMAGE in ARTICLE"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/ImageObject">` +
@@ -324,7 +324,7 @@ func Test_ArticleWithEmbeddedAndTopLevelImages(t *testing.T) {
 	assert.Equal(t, 600, image.Height)
 }
 
-func Test_ItemscopeInHTMLTag(t *testing.T) {
+func Test_SchemaOrg_ItemscopeInHTMLTag(t *testing.T) {
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	setItemScopeAndType(doc, "Article")
@@ -340,7 +340,7 @@ func Test_ItemscopeInHTMLTag(t *testing.T) {
 	assert.NotNil(t, parser.Article())
 }
 
-func Test_SupportedWithUnsupportedItemprop(t *testing.T) {
+func Test_SchemaOrg_SupportedWithUnsupportedItemprop(t *testing.T) {
 	expectedTitle := "Testcase for Supported With Unsupported Itemprop"
 	expectedSection := "Testing"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/Article">` +
@@ -387,7 +387,7 @@ func Test_SupportedWithUnsupportedItemprop(t *testing.T) {
 	assert.Equal(t, 0, len(article.Authors))
 }
 
-func Test_UnsupportedWithSupportedItemprop(t *testing.T) {
+func Test_SchemaOrg_UnsupportedWithSupportedItemprop(t *testing.T) {
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/Movie">` +
 		`	<span itemprop="headline">Testcase for Unsupported With Supported Itemprop` +
 		`	</span>` +
@@ -418,11 +418,11 @@ func Test_UnsupportedWithSupportedItemprop(t *testing.T) {
 	assert.Equal(t, 0, len(parser.Images()))
 }
 
-func Test_UnsupportedWithNestedSupported(t *testing.T) {
+func Test_SchemaOrg_UnsupportedWithNestedSupported(t *testing.T) {
 	expectedTitle := "Testcase for ARTICLE nested in Unsupported Type"
 	expectedDescription := "Testing ARTICLE that is nested within unsupported type"
-	expectedUrl := "http://dummy/test_article_with_embedded_items.html"
-	expectedImage := "http://dummy/test_article_with_embedded_items.jpeg"
+	expectedUrl := "http://dummy/Test_SchemaOrg_article_with_embedded_items.html"
+	expectedImage := "http://dummy/Test_SchemaOrg_article_with_embedded_items.jpeg"
 	expectedAuthor := "Whoever authored"
 	expectedPublisher := "Whatever Article Incorporated"
 	expectedDatePublished := "April 15, 2014"
@@ -481,7 +481,7 @@ func Test_UnsupportedWithNestedSupported(t *testing.T) {
 	assert.Equal(t, expectedAuthor, article.Authors[0])
 }
 
-func Test_SameItempropDifferentValues(t *testing.T) {
+func Test_SchemaOrg_SameItempropDifferentValues(t *testing.T) {
 	expectedAuthor := "Author 1"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/Article">` +
 		`	<div id="2" itemscope itemtype="http://schema.org/Person"` +
@@ -510,7 +510,7 @@ func Test_SameItempropDifferentValues(t *testing.T) {
 	assert.Equal(t, expectedAuthor, article.Authors[0])
 }
 
-func Test_ItempropWithMultiProperties(t *testing.T) {
+func Test_SchemaOrg_ItempropWithMultiProperties(t *testing.T) {
 	expectedPerson := "Person foo"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/Article">` +
 		`	<div id="2" itemscope itemtype="http://schema.org/Person"` +
@@ -538,7 +538,7 @@ func Test_ItempropWithMultiProperties(t *testing.T) {
 	assert.Equal(t, expectedPerson, article.Authors[0])
 }
 
-func Test_AuthorPropertyFromDifferentSources(t *testing.T) {
+func Test_SchemaOrg_AuthorPropertyFromDifferentSources(t *testing.T) {
 	// Test that "creator" property is used when "author" property doesn't exist.
 	expectedCreator := "Whoever created"
 	htmlStr := `<div id="1" itemscope itemtype="http://schema.org/Article">` +
@@ -582,7 +582,7 @@ func Test_AuthorPropertyFromDifferentSources(t *testing.T) {
 	assert.Nil(t, parser.Article())
 }
 
-func Test_GetTitleWhenTheMainArticleDoesntHaveHeadline(t *testing.T) {
+func Test_SchemaOrg_GetTitleWhenTheMainArticleDoesntHaveHeadline(t *testing.T) {
 	// In original dom-distiller there are title several elements with varying size.
 	// Their test is passed if element with `itemprop=name` with biggest area is
 	// selected. Unfortunately it's not possible with Go, so here we just test to
@@ -602,7 +602,7 @@ func Test_GetTitleWhenTheMainArticleDoesntHaveHeadline(t *testing.T) {
 	assert.Equal(t, expectedTitle, parser.Title())
 }
 
-func Test_GetTitleWhenTheMainArticleHasHeadline(t *testing.T) {
+func Test_SchemaOrg_GetTitleWhenTheMainArticleHasHeadline(t *testing.T) {
 	// In original dom-distiller there are several title elements with varying size.
 	// Their test is passed if element with `itemprop=headline` with biggest area
 	// is selected. Unfortunately it's not possible with Go, so here we just test
@@ -622,7 +622,7 @@ func Test_GetTitleWhenTheMainArticleHasHeadline(t *testing.T) {
 	assert.Equal(t, expectedTitle, parser.Title())
 }
 
-func Test_GetTitleWithNestedArticles(t *testing.T) {
+func Test_SchemaOrg_GetTitleWithNestedArticles(t *testing.T) {
 	// In original dom-distiller within the article there are several title
 	// elements with varying size. Their test is passed if element with
 	// `itemprop=headline` with biggest area is selected. Unfortunately it's

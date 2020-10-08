@@ -13,7 +13,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func Test_FullTreeBuilder(t *testing.T) {
+func Test_DomUtil_TreeClone_FullTreeBuilder(t *testing.T) {
 	expectedHTML := `
 		<div id="0">
 			<div id="1">
@@ -40,14 +40,14 @@ func Test_FullTreeBuilder(t *testing.T) {
 	assert.Equal(t, expectedHTML, dom.OuterHTML(root))
 }
 
-func Test_SingleLeafNode(t *testing.T) {
+func Test_DomUtil_TreeClone_SingleLeafNode(t *testing.T) {
 	leafNodes := []*html.Node{dom.CreateTextNode("some content")}
 
 	root := domutil.TreeClone(leafNodes)
 	assert.Equal(t, dom.TextContent(leafNodes[0]), dom.TextContent(root))
 }
 
-func Test_NoCommonAncestors(t *testing.T) {
+func Test_DomUtil_TreeClone_NoCommonAncestors(t *testing.T) {
 	divs := testutil.CreateDivTree()
 	leafNodes := []*html.Node{divs[3], dom.CreateElement("div")}
 
