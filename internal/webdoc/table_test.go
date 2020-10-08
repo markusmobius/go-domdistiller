@@ -25,7 +25,7 @@ func Test_WebDoc_Table_GenerateOutput(t *testing.T) {
 	dom.SetInnerHTML(div, html)
 
 	table := dom.QuerySelector(div, "table")
-	webTable := webdoc.Table{TableElement: table}
+	webTable := webdoc.Table{Element: table}
 
 	// Output should be the same as the input in this case.
 	got := webTable.GenerateOutput(false)
@@ -58,7 +58,7 @@ func Test_WebDoc_Table_GetImageURLs(t *testing.T) {
 
 	table := dom.QuerySelector(div, "table")
 	baseURL, _ := nurl.ParseRequestURI("http://example.com/")
-	webTable := webdoc.Table{TableElement: table, PageURL: baseURL}
+	webTable := webdoc.Table{Element: table, PageURL: baseURL}
 
 	urls := webTable.GetImageURLs()
 	assert.Equal(t, 5, len(urls))

@@ -12,15 +12,16 @@ import (
 
 type Table struct {
 	BaseElement
-	TableElement *html.Node
-	PageURL      *nurl.URL
+
+	Element *html.Node
+	PageURL *nurl.URL
 
 	cloned *html.Node
 }
 
 func (t *Table) GenerateOutput(textOnly bool) string {
 	if t.cloned == nil {
-		t.cloned = domutil.CloneAndProcessTree(t.TableElement, t.PageURL)
+		t.cloned = domutil.CloneAndProcessTree(t.Element, t.PageURL)
 	}
 
 	if textOnly {
@@ -33,7 +34,7 @@ func (t *Table) GenerateOutput(textOnly bool) string {
 // GetImageURLs returns list of source URLs of all image inside the table.
 func (t *Table) GetImageURLs() []string {
 	if t.cloned == nil {
-		t.cloned = domutil.CloneAndProcessTree(t.TableElement, t.PageURL)
+		t.cloned = domutil.CloneAndProcessTree(t.Element, t.PageURL)
 	}
 
 	imgURLs := []string{}
