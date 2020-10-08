@@ -51,6 +51,13 @@ func (i *Image) GetURLs() []string {
 	return urls
 }
 
+func (i *Image) getProcessedNode() *html.Node {
+	if i.cloned == nil {
+		i.cloned = i.cloneAndProcessNode()
+	}
+	return i.cloned
+}
+
 func (i *Image) cloneAndProcessNode() *html.Node {
 	cloned := dom.Clone(i.Element, true)
 	img := domutil.GetFirstElementByTagNameInc(cloned, "img")

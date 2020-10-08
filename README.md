@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 103 files with 10,339 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 102 files with 10,315 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -17,6 +17,7 @@ This package is still in development and the port process is still not finished.
 - Port `WebEmbed` from `webdocument/WebEmbed.java`
 - Port `WebImage` from `webdocument/WebImage.java`
 - Port `WebTable` from `webdocument/WebTable.java`
+- Port `WebFigure` from `webdocument/WebFigure.java`
 - Port `WebTextBuilder` from `webdocument/WebTextBuilder.java`
 - Port `ElementAction` from `webdocument/ElementAction.java`
 - Port `DomWalker` from `DomWalker.java`
