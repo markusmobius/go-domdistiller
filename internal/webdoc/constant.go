@@ -1,4 +1,5 @@
-// ORIGINAL: java/webdocument/WebText.java, java/webdocument/WebTag.java
+// ORIGINAL: java/webdocument/WebText.java, java/webdocument/WebTag.java,
+//           java/webdocument/WebImage.java
 
 package webdoc
 
@@ -50,4 +51,8 @@ var inlineTagNames = map[string]struct{}{
 	"label":    {},
 	"select":   {},
 	"textarea": {},
+}
+
+var lazyImageAttrs = map[string]string{
+	"data-srcset": "srcset",
 }
