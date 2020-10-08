@@ -4,6 +4,7 @@ package webdoc
 
 // Tag represents HTML tags that need to be preserved over.
 type Tag struct {
+	BaseElement
 	Name string
 	Type TagType
 }
