@@ -71,10 +71,6 @@ public class TestUtil {
         return noUrlParams + strToAppend;
     }
 
-    public static String removeAllDirAttributes(String originalHtml) {
-        return originalHtml.replaceAll(" dir=\\\"(ltr|rtl|inherit|auto)\\\"","");
-    }
-
     public static List<Node> nodeListToList(NodeList nodeList) {
         List<Node> nodes = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {

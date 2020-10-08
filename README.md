@@ -6,13 +6,21 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 120 files with 12,120 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 110 files with 10,958 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 8 October 2020
+
+- Port `WebTag` from `webdocument/WebTag.java`
+- Port `WebText` from `webdocument/WebText.java`
+- Port `WebTextBuilder` from `webdocument/WebTextBuilder.java`
+- Port `ElementAction` from `webdocument/ElementAction.java`
 
 ### 7 October 2020
 
 - Port `TableClassifier` from `TableClassifier.java`
+- Remove unnecessary files from `original-code`.
 
 ### 6 October 2020
 

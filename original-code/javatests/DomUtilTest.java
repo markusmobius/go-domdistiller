@@ -91,50 +91,6 @@ public class DomUtilTest extends DomDistillerJsTestCase {
         assertEquals(0, result.size());
     }
 
-    /**
-     * The tree graph is:
-     * 1 - 2 - 3
-     *       \ 4 - 5
-     */
-    public void testNearestCommonAncestor() {
-        Element div = TestUtil.createDiv(1);
-        mBody.appendChild(div);
-
-        Element div2 = TestUtil.createDiv(2);
-        div.appendChild(div2);
-
-        Element currDiv = TestUtil.createDiv(3);
-        div2.appendChild(currDiv);
-        Element finalDiv1 = currDiv;
-
-        currDiv = TestUtil.createDiv(4);
-        div2.appendChild(currDiv);
-        currDiv.appendChild(TestUtil.createDiv(5));
-
-        assertEquals(div2, DomUtil.getNearestCommonAncestor(finalDiv1, currDiv.getChild(0)));
-        NodeList nodeList = DomUtil.querySelectorAll(mRoot, "[id=\"3\"],[id=\"5\"]");
-        assertEquals(div2, DomUtil.getNearestCommonAncestor(TestUtil.nodeListToList(nodeList)));
-    }
-
-    /**
-     * The tree graph is:
-     * 1 - 2 - 3
-     */
-    public void testNearestCommonAncestorIsRoot() {
-        Element div = TestUtil.createDiv(1);
-        mBody.appendChild(div);
-
-        Element div2 = TestUtil.createDiv(2);
-        div.appendChild(div2);
-
-        Element div3 = TestUtil.createDiv(3);
-        div2.appendChild(div3);
-
-        assertEquals(div, DomUtil.getNearestCommonAncestor(div, div3));
-        NodeList nodeList = DomUtil.querySelectorAll(mRoot, "[id=\"1\"],[id=\"3\"]");
-        assertEquals(div, DomUtil.getNearestCommonAncestor(TestUtil.nodeListToList(nodeList)));
-    }
-
     public void testNodeDepth() {
         Element div = TestUtil.createDiv(1);
 
@@ -244,37 +200,6 @@ public class DomUtilTest extends DomDistillerJsTestCase {
         assertEquals(11, contentNodes.size());
     }
 
-    public void testMakeAllLinksAbsolute() {
-        final String html =
-            "<a href=\"link\"></a>" +
-            "<img src=\"image\" srcset=\"image200 200w, image400 400w\">" +
-            "<img src=\"image2\">" +
-            "<video src=\"video\" poster=\"poster\">" +
-                "<source src=\"source\" srcset=\"s2, s3\">" +
-                "<track src=\"track\">" +
-            "</video>";
-
-        final String expected =
-            "<a href=\"http://example.com/link\"></a>" +
-            "<img src=\"http://example.com/image\" " +
-              "srcset=\"http://example.com/image200 200w, http://example.com/image400 400w\">" +
-            "<img src=\"http://example.com/image2\">" +
-            "<video src=\"http://example.com/video\" poster=\"http://example.com/poster\">" +
-                "<source src=\"http://example.com/source\" " +
-                    "srcset=\"http://example.com/s2, http://example.com/s3\">" +
-                "<track src=\"http://example.com/track\">" +
-            "</video>";
-
-        mHead.setInnerHTML("<base href=\"http://example.com/\">");
-        mBody.setInnerHTML(html);
-
-        mBody.setInnerHTML(html);
-        for (int i = 0; i < mBody.getChildCount(); i++) {
-            DomUtil.makeAllLinksAbsolute(mBody.getChild(i));
-        }
-        assertEquals(expected, mBody.getInnerHTML());
-    }
-
     public void testGetSrcSetUrls() {
         String html =
             "<img src=\"http://example.com/image\" " +
@@ -304,107 +229,6 @@ public class DomUtilTest extends DomDistillerJsTestCase {
         assertEquals("//example.org/image300", urls.get(3));
     }
 
-    public void testStripTableBackgroundColorAttributes() {
-        String tableWithBGColorHTML =
-            "<table bgcolor=\"red\">" +
-                "<tbody>" +
-                    "<tr bgcolor=\"red\">" +
-                        "<th bgcolor=\"red\">text</th>" +
-                        "<th bgcolor=\"red\">text</th>" +
-                    "</tr><tr bgcolor=\"red\">" +
-                        "<td bgcolor=\"red\">text</td>" +
-                        "<td bgcolor=\"red\">text</td>" +
-                    "</tr>" +
-                "</tbody>" +
-            "</table>";
-
-        final String expected =
-            "<table>" +
-                "<tbody>" +
-                    "<tr>" +
-                        "<th>text</th>" +
-                        "<th>text</th>" +
-                    "</tr><tr>" +
-                        "<td>text</td>" +
-                        "<td>text</td>" +
-                    "</tr>" +
-                "</tbody>" +
-            "</table>";
-
-        mBody.setInnerHTML(tableWithBGColorHTML);
-        DomUtil.stripTableBackgroundColorAttributes(mBody);
-        assertEquals(expected, mBody.getInnerHTML());
-
-        // We also test stripping the table element directly to ensure that
-        // stripTableBackgroundColorAttributes deals with root elements properly.
-        mBody.setInnerHTML(tableWithBGColorHTML);
-        DomUtil.stripTableBackgroundColorAttributes(mBody.getFirstChildElement());
-        assertEquals(expected, mBody.getInnerHTML());
-    }
-
-    public void testStripAllUnsafeAttributes() {
-        String unsafeHTML = "<h1 class='foo' onclick='alert(123);'>Foo</h1>"
-                + "<img alt='bar' invalidattr='alert(\"Stop\");'>"
-                + "<div tabIndex=0 onScroll='alert(\"Unsafe\");'>Baz</div>";
-
-        Element e = Document.get().createDivElement();
-        e.setAttribute("onfocus", "window.location.href = 'bad.com';");
-        e.setInnerHTML(unsafeHTML);
-        mBody.appendChild(e);
-
-        final String expected = "<div><h1 class=\"foo\">Foo</h1>"
-                + "<img alt=\"bar\">"
-                + "<div tabindex=\"0\">Baz</div></div>";
-
-        DomUtil.stripAllUnsafeAttributes(e);
-        assertEquals(expected, mBody.getInnerHTML());
-    }
-
-    public void testStripStyleAttributes() {
-        String html =
-            "<div style=\"font-weight: folder\">" +
-                "text" +
-            "</div>" +
-            "<table style=\"position: absolute\">" +
-                "<tbody style=\"font-size: 2\">" +
-                    "<tr style=\"z-index: 0\">" +
-                        "<th style=\"top: 0px\">text</th>" +
-                        "<th style=\"width: 20px\">text</th>" +
-                    "</tr><tr style=\"left: 0\">" +
-                        "<td style=\"display: block\">text</td>" +
-                        "<td style=\"color: #123\">text</td>" +
-                    "</tr>" +
-                "</tbody>" +
-            "</table>";
-
-        final String expected =
-            "<div>" +
-                "text" +
-            "</div>" +
-            "<table>" +
-                "<tbody>" +
-                    "<tr>" +
-                        "<th>text</th>" +
-                        "<th>text</th>" +
-                    "</tr><tr>" +
-                        "<td>text</td>" +
-                        "<td>text</td>" +
-                    "</tr>" +
-                "</tbody>" +
-            "</table>";
-
-        // Test if the root element is handled properly.
-        mBody.setInnerHTML(html);
-        for (int i = 0; i < mBody.getChildCount(); i++) {
-            DomUtil.stripStyleAttributes(mBody.getChild(i));
-        }
-        assertEquals(expected, mBody.getInnerHTML());
-
-        mBody.setInnerHTML(html);
-        DomUtil.stripStyleAttributes(mBody);
-        assertEquals(expected, mBody.getInnerHTML());
-    }
-
     public void testStripImageElements() {
         String html =
             "<img id=\"a\" alt=\"alt\" dir=\"rtl\" title=\"t\" style=\"typo\" align=\"left\"" +
@@ -425,36 +249,6 @@ public class DomUtilTest extends DomDistillerJsTestCase {
 
         mBody.setInnerHTML(html);
         DomUtil.stripImageElements(mBody);
-        assertEquals(expected, mBody.getInnerHTML());
-    }
-
-    public void testStripUnwantedClassNames() {
-        String html =
-            "<br class=\"iscaptiontxt\">" +
-            "<br id=\"a\">" +
-            "<br class=\"\">" +
-            "<div class=\"tion cap\">" +
-                "<br class=\"hascaption\">" +
-                "<br class=\"not_me\">" +
-            "</div>";
-
-        final String expected =
-            "<br class=\"caption\">" +
-            "<br id=\"a\">" +
-            "<br>" +
-            "<div>" +
-                "<br class=\"caption\">" +
-                "<br>" +
-            "</div>";
-
-        mBody.setInnerHTML(html);
-        for (int i = 0; i < mBody.getChildCount(); i++) {
-            DomUtil.stripUnwantedClassNames(Element.as(mBody.getChild(i)));
-        }
-        assertEquals(expected, mBody.getInnerHTML());
-
-        mBody.setInnerHTML(html);
-        DomUtil.stripUnwantedClassNames(mBody);
         assertEquals(expected, mBody.getInnerHTML());
     }
 

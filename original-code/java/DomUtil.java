@@ -25,45 +25,6 @@ import java.util.Map;
 
 public class DomUtil {
     /**
-     * Allowlist of all safe HTML attributes. Taken from the Chromium
-     * source code in:
-     *   third_party/blink/renderer/core/html/html_attribute_names.json5
-     * and manually filtered to exclude event handlers. Last updated
-     * on June 12, 2020.
-     */
-    private static final HashSet<String> attributeAllowlist = new HashSet<>(Arrays.asList("abbr",
-            "accept-charset", "accept", "accesskey", "action", "align", "alink", "allow",
-            "allowfullscreen", "allowpaymentrequest", "alt", "archive", "as", "async",
-            "autocapitalize", "autocomplete", "autocorrect", "autofocus", "autoplay",
-            "autopictureinpicture", "axis", "background", "behavior", "bgcolor", "border",
-            "bordercolor", "capture", "cellpadding", "cellspacing", "char", "challenge", "charoff",
-            "charset", "checked", "cite", "class", "classid", "clear", "code", "codebase",
-            "codetype", "color", "cols", "colspan", "compact", "content", "contenteditable",
-            "controls", "controlslist", "conversiondestination", "coords", "crossorigin", "csp",
-            "data", "datetime", "declare", "decoding", "default", "defer", "dir", "direction",
-            "dirname", "disabled", "disablepictureinpicture", "disableremoteplayback",
-            "disallowdocumentaccess", "download", "draggable", "elementtiming", "enctype", "end",
-            "enterkeyhint", "event", "exportparts", "face", "for", "form", "formaction",
-            "formenctype", "formmethod", "formnovalidate", "formtarget", "frame", "frameborder",
-            "headers", "height", "hidden", "high", "href", "hreflang", "hreftranslate", "hspace",
-            "http-equiv", "id", "imagesizes", "imagesrcset", "importance", "impressiondata",
-            "impressionexpiry", "incremental", "inert", "inputmode", "integrity", "is", "ismap",
-            "keytype", "kind", "invisible", "label", "lang", "language", "latencyhint",
-            "leftmargin", "link", "list", "loading", "longdesc", "loop", "low", "lowsrc",
-            "manifest", "marginheight", "marginwidth", "max", "maxlength", "mayscript", "media",
-            "method", "min", "minlength", "multiple", "muted", "name", "nohref", "nomodule",
-            "nonce", "noresize", "noshade", "novalidate", "nowrap", "object", "open", "optimum",
-            "part", "pattern", "placeholder", "playsinline", "ping", "policy", "poster", "preload",
-            "pseudo", "readonly", "referrerpolicy", "rel", "reportingorigin", "required",
-            "resources", "rev", "reversed", "role", "rows", "rowspan", "rules", "sandbox", "scheme",
-            "scope", "scrollamount", "scrolldelay", "scrolling", "select", "selected", "shadowroot",
-            "shadowrootdelegatesfocus", "shape", "size", "sizes", "slot", "span", "spellcheck",
-            "src", "srcset", "srcdoc", "srclang", "standby", "start", "step", "style", "summary",
-            "tabindex", "target", "text", "title", "topmargin", "translate", "truespeed",
-            "trusttoken", "type", "usemap", "valign", "value", "valuetype", "version", "vlink",
-            "vspace", "virtualkeyboardpolicy", "webkitdirectory", "width", "wrap"));
-
-    /**
      * GWT does not provide a way to get a list of all attributes that have been explicitly set on a
      * DOM element (only a way to query the value of a particular attribute). In javascript, this
      * list is accessible as elem.attributes.
@@ -79,15 +40,6 @@ public class DomUtil {
     public static native Element getFirstElementWithClassName(Element root, String className) /*-{
         return root.querySelector("." + className);
     }-*/;
-
-    // Returns the first element with |tagName| in the tree rooted at |root|, including root.
-    // null if none is found.
-    public static Element getFirstElementByTagNameInc(Element e, String tagName) {
-        if (e.getTagName() == tagName) {
-            return e;
-        }
-        return getFirstElementByTagName(e, tagName);
-    }
 
     // Returns the first element with |tagName| in the tree rooted at |root|.
     // null if none is found.
@@ -259,30 +211,6 @@ public class DomUtil {
     }
 
     /**
-     * Get the nearest common ancestor of two nodes.
-     * @param n1 First node.
-     * @param n2 Second node.
-     * @return The nearest common ancestor node of n1 and n2.
-     */
-    public static Node getNearestCommonAncestor(final Node n1, final Node n2) {
-        Node parent = n1;
-        while (parent != null && !JavaScript.contains(parent, n2)) parent = parent.getParentNode();
-        return parent;
-    }
-
-    /**
-     * Get the nearest common ancestor of nodes.
-     */
-    public static Node getNearestCommonAncestor(final List<? extends Node> ns) {
-        if (ns.size() == 0) return null;
-        Node parent = ns.get(0);
-        for (int i = 1; i < ns.size(); i++) {
-            parent = getNearestCommonAncestor(parent, ns.get(i));
-        }
-        return parent;
-    }
-
-    /**
      * Get all text from a tree/sub-tree. The node is added to the DOM for rendering, so that the
      * innerText has all the line breaks even if the node is not originally rendered.
      * See https://crbug.com/859410.
@@ -328,78 +256,6 @@ public class DomUtil {
         return (Element) clonedSubtree;
     }
 
-    /**
-     * Makes all anchors and video posters absolute. This calls "makeAllSrcAttributesAbsolute"
-     * and "makeAllSrcSetAbsolute".
-     * @param rootNode The root Node to look through.
-     */
-    public static void makeAllLinksAbsolute(Node rootNode) {
-        Element root = Element.as(rootNode);
-
-        // AnchorElement.getHref() and ImageElement.getSrc() both return the
-        // absolute URI, so simply set them as the respective attributes.
-
-        if ("A".equals(root.getTagName())) {
-            AnchorElement link = AnchorElement.as(root);
-            if (!link.getHref().isEmpty()) {
-                link.setHref(link.getHref());
-            }
-        }
-        NodeList<Element> allLinks = root.getElementsByTagName("A");
-        for (int i = 0; i < allLinks.getLength(); i++) {
-            AnchorElement link = AnchorElement.as(allLinks.getItem(i));
-            if (!link.getHref().isEmpty()) {
-                link.setHref(link.getHref());
-            }
-        }
-        if (root.getTagName().equals("VIDEO")) {
-            VideoElement video = (VideoElement) root;
-            if (!video.getPoster().isEmpty()) {
-                video.setPoster(video.getPoster());
-            }
-        }
-        NodeList<Element> videoTags = root.getElementsByTagName("VIDEO");
-        for (int i = 0; i < videoTags.getLength(); i++) {
-            VideoElement video = (VideoElement) videoTags.getItem(i);
-            if (!video.getPoster().isEmpty()) {
-                video.setPoster(video.getPoster());
-            }
-        }
-        makeAllSrcAttributesAbsolute(root);
-
-        makeAllSrcSetAbsolute(root);
-    }
-
-    public static void makeAllSrcSetAbsolute(Element root) {
-        if (root.hasAttribute("srcset")) {
-            makeSrcSetAbsolute(root);
-        }
-        NodeList<Element> es = DomUtil.querySelectorAll(root, "[SRCSET]");
-        for (int i = 0; i < es.getLength(); i++) {
-            makeSrcSetAbsolute(es.getItem(i));
-        }
-    }
-
-    private static void makeSrcSetAbsolute(Element ie) {
-        String srcset = ie.getAttribute("srcset");
-        if (srcset.isEmpty()) {
-            ie.removeAttribute("srcset");
-            return;
-        }
-
-        ImageElement holder = Document.get().createImageElement();
-        String[] sizes = StringUtil.jsSplit(srcset, ",");
-        for(int i = 0; i < sizes.length; i++) {
-            String size = StringUtil.jsTrim(sizes[i]);
-            if (size.isEmpty()) continue;
-            String[] comp = size.split(" ");
-            holder.setSrc(comp[0]);
-            comp[0] = holder.getSrc();
-            sizes[i] = StringUtil.join(comp, " ");
-        }
-        ie.setAttribute("srcset", StringUtil.join(sizes, ", "));
-    }
-
     public static List<String> getAllSrcSetUrls(Element root) {
         List<String> list = new ArrayList<>();
         if (root.hasAttribute("srcset")) {
@@ -439,162 +295,6 @@ public class DomUtil {
         NodeList<Element> imgs = DomUtil.querySelectorAll(root, "IMG");
         for (int i = 0; i < imgs.getLength(); i++) {
             stripImageElement(ImageElement.as(imgs.getItem(i)));
-        }
-    }
-
-    /**
-     * Strips all attributes from nodes other than ones in the allowlist.
-     */
-    @SuppressWarnings("unused")
-    public static void stripAllUnsafeAttributes(Node root) {
-        if (root.getNodeType() == Node.ELEMENT_NODE) {
-            stripAllUnsafeAttributesFromElement(Element.as(root));
-        }
-        NodeList<Element> elements = DomUtil.querySelectorAll(root, "*");
-        for (int i = 0; i < elements.getLength(); i++) {
-            stripAllUnsafeAttributesFromElement(elements.getItem(i));
-        }
-    }
-
-    /**
-     * Strips all attributes from nodes other than ones in the allowlist.
-     */
-    @SuppressWarnings("unused")
-    public static void stripAllUnsafeAttributesFromElement(Element element) {
-        JsArray<Node> attrs = getAttributes(element);
-        for (int j = 0; j < attrs.length();) {
-            String attrName = attrs.get(j).getNodeName();
-            if (!attributeAllowlist.contains(attrName)) {
-                element.removeAttribute(attrName);
-            } else {
-                j++;
-            }
-        }
-    }
-
-    /**
-     * Only keep some attributes for image elements.
-     * @param imgElement The image element to strip in-place.
-     */
-    public static void stripImageElement(ImageElement imgElement) {
-        JsArray<Node> attrs = getAttributes(imgElement);
-        for (int i = 0; i < attrs.length(); ) {
-            String name = attrs.get(i).getNodeName();
-            if (!"src".equals(name) &&
-                !"alt".equals(name) &&
-                !"srcset".equals(name) &&
-                !"dir".equals(name) &&
-                !"width".equals(name) &&
-                !"height".equals(name) &&
-                !"title".equals(name)) {
-                imgElement.removeAttribute(name);
-            } else {
-                i++;
-            }
-        }
-    }
-
-    /**
-     * Makes all "img", "source", "track", and "video" tags have an absolute "src" attribute.
-     * @param root The root element to look through.
-     */
-    public static native void makeAllSrcAttributesAbsolute(Element root) /*-{
-        if (root.tagName == "IMG" || root.tagName == "SOURCE" || root.tagName == "TRACK" ||
-            root.tagName == "VIDEO") {
-            if (root.src) {
-                root.src = root.src;
-            }
-        }
-        var elementsWithSrc = root.querySelectorAll('img,source,track,video');
-        for (var key in elementsWithSrc) {
-            if (elementsWithSrc[key].src) {
-                elementsWithSrc[key].src = elementsWithSrc[key].src;
-            }
-        }
-    }-*/;
-
-    /**
-     * Strips some attribute from certain tags in the tree rooted at |rootNode|, including root.
-     * @param tagNames The tag names to be processed. ["*"] means all.
-     * TODO(crbug.com/654108): We should convert to allowlisting for all the tags.
-     */
-    @SuppressWarnings("unused")
-    public static void stripAttributeFromTags(Node rootNode, String attribute, String[] tagNames) {
-        Element root = Element.as(rootNode);
-        for (String tag: tagNames) {
-            if (root.getTagName().equals(tag) || tag.equals("*")) {
-                root.removeAttribute(attribute);
-            }
-        }
-
-        for (String tag: tagNames) {
-            tag += "[" + attribute + "]";
-        }
-        String query = StringUtil.join(tagNames, ", ");
-        NodeList<Element> tags = DomUtil.querySelectorAll(root, query);
-        for (int i = 0; i < tags.getLength(); i++) {
-            tags.getItem(i).removeAttribute(attribute);
-        }
-    }
-
-    /**
-     * Strips all "id" attributes from all nodes in the tree rooted at |node|
-     */
-    public static void stripIds(Node node) {
-        stripAttributeFromTags(node, "ID", new String[]{"*"});
-    }
-
-    /**
-     * Strips all "color" attributes from "font" nodes in the tree rooted at |rootNode|
-     */
-    public static void stripFontColorAttributes(Node rootNode) {
-        stripAttributeFromTags(rootNode, "COLOR", new String[]{"FONT"});
-    }
-
-    /**
-     * Strips all "bgcolor" attributes from table nodes in the tree rooted at |rootNode|
-     */
-    public static void stripTableBackgroundColorAttributes(Node rootNode) {
-        stripAttributeFromTags(rootNode, "BGCOLOR", new String[]{"TABLE", "TR", "TD", "TH"});
-    }
-
-    /**
-     * Strips all "style" attributes from all nodes in the tree rooted at |rootNode|
-     */
-    public static void stripStyleAttributes(Node rootNode) {
-        stripAttributeFromTags(rootNode, "STYLE", new String[]{"*"});
-    }
-
-    /**
-     * Strips all "target" attributes from anchor nodes in the tree rooted at |rootNode|
-     */
-    public static void stripTargetAttributes(Node rootNode) {
-        stripAttributeFromTags(rootNode, "TARGET", new String[]{"A"});
-    }
-
-    /**
-     * Strips unwanted classNames from all nodes in the tree rooted at |root|.
-     * TODO(crbug.com/654109): "caption" is essential for styling, but all classNames should
-     *                         be removed eventually.
-     */
-    public static void stripUnwantedClassNames(Node root) {
-        if (root.getNodeType() == Node.ELEMENT_NODE) {
-            Element element = Element.as(root);
-            if (element.hasAttribute("class")) {
-                stripUnwantedClassName(element);
-            }
-        }
-        NodeList<Element> elems = DomUtil.querySelectorAll(root, "[class]");
-        for (int i = 0; i < elems.getLength(); i++) {
-            stripUnwantedClassName(elems.getItem(i));
-        }
-    }
-
-    private static void stripUnwantedClassName(Element elem) {
-        if (elem.getAttribute("class").contains("caption")) {
-            elem.setClassName("caption");
-        } else {
-            elem.removeAttribute("class");
         }
     }
 

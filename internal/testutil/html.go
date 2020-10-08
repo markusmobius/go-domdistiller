@@ -4,11 +4,17 @@ package testutil
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/yosssi/gohtml"
 	"golang.org/x/net/html"
+)
+
+var (
+	rxDirAttributes = regexp.MustCompile(`(?i) dir="(ltr|rtl|inherit|auto)"`)
 )
 
 func CreateDivTree() []*html.Node {
@@ -57,6 +63,10 @@ func CreateMetaName(name string, content string) *html.Node {
 	return meta
 }
 
+func RemoveAllDirAttributes(str string) string {
+	return rxDirAttributes.ReplaceAllString(str, "")
+}
+
 func createDivTree(e *html.Node, depth int, divs *[]*html.Node) {
 	if depth > 2 {
 		return
@@ -87,4 +97,9 @@ func CreateHTML() *html.Node {
 
 	root, _ := html.Parse(strings.NewReader(rawHTML))
 	return root
+}
+
+// GetPrettyHTML returns formatted outer HTML of the node.
+func GetPrettyHTML(node *html.Node) string {
+	return gohtml.Format(dom.OuterHTML(node))
 }
