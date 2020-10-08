@@ -8,7 +8,6 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/label"
-	"github.com/markusmobius/go-domdistiller/internal/treeclone"
 	"golang.org/x/net/html"
 )
 
@@ -38,7 +37,7 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 
 	// TODO: Instead of doing this next part, in the future track font size weight
 	// and etc. and wrap the nodes in a "p" tag.
-	clonedRoot := treeclone.Build(t.TextNodes())
+	clonedRoot := domutil.TreeClone(t.TextNodes())
 
 	// To keep formatting/structure, at least one parent element should be in the output.
 	// This is necessary because many times a WebText is only a single text node.
