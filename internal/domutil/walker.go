@@ -12,7 +12,15 @@ import (
 //   of the node will be skipped and fnExit won't be called for this node.
 // - fnExit is called when exiting a node, after visiting all of its children.
 func WalkNodes(root *html.Node, fnVisit func(*html.Node) bool, fnExit func(*html.Node)) {
-	visitChildren := fnVisit(root)
+	if root == nil {
+		return
+	}
+
+	visitChildren := false
+	if fnVisit != nil {
+		visitChildren = fnVisit(root)
+	}
+
 	if !visitChildren {
 		return
 	}
@@ -21,5 +29,7 @@ func WalkNodes(root *html.Node, fnVisit func(*html.Node) bool, fnExit func(*html
 		WalkNodes(child, fnVisit, fnExit)
 	}
 
-	fnExit(root)
+	if fnExit != nil {
+		fnExit(root)
+	}
 }

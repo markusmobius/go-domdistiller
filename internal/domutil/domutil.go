@@ -149,6 +149,30 @@ func MakeAllSrcSetAbsolute(root *html.Node, pageURL *nurl.URL) {
 	}
 }
 
+func GetSrcSetURLs(node *html.Node) []string {
+	srcset := dom.GetAttribute(node, "srcset")
+	if srcset == "" {
+		return nil
+	}
+
+	matches := rxSrcsetURL.FindAllStringSubmatch(srcset, -1)
+	urls := make([]string, len(matches))
+	for i, group := range matches {
+		urls[i] = group[1]
+	}
+
+	return urls
+}
+
+func GetAllSrcSetURLs(root *html.Node) []string {
+	urls := GetSrcSetURLs(root)
+	for _, node := range dom.QuerySelectorAll(root, "[srcset]") {
+		urls = append(urls, GetSrcSetURLs(node)...)
+	}
+
+	return urls
+}
+
 // StripImageElement removes unnecessary attributes for image elements.
 func StripImageElement(img *html.Node) {
 	importantAttrs := []html.Attribute{}
@@ -161,6 +185,16 @@ func StripImageElement(img *html.Node) {
 		}
 	}
 	img.Attr = importantAttrs
+}
+
+func StripImageElements(root *html.Node) {
+	if dom.TagName(root) == "img" {
+		StripImageElement(root)
+	}
+
+	for _, img := range dom.QuerySelectorAll(root, "img") {
+		StripImageElement(img)
+	}
 }
 
 // StripAttributeFromTagss trips some attribute from certain tags in the tree
@@ -235,6 +269,57 @@ func StripAllUnsafeAttributes(root *html.Node) {
 	for _, element := range dom.QuerySelectorAll(root, "*") {
 		stripAllUnsafeAttributes(element)
 	}
+}
+
+// CloneAndProcessList clones and process list of relevant nodes for output.
+func CloneAndProcessList(outputNodes []*html.Node, pageURL *nurl.URL) *html.Node {
+	if len(outputNodes) == 0 {
+		return nil
+	}
+
+	clonedSubTree := TreeClone(outputNodes)
+	if clonedSubTree == nil || clonedSubTree.Type != html.ElementNode {
+		return nil
+	}
+
+	StripIDs(clonedSubTree)
+	MakeAllLinksAbsolute(clonedSubTree, pageURL)
+	StripTargetAttributes(clonedSubTree)
+	StripFontColorAttributes(clonedSubTree)
+	StripTableBackgroundColorAttributes(clonedSubTree)
+	StripStyleAttributes(clonedSubTree)
+	StripImageElements(clonedSubTree)
+	StripAllUnsafeAttributes(clonedSubTree)
+	return clonedSubTree
+}
+
+// CloneAndProcessTree clone and process a given node tree/subtree.
+// In original dom-distiller this will ignore hidden elements,
+// unfortunately we can't do that here, so we will include hidden
+// elements as well. NEED-COMPUTE-CSS.
+func CloneAndProcessTree(root *html.Node, pageURL *nurl.URL) *html.Node {
+	return CloneAndProcessList(GetOutputNodes(root), pageURL)
+}
+
+// GetOutputNodes returns list of relevant nodes for output from a subtree.
+func GetOutputNodes(root *html.Node) []*html.Node {
+	outputNodes := []*html.Node{}
+	WalkNodes(root, func(node *html.Node) bool {
+		switch node.Type {
+		case html.TextNode:
+			outputNodes = append(outputNodes, node)
+			return false
+
+		case html.ElementNode:
+			outputNodes = append(outputNodes, node)
+			return true
+
+		default:
+			return false
+		}
+	}, nil)
+
+	return outputNodes
 }
 
 // makeSrcSetAbsolute makes `srcset` for this node absolute.

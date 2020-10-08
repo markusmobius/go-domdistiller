@@ -10,7 +10,13 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
+	"golang.org/x/net/html"
 )
+
+// NEED-COMPUTE-CSS
+// There are some unit tests in original dom-distiller that can't be
+// implemented because they require to compute the stylesheets :
+// - Test_GetOutputNodesWithHiddenChildren
 
 func Test_NearestCommonAncestor(t *testing.T) {
 	// The tree graph is
@@ -82,6 +88,61 @@ func Test_MakeAllLinksAbsolute(t *testing.T) {
 	dom.SetInnerHTML(body, html)
 
 	domutil.MakeAllLinksAbsolute(doc, baseURL)
+	assert.Equal(t, expected, dom.InnerHTML(body))
+}
+
+func Test_GetSrcSetURLs(t *testing.T) {
+	html := `<img src="http://example.com/image" ` +
+		`srcset="http://example.com/image200 200w, http://example.com/image400 400w"/>`
+
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, html)
+
+	img := dom.QuerySelector(div, "img")
+	srcsetURLs := domutil.GetSrcSetURLs(img)
+	assert.Equal(t, 2, len(srcsetURLs))
+	assert.Equal(t, "http://example.com/image200", srcsetURLs[0])
+	assert.Equal(t, "http://example.com/image400", srcsetURLs[1])
+}
+
+func Test_GetAllSrcSetURLs(t *testing.T) {
+	html := `<picture>` +
+		`<source srcset="image200 200w, //example.org/image400 400w"/>` +
+		`<source srcset="image100 100w, //example.org/image300 300w"/>` +
+		`<img/>` +
+		`</picture>`
+
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, html)
+
+	srcsetURLs := domutil.GetAllSrcSetURLs(div)
+	assert.Equal(t, 4, len(srcsetURLs))
+	assert.Equal(t, "image200", srcsetURLs[0])
+	assert.Equal(t, "//example.org/image400", srcsetURLs[1])
+	assert.Equal(t, "image100", srcsetURLs[2])
+	assert.Equal(t, "//example.org/image300", srcsetURLs[3])
+}
+
+func Test_StripImageElements(t *testing.T) {
+	html := `<img id="a" alt="alt" dir="rtl" title="t" style="typo" align="left"` +
+		`src="image" class="a" srcset="image200 200w" data-dummy="a"/>` +
+		`<img mulformed="nothing" data-empty data-dup="1" data-dup="2" src="image" src="second"/>`
+
+	expected := `<img alt="alt" dir="rtl" title="t" src="image" srcset="image200 200w"/>` +
+		`<img src="image" src="second"/>`
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.SetInnerHTML(body, html)
+
+	// Test if the root element is handled properly.
+	for _, child := range dom.Children(body) {
+		domutil.StripImageElements(child)
+	}
+	assert.Equal(t, expected, dom.InnerHTML(body))
+
+	dom.SetInnerHTML(body, html)
+	domutil.StripImageElements(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
@@ -211,4 +272,49 @@ func Test_StripAllUnsafeAttributes(t *testing.T) {
 
 	domutil.StripAllUnsafeAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
+}
+
+func Test_GetOutputNodes(t *testing.T) {
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, `<p>`+
+		`<span>Some content</span>`+
+		`<img src="./image.png"/>`+
+		`</p>`)
+
+	// Expected nodes: <div><p><span>#text<img>.
+	contentNodes := domutil.GetOutputNodes(div)
+	assert.Len(t, contentNodes, 5)
+
+	node := contentNodes[0]
+	assert.Equal(t, html.ElementNode, node.Type)
+	assert.Equal(t, "div", dom.TagName(node))
+
+	node = contentNodes[1]
+	assert.Equal(t, html.ElementNode, node.Type)
+	assert.Equal(t, "p", dom.TagName(node))
+
+	node = contentNodes[2]
+	assert.Equal(t, html.ElementNode, node.Type)
+	assert.Equal(t, "span", dom.TagName(node))
+
+	node = contentNodes[3]
+	assert.Equal(t, html.TextNode, node.Type)
+
+	node = contentNodes[4]
+	assert.Equal(t, html.ElementNode, node.Type)
+	assert.Equal(t, "img", dom.TagName(node))
+}
+
+func Test_GetOutputNodesNestedTable(t *testing.T) {
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, `<table>`+
+		`<tbody><tr>`+
+		`<td><table><tbody><tr><td>nested</td></tr></tbody></table></td>`+
+		`<td>outer</td>`+
+		`</tr></tbody>`+
+		`</table>`)
+
+	table := dom.QuerySelector(div, "table")
+	contentNodes := domutil.GetOutputNodes(table)
+	assert.Len(t, contentNodes, 11)
 }

@@ -38,7 +38,7 @@ func CharCount(str string) int {
 // However, if url is prefixed with hash (#), the url won't be changed.
 func CreateAbsoluteURL(url string, base *nurl.URL) string {
 	if url == "" || base == nil {
-		return ""
+		return url
 	}
 
 	// If it is hash tag, return as it is
