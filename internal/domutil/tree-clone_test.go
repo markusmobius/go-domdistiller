@@ -1,6 +1,6 @@
 // ORIGINAL: javatest/TreeCloneBuilderTest.java
 
-package treeclone_test
+package domutil_test
 
 import (
 	"regexp"
@@ -8,8 +8,8 @@ import (
 
 	"github.com/alecthomas/assert"
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
-	"github.com/markusmobius/go-domdistiller/internal/treeclone"
 	"golang.org/x/net/html"
 )
 
@@ -36,14 +36,14 @@ func Test_FullTreeBuilder(t *testing.T) {
 	divs := testutil.CreateDivTree()
 	leafNodes := []*html.Node{divs[3], divs[4], divs[5], divs[14]}
 
-	root := treeclone.Build(leafNodes)
+	root := domutil.TreeClone(leafNodes)
 	assert.Equal(t, expectedHTML, dom.OuterHTML(root))
 }
 
 func Test_SingleLeafNode(t *testing.T) {
 	leafNodes := []*html.Node{dom.CreateTextNode("some content")}
 
-	root := treeclone.Build(leafNodes)
+	root := domutil.TreeClone(leafNodes)
 	assert.Equal(t, dom.TextContent(leafNodes[0]), dom.TextContent(root))
 }
 
@@ -51,6 +51,6 @@ func Test_NoCommonAncestors(t *testing.T) {
 	divs := testutil.CreateDivTree()
 	leafNodes := []*html.Node{divs[3], dom.CreateElement("div")}
 
-	root := treeclone.Build(leafNodes)
+	root := domutil.TreeClone(leafNodes)
 	assert.Nil(t, root)
 }

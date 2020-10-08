@@ -1,13 +1,12 @@
 // ORIGINAL: java/TreeCloneBuilder.java
 
-package treeclone
+package domutil
 
 import (
-	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"golang.org/x/net/html"
 )
 
-// Build takes a list of nodes and returns a clone of the minimum tree in the
+// TreeClone takes a list of nodes and returns a clone of the minimum tree in the
 // DOM that contains all of them. This is done by going through each node, cloning its
 // parent and adding children to that parent until the next node is not contained in
 // that parent (originally). The list cannot contain a parent of any of the other nodes.
@@ -15,9 +14,9 @@ import (
 //
 // This implementation doesn't come from the original dom-distiller code. Instead I
 // created it from scratch to make it simpler and more Go idiomatic.
-func Build(nodes []*html.Node) *html.Node {
+func TreeClone(nodes []*html.Node) *html.Node {
 	// Get the nearest ancestor
-	allAncestors, nearestAncestor := domutil.GetAncestors(nodes...)
+	allAncestors, nearestAncestor := GetAncestors(nodes...)
 	if nearestAncestor == nil {
 		return nil
 	}
