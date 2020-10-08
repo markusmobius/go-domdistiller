@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 109 files with 10,911 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 107 files with 10,775 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -17,6 +17,7 @@ This package is still in development and the port process is still not finished.
 - Port `WebEmbed` from `webdocument/WebEmbed.java`
 - Port `WebTextBuilder` from `webdocument/WebTextBuilder.java`
 - Port `ElementAction` from `webdocument/ElementAction.java`
+- Port `DomWalker` from `DomWalker.java`
 
 ### 7 October 2020
 
