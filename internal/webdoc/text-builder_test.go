@@ -111,21 +111,21 @@ func Test_WebDoc_TextBuilder_WhitespaceNodes(t *testing.T) {
 
 	tbAddText(builder, "one", 0)
 	tb := builder.Build(0)
-	assert.Equal(t, tb.GetFirstNonWhitespaceTextNode(), tb.GetLastNonWhitespaceTextNode())
+	assert.Equal(t, tb.FirstNonWhitespaceTextNode(), tb.LastNonWhitespaceTextNode())
 
 	tbAddText(builder, " ", 0)
 	tbAddText(builder, "one", 0)
 	tbAddText(builder, " ", 0)
 	tb = builder.Build(0)
-	assert.Equal(t, tb.GetFirstNonWhitespaceTextNode(), tb.GetLastNonWhitespaceTextNode())
+	assert.Equal(t, tb.FirstNonWhitespaceTextNode(), tb.LastNonWhitespaceTextNode())
 	assert.Equal(t, 3, len(tb.TextNodes()))
-	assert.False(t, tb.TextNodes()[0] == tb.GetFirstNonWhitespaceTextNode())
-	assert.False(t, tb.TextNodes()[2] == tb.GetFirstNonWhitespaceTextNode())
+	assert.False(t, tb.TextNodes()[0] == tb.FirstNonWhitespaceTextNode())
+	assert.False(t, tb.TextNodes()[2] == tb.FirstNonWhitespaceTextNode())
 
 	tbAddText(builder, "one", 0)
 	tbAddText(builder, "two", 0)
 	tb = builder.Build(0)
-	assert.False(t, tb.GetFirstNonWhitespaceTextNode() == tb.GetLastNonWhitespaceTextNode())
+	assert.False(t, tb.FirstNonWhitespaceTextNode() == tb.LastNonWhitespaceTextNode())
 }
 
 func Test_WebDoc_TextBuilder_BrElement(t *testing.T) {

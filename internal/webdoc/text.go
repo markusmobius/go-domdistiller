@@ -120,14 +120,14 @@ func (t *Text) TakeLabels() map[string]struct{} {
 	return res
 }
 
-func (t *Text) GetFirstNonWhitespaceTextNode() *html.Node {
+func (t Text) FirstNonWhitespaceTextNode() *html.Node {
 	return t.textNodes[t.firstWordNode]
 }
 
-func (t *Text) GetLastNonWhitespaceTextNode() *html.Node {
+func (t Text) LastNonWhitespaceTextNode() *html.Node {
 	return t.textNodes[t.lastWordNode]
 }
 
-func (t *Text) TextNodes() []*html.Node {
+func (t Text) TextNodes() []*html.Node {
 	return t.textNodes[t.start:t.end]
 }
