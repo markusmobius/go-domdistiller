@@ -13,6 +13,7 @@ This package is still in development and the port process is still not finished.
 ### 9 October 2020
 
 - Port `WebVideo` from `webdocument/WebVideo.java`
+- Add initial MIT license.
 
 ### 8 October 2020
 
