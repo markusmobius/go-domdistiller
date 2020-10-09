@@ -28,7 +28,9 @@ This package is still in development and the port process is still not finished.
 ### 7 October 2020
 
 - Port `TableClassifier` from `TableClassifier.java`
-- Remove unnecessary files from `original-code`.
+- Remove `DomDistillerEntry` since it's useless for our case.
+- Remove `Assert` because we already use [`testify`][1] package that provide assertion utilities.
+- Remove `JsTestCase`, `JsTestEntry`, `JsTestSuitBase` and `DomDistillerJsTestCase` because it's only used in Java to prepare the unit tests.
 
 ### 6 October 2020
 
@@ -52,3 +54,4 @@ This package is still in development and the port process is still not finished.
 - Port `OpenGraphParser` and `OpenGraphParserAccessor` from `OpenGraphParser.java`
 
 [0]: https://chromium.googlesource.com/chromium/dom-distiller
+[1]: https://github.com/stretchr/testify
