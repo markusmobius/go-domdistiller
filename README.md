@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 96 files with 10,061 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 94 files with 9,966 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 9 October 2020
+
+- Port `WebVideo` from `webdocument/WebVideo.java`
 
 ### 8 October 2020
 
