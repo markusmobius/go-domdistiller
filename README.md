@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 87 files with 9,324 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 85 files with 9,299 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -14,6 +14,7 @@ This package is still in development and the port process is still not finished.
 
 - Port `WebDocument` from `webdocument/WebDocument.java`
 - Port `WebDocumentBuilder` from `webdocument/WebDocumentBuilder.java`
+- Remove `KeepEverythingExtractor.java` and `KeepEverythingWithMinKWordsExtractor.java` because it's not used anywhere.
 
 ### 9 October 2020
 
