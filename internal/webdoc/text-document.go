@@ -1,11 +1,15 @@
 // ORIGINAL: java/document/TextDocument.java and
 //           java/document/TextDocumentStatistics.java
 
-package document
+package webdoc
 
 // TextDocument is a text document, consisting of one or more TextBlock.
 type TextDocument struct {
-	TextBlocks []TextBlock
+	TextBlocks []*TextBlock
+}
+
+func NewTextDocument(textBlocks []*TextBlock) *TextDocument {
+	return &TextDocument{textBlocks}
 }
 
 func (td *TextDocument) ApplyToModel() {

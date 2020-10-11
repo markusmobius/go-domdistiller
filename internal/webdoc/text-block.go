@@ -1,6 +1,6 @@
 // ORIGINAL: java/document/TextBlock.java
 
-package document
+package webdoc
 
 import (
 	"fmt"
@@ -8,15 +8,13 @@ import (
 	"strings"
 
 	"github.com/markusmobius/go-domdistiller/internal/label"
-	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
 )
 
 // TextBlock describes a block of text. A block can be an "atomic" text node (i.e., a sequence
 // of text that is not interrupted by any HTML markup) or a compound of such atomic elements.
 type TextBlock struct {
-	TextElements     []webdoc.Text
-	TextIndexes      []int
+	TextElements     []*Text
 	Text             string
 	Labels           map[string]struct{}
 	NumWords         int
@@ -27,16 +25,21 @@ type TextBlock struct {
 	isContent bool
 }
 
-func NewTextBlock(textElements []webdoc.Text, index int) *TextBlock {
-	wt := textElements[index]
-	tb := &TextBlock{
-		TextElements:     textElements,
-		TextIndexes:      []int{index},
-		Text:             wt.Text,
-		Labels:           wt.TakeLabels(),
-		NumWords:         wt.NumWords,
-		NumWordsInAnchor: wt.NumLinkedWords,
-		TagLevel:         wt.TagLevel,
+func NewTextBlock(textElements ...*Text) *TextBlock {
+	tb := &TextBlock{TextElements: textElements, TagLevel: -1}
+
+	for _, wt := range textElements {
+		tb.Text += wt.Text
+		tb.NumWords += wt.NumWords
+		tb.NumWordsInAnchor += wt.NumLinkedWords
+
+		for label := range wt.TakeLabels() {
+			tb.AddLabels(label)
+		}
+
+		if tb.TagLevel == -1 {
+			tb.TagLevel = wt.TagLevel
+		}
 	}
 
 	tb.LinkDensity = tb.calcLinkDensity()
@@ -64,7 +67,7 @@ func (tb *TextBlock) MergeNext(other TextBlock) {
 	tb.NumWordsInAnchor += other.NumWordsInAnchor
 	tb.LinkDensity = tb.calcLinkDensity()
 	tb.isContent = tb.isContent || other.isContent
-	tb.TextIndexes = append(tb.TextIndexes, other.TextIndexes...)
+	tb.TextElements = append(tb.TextElements, other.TextElements...)
 
 	for label := range other.Labels {
 		tb.AddLabels(label)
@@ -76,12 +79,20 @@ func (tb *TextBlock) MergeNext(other TextBlock) {
 }
 
 func (tb *TextBlock) AddLabels(labels ...string) {
+	if tb.Labels == nil {
+		tb.Labels = make(map[string]struct{})
+	}
+
 	for _, label := range labels {
 		tb.Labels[label] = struct{}{}
 	}
 }
 
 func (tb *TextBlock) RemoveLabels(labels ...string) {
+	if tb.Labels == nil {
+		tb.Labels = make(map[string]struct{})
+	}
+
 	for _, label := range labels {
 		delete(tb.Labels, label)
 	}
@@ -93,11 +104,21 @@ func (tb *TextBlock) HasLabel(label string) bool {
 }
 
 func (tb *TextBlock) OffsetBlocksStart() int {
-	return tb.firstText().OffsetBlock
+	firstText := tb.firstText()
+	if firstText == nil {
+		return -1
+	}
+
+	return firstText.OffsetBlock
 }
 
 func (tb *TextBlock) OffsetBlocksEnd() int {
-	return tb.lastText().OffsetBlock
+	lastText := tb.lastText()
+	if lastText == nil {
+		return -1
+	}
+
+	return lastText.OffsetBlock
 }
 
 func (tb *TextBlock) FirstNonWhitespaceTextNode() *html.Node {
@@ -113,8 +134,7 @@ func (tb *TextBlock) ApplyToModel() {
 		return
 	}
 
-	for _, idx := range tb.TextIndexes {
-		wt := tb.TextElements[idx]
+	for _, wt := range tb.TextElements {
 		wt.SetIsContent(true)
 		if tb.HasLabel(label.Title) {
 			wt.AddLabel(label.Title)
@@ -124,7 +144,7 @@ func (tb *TextBlock) ApplyToModel() {
 
 func (tb *TextBlock) String() string {
 	str := "["
-	str += fmt.Sprintf("%d-%d;", tb.OffsetBlocksStart(), tb.OffsetBlocksEnd())
+	str += fmt.Sprintf("%d/%d;", tb.OffsetBlocksStart(), tb.OffsetBlocksEnd())
 	str += fmt.Sprintf("tl=%d;", tb.TagLevel)
 	str += fmt.Sprintf("nw=%d;", tb.NumWords)
 	str += fmt.Sprintf("ld=%.3f;", tb.LinkDensity)
@@ -148,11 +168,19 @@ func (tb *TextBlock) calcLinkDensity() float64 {
 	return float64(tb.NumWordsInAnchor) / float64(tb.NumWords)
 }
 
-func (tb *TextBlock) firstText() webdoc.Text {
+func (tb TextBlock) firstText() *Text {
+	if len(tb.TextElements) == 0 {
+		return nil
+	}
+
 	return tb.TextElements[0]
 }
 
-func (tb *TextBlock) lastText() webdoc.Text {
+func (tb TextBlock) lastText() *Text {
+	if len(tb.TextElements) == 0 {
+		return nil
+	}
+
 	return tb.TextElements[len(tb.TextElements)-1]
 }
 
