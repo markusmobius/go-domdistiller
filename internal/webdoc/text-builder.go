@@ -98,11 +98,11 @@ func (tb *TextBuilder) Build(offsetBlock int) *Text {
 
 	text := Text{
 		Text:           tb.textBuffer.String(),
-		textNodes:      tb.textNodes,
-		start:          tb.firstNode,
-		end:            len(tb.textNodes),
-		firstWordNode:  tb.firstNonWhitespaceNode,
-		lastWordNode:   tb.lastNonWhitespaceNode,
+		TextNodes:      tb.textNodes,
+		Start:          tb.firstNode,
+		End:            len(tb.textNodes),
+		FirstWordNode:  tb.firstNonWhitespaceNode,
+		LastWordNode:   tb.lastNonWhitespaceNode,
 		NumWords:       tb.numWords,
 		NumLinkedWords: tb.numAnchorWords,
 		TagLevel:       tb.blockTagLevel,

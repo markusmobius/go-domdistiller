@@ -13,7 +13,11 @@ import (
 
 const maxClassCount = 2
 
-var rxComment = regexp.MustCompile(`(?i)\bcomments?\b`)
+var (
+	rxComment       = regexp.MustCompile(`(?i)\bcomments?\b`)
+	rxDisplay       = regexp.MustCompile(`(?i)display:\s*`)
+	rxInlineDisplay = regexp.MustCompile(`(?i)display:\s*inline`)
+)
 
 type ElementAction struct {
 	Flush           bool
@@ -23,16 +27,28 @@ type ElementAction struct {
 }
 
 func GetActionForElement(element *html.Node) ElementAction {
-	// In original dom-distiller, the `flush` and `changesTagLevel` values
-	// are decided depending on element syle. Unfortunately, this is not
-	// possible so I simply use the default condition. NEED-COMPUTE-CSS.
-	action := ElementAction{
-		Flush:           true,
-		ChangesTagLevel: true,
-		Labels:          make([]string, 0),
+	tagName := dom.TagName(element)
+	styleAttr := dom.GetAttribute(element, "style")
+
+	// In original dom-distiller, the `flush` and `changesTagLevel` values are decided depending
+	// on element display syle. For example, inline element shouldn't change tag level. Unfortunately,
+	// this is not possible since we can't compute stylesheet. As fallback, here we simply check if
+	// tag is inline by default (see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements).
+	// We also check if element's inline style has `display: inline`. NEED-COMPUTE-CSS.
+	action := ElementAction{Labels: make([]string, 0)}
+	_, isInlineElement := inlineTagNames[tagName]
+	hasDisplayStyleAttr := rxDisplay.MatchString(styleAttr)
+	hasInlineDisplayStyleAttr := rxInlineDisplay.MatchString(styleAttr)
+
+	switch {
+	case isInlineElement && !hasDisplayStyleAttr,
+		hasInlineDisplayStyleAttr:
+
+	default:
+		action.Flush = true
+		action.ChangesTagLevel = true
 	}
 
-	tagName := dom.TagName(element)
 	if tagName != "html" && tagName != "body" && tagName != "article" {
 		id := dom.GetAttribute(element, "id")
 		className := dom.GetAttribute(element, "class")

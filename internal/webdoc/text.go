@@ -23,11 +23,11 @@ type Text struct {
 	GroupNumber    int
 	PageURL        *nurl.URL
 
-	textNodes     []*html.Node
-	start         int
-	end           int
-	firstWordNode int
-	lastWordNode  int
+	TextNodes     []*html.Node
+	Start         int
+	End           int
+	FirstWordNode int
+	LastWordNode  int
 }
 
 func (t *Text) GenerateOutput(textOnly bool) string {
@@ -37,12 +37,12 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 
 	// TODO: Instead of doing this next part, in the future track font size weight
 	// and etc. and wrap the nodes in a "p" tag.
-	clonedRoot := domutil.TreeClone(t.TextNodes())
+	clonedRoot := domutil.TreeClone(t.GetTextNodes())
 
 	// To keep formatting/structure, at least one parent element should be in the output.
 	// This is necessary because many times a WebText is only a single text node.
 	if clonedRoot.Type != html.ElementNode {
-		parentClone := dom.Clone(t.TextNodes()[0].Parent, false)
+		parentClone := dom.Clone(t.GetTextNodes()[0].Parent, false)
 		dom.AppendChild(parentClone, clonedRoot)
 		clonedRoot = parentClone
 	}
@@ -63,7 +63,7 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 		}
 
 		if srcRoot == nil {
-			srcRoot = domutil.GetNearestCommonAncestor(t.TextNodes()...)
+			srcRoot = domutil.GetNearestCommonAncestor(t.GetTextNodes()...)
 			if srcRoot.Type != html.ElementNode {
 				srcRoot = domutil.GetParentElement(srcRoot)
 			}
@@ -121,13 +121,13 @@ func (t *Text) TakeLabels() map[string]struct{} {
 }
 
 func (t Text) FirstNonWhitespaceTextNode() *html.Node {
-	return t.textNodes[t.firstWordNode]
+	return t.TextNodes[t.FirstWordNode]
 }
 
 func (t Text) LastNonWhitespaceTextNode() *html.Node {
-	return t.textNodes[t.lastWordNode]
+	return t.TextNodes[t.LastWordNode]
 }
 
-func (t Text) TextNodes() []*html.Node {
-	return t.textNodes[t.start:t.end]
+func (t Text) GetTextNodes() []*html.Node {
+	return t.TextNodes[t.Start:t.End]
 }

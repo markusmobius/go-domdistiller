@@ -6,9 +6,19 @@ package webdoc
 type Element interface {
 	// GenerateOutput generates HTML output for this Element.
 	GenerateOutput(textOnly bool) string
+	IsContent() bool
+	SetIsContent(bool)
 }
 
 // BaseElement is base of any other element.
 type BaseElement struct {
-	IsContent bool
+	isContent bool
+}
+
+func (be *BaseElement) IsContent() bool {
+	return be.isContent
+}
+
+func (be *BaseElement) SetIsContent(b bool) {
+	be.isContent = b
 }

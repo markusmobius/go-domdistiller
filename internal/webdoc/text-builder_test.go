@@ -23,7 +23,7 @@ func Test_WebDoc_TextBuilder_SimpleBlocks(t *testing.T) {
 	assert.Equal(t, 2, block.NumWords)
 	assert.Equal(t, 0, block.NumLinkedWords)
 	assert.Equal(t, "Two words.", block.Text)
-	assert.Equal(t, 1, len(block.TextNodes()))
+	assert.Equal(t, 1, len(block.GetTextNodes()))
 	assert.Equal(t, 0, len(block.Labels))
 	assert.Equal(t, 0, block.OffsetBlock)
 
@@ -35,7 +35,7 @@ func Test_WebDoc_TextBuilder_SimpleBlocks(t *testing.T) {
 	assert.Equal(t, 4, block.NumWords)
 	assert.Equal(t, 0, block.NumLinkedWords)
 	assert.Equal(t, "More than two words.", block.Text)
-	assert.Equal(t, 4, len(block.TextNodes()))
+	assert.Equal(t, 4, len(block.GetTextNodes()))
 	assert.Equal(t, 1, block.OffsetBlock)
 
 	assert.Nil(t, builder.Build(0))
@@ -118,9 +118,11 @@ func Test_WebDoc_TextBuilder_WhitespaceNodes(t *testing.T) {
 	tbAddText(builder, " ", 0)
 	tb = builder.Build(0)
 	assert.Equal(t, tb.FirstNonWhitespaceTextNode(), tb.LastNonWhitespaceTextNode())
-	assert.Equal(t, 3, len(tb.TextNodes()))
-	assert.False(t, tb.TextNodes()[0] == tb.FirstNonWhitespaceTextNode())
-	assert.False(t, tb.TextNodes()[2] == tb.FirstNonWhitespaceTextNode())
+
+	textNodes := tb.GetTextNodes()
+	assert.Equal(t, 3, len(textNodes))
+	assert.False(t, textNodes[0] == tb.FirstNonWhitespaceTextNode())
+	assert.False(t, textNodes[2] == tb.FirstNonWhitespaceTextNode())
 
 	tbAddText(builder, "one", 0)
 	tbAddText(builder, "two", 0)
@@ -141,7 +143,7 @@ func Test_WebDoc_TextBuilder_BrElement(t *testing.T) {
 	tbAddText(builder, "lines", 0)
 
 	webText := builder.Build(0)
-	assert.Equal(t, 7, len(webText.TextNodes()))
+	assert.Equal(t, 7, len(webText.GetTextNodes()))
 	assert.Equal(t, "words\nsplit\nwith\nlines", webText.Text)
 }
 
