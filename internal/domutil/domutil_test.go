@@ -18,6 +18,23 @@ import (
 // implemented because they require to compute the stylesheets :
 // - Test_DomUtil_GetOutputNodesWithHiddenChildren
 
+func Test_DomUtil_HasRootDomain(t *testing.T) {
+	// Positive tests.
+	assert.True(t, domutil.HasRootDomain("//www.foo.bar/foo/bar.html", "foo.bar"))
+	assert.True(t, domutil.HasRootDomain("http://www.foo.bar/foo/bar.html", "foo.bar"))
+	assert.True(t, domutil.HasRootDomain("https://www.m.foo.bar/foo/bar.html", "foo.bar"))
+	assert.True(t, domutil.HasRootDomain("https://www.m.foo.bar/foo/bar.html", "www.m.foo.bar"))
+	assert.True(t, domutil.HasRootDomain("http://localhost/foo/bar.html", "localhost"))
+	assert.True(t, domutil.HasRootDomain("https://www.m.foo.bar.baz", "foo.bar.baz"))
+	// Negative tests.
+	assert.False(t, domutil.HasRootDomain("https://www.m.foo.bar.baz", "x.foo.bar.baz"))
+	assert.False(t, domutil.HasRootDomain("https://www.foo.bar.baz", "foo.bar"))
+	assert.False(t, domutil.HasRootDomain("http://foo", "m.foo"))
+	assert.False(t, domutil.HasRootDomain("https://www.badfoobar.baz", "foobar.baz"))
+	assert.False(t, domutil.HasRootDomain("", "foo"))
+	assert.False(t, domutil.HasRootDomain("http://foo.bar", ""))
+}
+
 func Test_DomUtil_NearestCommonAncestor(t *testing.T) {
 	// The tree graph is
 	// 1 - 2 - 3

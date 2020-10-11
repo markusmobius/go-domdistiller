@@ -22,7 +22,7 @@ func (f *Figure) GenerateOutput(textOnly bool) string {
 	figure := dom.CreateElement("figure")
 	dom.AppendChild(figure, f.getProcessedNode())
 	if dom.InnerHTML(f.Caption) != "" {
-		dom.AppendChild(figure, f.Caption)
+		dom.AppendChild(figure, figCaption)
 	}
 
 	return dom.OuterHTML(figure)

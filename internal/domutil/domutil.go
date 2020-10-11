@@ -21,13 +21,42 @@ var (
 	rxSrcsetURL        = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
 )
 
+// HasRootDomain checks if a provided URL has the specified root domain
+// (ex. http://a.b.c/foo/bar has root domain of b.c).
+func HasRootDomain(url string, root string) bool {
+	if url == "" || root == "" {
+		return false
+	}
+
+	if strings.HasPrefix(url, "//") {
+		url = "http:" + url
+	}
+
+	parsedURL, err := nurl.ParseRequestURI(url)
+	if err != nil {
+		return false
+	}
+
+	return parsedURL.Host == root || strings.HasSuffix(parsedURL.Host, "."+root)
+}
+
 // GetFirstElementByTagNameInc returns the first element with `tagName` in the
-// tree rooted at `root`, including root. null if none is found.
+// tree rooted at `root`, including root. Nil if none is found.
 func GetFirstElementByTagNameInc(root *html.Node, tagName string) *html.Node {
 	if dom.TagName(root) == tagName {
 		return root
 	}
-	return dom.QuerySelector(root, tagName)
+	return GetFirstElementByTagName(root, tagName)
+}
+
+// GetFirstElementByTagName returns the first element with `tagName` in the
+// tree rooted at `root`. Nil if none is found.
+func GetFirstElementByTagName(root *html.Node, tagName string) *html.Node {
+	nodes := dom.GetElementsByTagName(root, tagName)
+	if len(nodes) > 0 {
+		return nodes[0]
+	}
+	return nil
 }
 
 // GetNearestCommonAncestor returns the nearest common ancestor of nodes.
