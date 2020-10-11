@@ -14,9 +14,11 @@ import (
 )
 
 var (
-	rxPunctuation = regexp.MustCompile(`\s+([.?!,:;])(\S+)`)
-	rxTempNewline = regexp.MustCompile(`\s*\|\\/\|\s*`)
-	rxSrcsetURL   = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
+	rxPunctuation      = regexp.MustCompile(`\s+([.?!,;])\s*(\S*)`)
+	rxTempNewline      = regexp.MustCompile(`\s*\|\\/\|\s*`)
+	rxDisplayNone      = regexp.MustCompile(`(?i)display:\s*none`)
+	rxVisibilityHidden = regexp.MustCompile(`(?i)visibility:\s*(:?hidden|collapse)`)
+	rxSrcsetURL        = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
 )
 
 // GetFirstElementByTagNameInc returns the first element with `tagName` in the
@@ -371,7 +373,7 @@ func stripAllUnsafeAttributes(node *html.Node) {
 // text from hidden children. A child is hidden if it's computed width is 0, whether
 // because its CSS (e.g `display: none`, `visibility: hidden`, etc), or if the child
 // has `hidden` attribute. Since we can't compute stylesheet, we only look at `hidden`
-// attribute here.
+// attribute and inline style.
 //
 // Besides excluding text from hidden children, difference between this function and
 // `dom.TextContent` is the latter will skip <br> tag while this function will preserve
@@ -388,7 +390,15 @@ func InnerText(node *html.Node) string {
 		case html.ElementNode:
 			if n.Data == "br" {
 				buffer.WriteString(`|\/|`)
-			} else if dom.HasAttribute(n, "hidden") {
+				return
+			}
+
+			if dom.HasAttribute(n, "hidden") {
+				return
+			}
+
+			styleAttr := dom.GetAttribute(n, "style")
+			if rxDisplayNone.MatchString(styleAttr) || rxVisibilityHidden.MatchString(styleAttr) {
 				return
 			}
 		}
