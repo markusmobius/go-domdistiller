@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 79 files with 8,482 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 76 files with 8,315 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
@@ -19,6 +19,8 @@ This package is still in development and the port process is still not finished.
 - Port `TwitterExtractor` from `extractors/embed/TwitterExtractor.java`
 - Port `VimeoExtractor` from `extractors/embed/Vimeotractor.java`
 - Port `YouTubeExtractor` from `extractors/embed/YouTubeExtractor.java`
+- Remove `JavaScript.java` because functions inside it already available in Go standard library.
+- Remove `GwtOverlayProtoTest.java` because it's only test model for Protobuf which we don't use.
 - Remove `KeepEverythingExtractor.java` and `KeepEverythingWithMinKWordsExtractor.java` because it's not used anywhere.
 
 ### 9 October 2020
