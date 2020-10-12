@@ -9,6 +9,7 @@ require (
 	github.com/go-shiori/dom v0.0.0-20201006235049-0d0a36c25684
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/stretchr/testify v1.4.0
 	github.com/yosssi/gohtml v0.0.0-20200519115854-476f5b4b8047
 	golang.org/x/net v0.0.0-20201006153459-a7d1128ccaa0
 )

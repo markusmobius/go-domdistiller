@@ -6,9 +6,14 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 76 files with 8,315 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 73 files with 7,853 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 12 October 2020
+
+- Port `DomConverter` from `webdocument/DomConverter.java`
+- Port `FakeWebDocumentBuilder` from `javatest/webdocument/FakeWebDocumentBuilder.java`
 
 ### 11 October 2020
 

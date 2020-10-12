@@ -18,7 +18,7 @@ type DocumentBuilder interface {
 	AddLineBreak(node *html.Node)
 	AddDataTable(e *html.Node)
 	AddTag(tag *Tag)
-	AddEmbed(embedNode Element)
+	AddEmbed(embed Element)
 }
 
 type WebDocumentBuilder struct {

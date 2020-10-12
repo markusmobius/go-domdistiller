@@ -21,6 +21,15 @@ type Video struct {
 	PageURL *nurl.URL
 }
 
+func NewVideo(node *html.Node, pageURL *nurl.URL, width, height int) *Video {
+	return &Video{
+		Element: node,
+		PageURL: pageURL,
+		Width:   width,
+		Height:  height,
+	}
+}
+
 func (v *Video) GenerateOutput(textOnly bool) string {
 	if textOnly {
 		return ""

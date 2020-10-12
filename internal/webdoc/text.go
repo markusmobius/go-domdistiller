@@ -95,7 +95,7 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 		return domutil.InnerText(clonedRoot)
 	}
 
-	if _, canBeNested := nestingTags[dom.TagName(clonedRoot)]; canBeNested {
+	if CanBeNested(dom.TagName(clonedRoot)) {
 		return dom.InnerHTML(clonedRoot)
 	}
 

@@ -29,7 +29,7 @@ func Test_WebDoc_Video_GenerateOutput(t *testing.T) {
 		`<track src="http://example.com/foo.vtt"/>` +
 		`</video>`
 
-	webVideo := webdoc.Video{Element: video}
+	webVideo := webdoc.NewVideo(video, nil, 0, 0)
 	assert.Equal(t, expected, webVideo.GenerateOutput(false))
 }
 
@@ -56,7 +56,7 @@ func Test_WebDoc_Video_GenerateOutputInvalidChildren(t *testing.T) {
 		`<track src="http://example.com/foo.vtt"/>` +
 		`</video>`
 
-	webVideo := webdoc.Video{Element: video}
+	webVideo := webdoc.NewVideo(video, nil, 0, 0)
 	assert.Equal(t, expected, webVideo.GenerateOutput(false))
 }
 
@@ -80,12 +80,12 @@ func Test_WebDoc_Video_GenerateOutputRelativeURL(t *testing.T) {
 		`</video>`
 
 	baseURL, _ := nurl.ParseRequestURI("http://example.com/")
-	webVideo := webdoc.Video{Element: video, PageURL: baseURL}
+	webVideo := webdoc.NewVideo(video, baseURL, 0, 0)
 	assert.Equal(t, expected, webVideo.GenerateOutput(false))
 }
 
 func Test_WebDoc_Video_PosterEmpty(t *testing.T) {
 	video := dom.CreateElement("video")
-	webVideo := webdoc.Video{Element: video, Width: 400, Height: 300}
+	webVideo := webdoc.NewVideo(video, nil, 400, 300)
 	assert.Equal(t, "<video></video>", webVideo.GenerateOutput(false))
 }

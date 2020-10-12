@@ -18,6 +18,11 @@ var nestingTags = map[string]struct{}{
 	"pre":        {},
 }
 
+func CanBeNested(tagName string) bool {
+	_, canBeNested := nestingTags[tagName]
+	return canBeNested
+}
+
 // All inline elements except for impossible tags: br, object, and script.
 // Please refer to DomConverter.visitElement() for skipped tags.
 // Reference: https://developer.mozilla.org/en-US/docs/HTML/Inline_elements
