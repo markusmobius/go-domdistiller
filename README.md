@@ -14,6 +14,7 @@ This package is still in development and the port process is still not finished.
 
 - Port `DomConverter` from `webdocument/DomConverter.java`
 - Port `FakeWebDocumentBuilder` from `javatest/webdocument/FakeWebDocumentBuilder.java`
+- Replace `alecthomas/assert` with `stretchr/testify/assert`. Nothing wrong with the former but the latter is better since it prints the log as raw text instead of formatted one. Might be useful if in later days we decide to set CI for testing.
 
 ### 11 October 2020
 

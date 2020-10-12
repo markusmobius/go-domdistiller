@@ -5,10 +5,10 @@ package markup_test
 import (
 	"testing"
 
-	"github.com/alecthomas/assert"
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/markup"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
 )
 

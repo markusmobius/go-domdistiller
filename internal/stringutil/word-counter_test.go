@@ -5,8 +5,8 @@ package stringutil_test
 import (
 	"testing"
 
-	"github.com/alecthomas/assert"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_StringUtil_FullWordCounter(t *testing.T) {

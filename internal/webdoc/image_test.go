@@ -6,9 +6,9 @@ import (
 	nurl "net/url"
 	"testing"
 
-	"github.com/alecthomas/assert"
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_WebDoc_Image_GenerateOutput(t *testing.T) {

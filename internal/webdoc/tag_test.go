@@ -5,8 +5,8 @@ package webdoc_test
 import (
 	"testing"
 
-	"github.com/alecthomas/assert"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_WebDoc_Tag_OLGenerateOutput(t *testing.T) {

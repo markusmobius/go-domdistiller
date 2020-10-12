@@ -5,10 +5,10 @@ package webdoc_test
 import (
 	"testing"
 
-	"github.com/alecthomas/assert"
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_WebDoc_TextBuilder_SimpleBlocks(t *testing.T) {
