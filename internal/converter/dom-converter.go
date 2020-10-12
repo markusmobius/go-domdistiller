@@ -16,10 +16,10 @@ import (
 
 // DomConverter converts a node and its children into a Document.
 type DomConverter struct {
-	builder       webdoc.DocumentBuilder
-	extractors    []extractor.EmbedExtractor
-	embedTagNames map[string]struct{}
-	pageURL       *nurl.URL
+	builder         webdoc.DocumentBuilder
+	embedExtractors []extractor.EmbedExtractor
+	embedTagNames   map[string]struct{}
+	pageURL         *nurl.URL
 }
 
 func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL) *DomConverter {
@@ -38,10 +38,10 @@ func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL) *DomConv
 	}
 
 	return &DomConverter{
-		builder:       builder,
-		extractors:    extractors,
-		embedTagNames: embedTagNames,
-		pageURL:       pageURL,
+		builder:         builder,
+		embedExtractors: extractors,
+		embedTagNames:   embedTagNames,
+		pageURL:         pageURL,
 	}
 }
 
@@ -83,7 +83,7 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 	tagName := dom.TagName(node)
 	if _, isEmbed := dc.embedTagNames[tagName]; isEmbed {
 		// If the tag is marked as interesting, check the extractors.
-		for _, extractor := range dc.extractors {
+		for _, extractor := range dc.embedExtractors {
 			embed := extractor.Extract(node)
 			if embed != nil {
 				dc.builder.AddEmbed(embed)
