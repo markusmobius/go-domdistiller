@@ -8,15 +8,18 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
 )
 
 // YouTubeExtractor is used for extracting YouTube videos and relevant information.
-type YouTubeExtractor struct{}
+type YouTubeExtractor struct {
+	PageURL *nurl.URL
+}
 
-func NewYouTubeExtractor() *YouTubeExtractor {
-	return &YouTubeExtractor{}
+func NewYouTubeExtractor(pageURL *nurl.URL) *YouTubeExtractor {
+	return &YouTubeExtractor{PageURL: pageURL}
 }
 
 func (ye *YouTubeExtractor) RelevantTagNames() []string {
@@ -59,6 +62,7 @@ func (ye *YouTubeExtractor) Extract(node *html.Node) webdoc.Element {
 		src = strings.Replace(src, "&", "?", 1)
 	}
 
+	src = stringutil.CreateAbsoluteURL(src, ye.PageURL)
 	if !domutil.HasRootDomain(src, "youtube.com") && !domutil.HasRootDomain(src, "youtube-nocookie.com") {
 		return nil
 	}

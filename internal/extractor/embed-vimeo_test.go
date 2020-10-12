@@ -3,6 +3,7 @@
 package extractor_test
 
 import (
+	nurl "net/url"
 	"testing"
 
 	"github.com/alecthomas/assert"
@@ -13,9 +14,10 @@ import (
 
 func Test_Extractor_Vimeo_Extract(t *testing.T) {
 	vimeo := dom.CreateElement("iframe")
-	dom.SetAttribute(vimeo, "src", "http://player.vimeo.com/video/12345?portrait=0")
+	dom.SetAttribute(vimeo, "src", "//player.vimeo.com/video/12345?portrait=0")
 
-	extractor := extractor.NewVimeoExtractor()
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := extractor.NewVimeoExtractor(pageURL)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes
@@ -36,7 +38,7 @@ func Test_Extractor_Vimeo_ExtractID(t *testing.T) {
 	vimeo := dom.CreateElement("iframe")
 	dom.SetAttribute(vimeo, "src", "http://player.vimeo.com/video/12345?portrait=0")
 
-	extractor := extractor.NewVimeoExtractor()
+	extractor := extractor.NewVimeoExtractor(nil)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes

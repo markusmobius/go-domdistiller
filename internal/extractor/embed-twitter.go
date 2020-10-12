@@ -8,16 +8,19 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
 )
 
 // TwitterExtractor is used to look for Twitter embeds. This class will looks for
 // both rendered and unrendered tweets.
-type TwitterExtractor struct{}
+type TwitterExtractor struct {
+	PageURL *nurl.URL
+}
 
-func NewTwitterExtractor() *TwitterExtractor {
-	return &TwitterExtractor{}
+func NewTwitterExtractor(pageURL *nurl.URL) *TwitterExtractor {
+	return &TwitterExtractor{PageURL: pageURL}
 }
 
 func (te *TwitterExtractor) RelevantTagNames() []string {
@@ -60,6 +63,7 @@ func (te *TwitterExtractor) extractNonRendered(node *html.Node) webdoc.Element {
 
 	tweetAnchor := anchors[len(anchors)-1]
 	tweetAnchorHref := dom.GetAttribute(tweetAnchor, "href")
+	tweetAnchorHref = stringutil.CreateAbsoluteURL(tweetAnchorHref, te.PageURL)
 	if !domutil.HasRootDomain(tweetAnchorHref, "twitter.com") {
 		return nil
 	}

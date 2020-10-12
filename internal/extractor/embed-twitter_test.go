@@ -3,6 +3,7 @@
 package extractor_test
 
 import (
+	nurl "net/url"
 	"testing"
 
 	"github.com/alecthomas/assert"
@@ -17,11 +18,12 @@ func Test_Extractor_Twitter_ExtractNotRenderedBasic(t *testing.T) {
 	dom.SetAttribute(tweetBlock, "class", "twitter-tweet")
 
 	p := dom.CreateElement("p")
-	dom.AppendChild(p, testutil.CreateAnchor("http://twitter.com/foo", "extra content"))
+	dom.AppendChild(p, testutil.CreateAnchor("//twitter.com/foo", "extra content"))
 	dom.AppendChild(tweetBlock, p)
-	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://twitter.com/foo/bar/12345", "January 1, 1900"))
+	dom.AppendChild(tweetBlock, testutil.CreateAnchor("//twitter.com/foo/bar/12345", "January 1, 1900"))
 
-	extractor := extractor.NewTwitterExtractor()
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := extractor.NewTwitterExtractor(pageURL)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -53,7 +55,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://twitter.com/foo/bar/12345///", "January 1, 1900"))
 
-	extractor := extractor.NewTwitterExtractor()
+	extractor := extractor.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -70,7 +72,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedBadTweet(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://nottwitter.com/12345", "timestamp"))
 
-	extractor := extractor.NewTwitterExtractor()
+	extractor := extractor.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.Nil(t, result)
@@ -83,7 +85,7 @@ func Test_Extractor_Twitter_ExtractRenderedBasic(t *testing.T) {
 	dom.SetAttribute(tweet, "src", "https://platform.twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-tweet-id", "12345")
 
-	extractor := extractor.NewTwitterExtractor()
+	extractor := extractor.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -98,7 +100,7 @@ func Test_Extractor_Twitter_ExtractRenderedBadTweet(t *testing.T) {
 	dom.SetAttribute(tweet, "src", "https://platform.not-twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-bad-id", "12345")
 
-	extractor := extractor.NewTwitterExtractor()
+	extractor := extractor.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.Nil(t, result)

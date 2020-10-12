@@ -3,6 +3,7 @@
 package extractor_test
 
 import (
+	nurl "net/url"
 	"testing"
 
 	"github.com/alecthomas/assert"
@@ -13,9 +14,10 @@ import (
 
 func Test_Extractor_YouTube_Extract(t *testing.T) {
 	youtube := dom.CreateElement("iframe")
-	dom.SetAttribute(youtube, "src", "http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=1&hl=zh_TW")
+	dom.SetAttribute(youtube, "src", "//www.youtube.com/embed/M7lc1UVf-VE?autoplay=1&hl=zh_TW")
 
-	extractor := extractor.NewYouTubeExtractor()
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := extractor.NewYouTubeExtractor(pageURL)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -37,7 +39,7 @@ func Test_Extractor_YouTube_ExtractID(t *testing.T) {
 	youtube := dom.CreateElement("iframe")
 	dom.SetAttribute(youtube, "src", "http://www.youtube.com/embed/M7lc1UVf-VE///?autoplay=1")
 
-	extractor := extractor.NewYouTubeExtractor()
+	extractor := extractor.NewYouTubeExtractor(nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -56,7 +58,7 @@ func Test_Extractor_YouTube_ExtractID(t *testing.T) {
 func Test_Extractor_YouTube_Object(t *testing.T) {
 	html := `<object>` +
 		`<param name="movie" ` +
-		`value="http://www.youtube.com/v/DML2WUhn2M0&hl=en_US&fs=1&hd=1">` +
+		`value="//www.youtube.com/v/DML2WUhn2M0&hl=en_US&fs=1&hd=1">` +
 		`</param>` +
 		`<param name="allowFullScreen" value="true">` +
 		`</param>` +
@@ -66,7 +68,8 @@ func Test_Extractor_YouTube_Object(t *testing.T) {
 	dom.SetInnerHTML(div, html)
 
 	youtube := dom.FirstElementChild(div)
-	extractor := extractor.NewYouTubeExtractor()
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := extractor.NewYouTubeExtractor(pageURL)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -87,7 +90,7 @@ func Test_Extractor_YouTube_Object2(t *testing.T) {
 	dom.SetInnerHTML(div, html)
 
 	youtube := dom.FirstElementChild(div)
-	extractor := extractor.NewYouTubeExtractor()
+	extractor := extractor.NewYouTubeExtractor(nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes

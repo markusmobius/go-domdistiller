@@ -8,15 +8,18 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
 )
 
 // VimeoExtractor is used for extracting Vimeo videos and relevant information.
-type VimeoExtractor struct{}
+type VimeoExtractor struct {
+	PageURL *nurl.URL
+}
 
-func NewVimeoExtractor() *VimeoExtractor {
-	return &VimeoExtractor{}
+func NewVimeoExtractor(pageURL *nurl.URL) *VimeoExtractor {
+	return &VimeoExtractor{PageURL: pageURL}
 }
 
 func (ve *VimeoExtractor) RelevantTagNames() []string {
@@ -38,6 +41,7 @@ func (ve *VimeoExtractor) Extract(node *html.Node) webdoc.Element {
 	}
 
 	src := dom.GetAttribute(node, "src")
+	src = stringutil.CreateAbsoluteURL(src, ve.PageURL)
 	if !domutil.HasRootDomain(src, "player.vimeo.com") {
 		return nil
 	}
