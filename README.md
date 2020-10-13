@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 51 files with 6,449 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 48 files with 6,385 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
 
