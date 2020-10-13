@@ -6,9 +6,30 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 73 files with 7,853 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 51 files with 6,449 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 13 October 2020
+
+- Port `NumWordsRulesClassifier` from `filters/english/NumWordsRulesClassifier.java`
+- Port `TerminatingBlocksFinder` from `filters/english/TerminatingBlocksFinder.java`
+- Port `BlockProximityFusion` from `filters/heuristics/BlockProximityFusion.java`
+- Port `DocumentTitleMatchClassifier` from `filters/heuristics/DocumentTitleMatchClassifier.java`
+- Port `ExpandTitleToContentFilter` from `filters/heuristics/ExpandTitleToContentFilter.java`
+- Port `HeadingFusion` from `filters/heuristics/HeadingFusion.java`
+- Port `KeepLargestBlockFilter` from `filters/heuristics/KeepLargestBlockFilter.java`
+- Port `LargeBlockSameTagLevelToContentFilter` from `filters/heuristics/LargeBlockSameTagLevelToContentFilter.java`
+- Port `ListAtEndFilter` from `filters/heuristics/ListAtEndFilter.java`
+- Port `SimilarSiblingContentExpansion` from `filters/heuristics/SimilarSiblingContentExpansion.java`
+- Port `BoilerplateBlockFilter` from `filters/simple/BoilerplateBlockFilter.java`
+- Port `LabelToBoilerplateFilter` from `filters/simple/LabelToBoilerplateFilter.java`
+- Port `TestTextBlockBuilder` from `javatest/TestTextBlockBuilder.java`
+- Port `TestTextDocumentBuilder` from `javatest/TestTextDocumentBuilder.java`
+- Port `TextDocumentTestUtil` from `javatest/document/TextDocumentTestUtil.java`
+- Port `TestWebTextBuilder` from `javatest/webdocument/TestWebTextBuilder.java`
+- Remove `filters/simple/MarkEverythingBoilerplateFilter.java` since it's not used anywhere.
+- Remove `filters/simple/MarkEverythingContentFilter.java` and `filters/simple/MinWordsFilter.java` since it's only used in `KeepEverythingExtractor.java` and `KeepEverythingWithMinKWordsExtractor.java` that we already removed back in 8 October.
 
 ### 12 October 2020
 

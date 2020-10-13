@@ -478,3 +478,41 @@ func GetParentElement(node *html.Node) *html.Node {
 
 	return nil
 }
+
+// Contains checks if child is inside node.
+func Contains(node, child *html.Node) bool {
+	if node == nil || child == nil {
+		return false
+	}
+
+	if node == child {
+		return true
+	}
+
+	childParent := child.Parent
+	for childParent != nil {
+		if childParent == node {
+			return true
+		}
+		childParent = childParent.Parent
+	}
+
+	return false
+}
+
+// NodeName returns the name of the current node as a string.
+// See https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName
+func NodeName(node *html.Node) string {
+	switch node.Type {
+	case html.TextNode:
+		return "#text"
+	case html.DocumentNode:
+		return "#document"
+	case html.CommentNode:
+		return "#comment"
+	case html.ElementNode, html.DoctypeNode:
+		return node.Data
+	default:
+		return ""
+	}
+}

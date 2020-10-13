@@ -61,7 +61,7 @@ func (tb *TextBlock) SetIsContent(isContent bool) bool {
 	return true
 }
 
-func (tb *TextBlock) MergeNext(other TextBlock) {
+func (tb *TextBlock) MergeNext(other *TextBlock) {
 	tb.Text += "\n" + other.Text
 	tb.NumWords += other.NumWords
 	tb.NumWordsInAnchor += other.NumWordsInAnchor
