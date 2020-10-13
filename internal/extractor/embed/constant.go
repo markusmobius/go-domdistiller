@@ -1,6 +1,6 @@
 // ORIGINAL: java/extractors/embeds/*.java
 
-package extractor
+package embed
 
 var (
 	lazyImageAttrs = []string{

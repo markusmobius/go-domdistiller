@@ -1,19 +1,19 @@
 // ORIGINAL: javatest/EmbedExtractorTest.java
 
-package extractor_test
+package embed_test
 
 import (
 	nurl "net/url"
 	"testing"
 
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-domdistiller/internal/extractor"
+	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Extractor_Twitter_ExtractNotRenderedBasic(t *testing.T) {
+func Test_Embed_Twitter_ExtractNotRenderedBasic(t *testing.T) {
 	tweetBlock := dom.CreateElement("blockquote")
 	dom.SetAttribute(tweetBlock, "class", "twitter-tweet")
 
@@ -23,7 +23,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedBasic(t *testing.T) {
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("//twitter.com/foo/bar/12345", "January 1, 1900"))
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := extractor.NewTwitterExtractor(pageURL)
+	extractor := embed.NewTwitterExtractor(pageURL)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -46,7 +46,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedBasic(t *testing.T) {
 	assert.Equal(t, "12345", result.ID)
 }
 
-func Test_Extractor_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
+func Test_Embed_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
 	tweetBlock := dom.CreateElement("blockquote")
 	dom.SetAttribute(tweetBlock, "class", "twitter-tweet")
 
@@ -55,7 +55,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://twitter.com/foo/bar/12345///", "January 1, 1900"))
 
-	extractor := extractor.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -63,7 +63,7 @@ func Test_Extractor_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
 	assert.Equal(t, "12345", result.ID)
 }
 
-func Test_Extractor_Twitter_ExtractNotRenderedBadTweet(t *testing.T) {
+func Test_Embed_Twitter_ExtractNotRenderedBadTweet(t *testing.T) {
 	tweetBlock := dom.CreateElement("blockquote")
 	dom.SetAttribute(tweetBlock, "class", "random-class")
 
@@ -72,20 +72,20 @@ func Test_Extractor_Twitter_ExtractNotRenderedBadTweet(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://nottwitter.com/12345", "timestamp"))
 
-	extractor := extractor.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.Nil(t, result)
 }
 
-func Test_Extractor_Twitter_ExtractRenderedBasic(t *testing.T) {
+func Test_Embed_Twitter_ExtractRenderedBasic(t *testing.T) {
 	tweet := dom.CreateElement("iframe")
 	dom.SetAttribute(tweet, "id", "twitter-widget")
 	dom.SetAttribute(tweet, "title", "Twitter Tweet")
 	dom.SetAttribute(tweet, "src", "https://platform.twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-tweet-id", "12345")
 
-	extractor := extractor.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -93,14 +93,14 @@ func Test_Extractor_Twitter_ExtractRenderedBasic(t *testing.T) {
 	assert.Equal(t, "12345", result.ID)
 }
 
-func Test_Extractor_Twitter_ExtractRenderedBadTweet(t *testing.T) {
+func Test_Embed_Twitter_ExtractRenderedBadTweet(t *testing.T) {
 	tweet := dom.CreateElement("iframe")
 	dom.SetAttribute(tweet, "id", "twitter-widget")
 	dom.SetAttribute(tweet, "title", "Twitter Tweet")
 	dom.SetAttribute(tweet, "src", "https://platform.not-twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-bad-id", "12345")
 
-	extractor := extractor.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.Nil(t, result)

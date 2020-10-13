@@ -1,23 +1,23 @@
 // ORIGINAL: javatest/EmbedExtractorTest.java
 
-package extractor_test
+package embed_test
 
 import (
 	nurl "net/url"
 	"testing"
 
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-domdistiller/internal/extractor"
+	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Extractor_Vimeo_Extract(t *testing.T) {
+func Test_Embed_Vimeo_Extract(t *testing.T) {
 	vimeo := dom.CreateElement("iframe")
 	dom.SetAttribute(vimeo, "src", "//player.vimeo.com/video/12345?portrait=0")
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := extractor.NewVimeoExtractor(pageURL)
+	extractor := embed.NewVimeoExtractor(pageURL)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes
@@ -34,11 +34,11 @@ func Test_Extractor_Vimeo_Extract(t *testing.T) {
 	assert.Nil(t, result)
 }
 
-func Test_Extractor_Vimeo_ExtractID(t *testing.T) {
+func Test_Embed_Vimeo_ExtractID(t *testing.T) {
 	vimeo := dom.CreateElement("iframe")
 	dom.SetAttribute(vimeo, "src", "http://player.vimeo.com/video/12345?portrait=0")
 
-	extractor := extractor.NewVimeoExtractor(nil)
+	extractor := embed.NewVimeoExtractor(nil)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes

@@ -1,6 +1,6 @@
 // ORIGINAL: java/extractors/embeds/EmbedExtractor.java
 
-package extractor
+package embed
 
 import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"

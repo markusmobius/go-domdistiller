@@ -1,6 +1,6 @@
 // ORIGINAL: java/extractors/embeds/VimeoExtractor.java
 
-package extractor
+package embed
 
 import (
 	nurl "net/url"

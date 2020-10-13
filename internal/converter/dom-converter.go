@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
-	"github.com/markusmobius/go-domdistiller/internal/extractor"
+	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
@@ -17,17 +17,17 @@ import (
 // DomConverter converts a node and its children into a Document.
 type DomConverter struct {
 	builder         webdoc.DocumentBuilder
-	embedExtractors []extractor.EmbedExtractor
+	embedExtractors []embed.EmbedExtractor
 	embedTagNames   map[string]struct{}
 	pageURL         *nurl.URL
 }
 
 func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL) *DomConverter {
-	extractors := []extractor.EmbedExtractor{
-		extractor.NewImageExtractor(pageURL),
-		extractor.NewTwitterExtractor(pageURL),
-		extractor.NewVimeoExtractor(pageURL),
-		extractor.NewYouTubeExtractor(pageURL),
+	extractors := []embed.EmbedExtractor{
+		embed.NewImageExtractor(pageURL),
+		embed.NewTwitterExtractor(pageURL),
+		embed.NewVimeoExtractor(pageURL),
+		embed.NewYouTubeExtractor(pageURL),
 	}
 
 	embedTagNames := make(map[string]struct{})

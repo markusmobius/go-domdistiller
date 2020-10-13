@@ -1,13 +1,13 @@
 // ORIGINAL: javatest/EmbedExtractorTest.java
 
-package extractor_test
+package embed_test
 
 import (
 	nurl "net/url"
 	"testing"
 
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-domdistiller/internal/extractor"
+	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,22 +19,22 @@ const imageBase64 = "data:image/png;base64,iVBORw0KGgo" +
 // NEED-COMPUTE-CSS
 // There are some unit tests in original dom-distiller that can't be
 // implemented because they require to compute the stylesheets :
-// - Test_Extractor_Image_WithSettingDimension
-// - Test_Extractor_Image_WithHeightCSS
-// - Test_Extractor_Image_WithWidthHeightCSSPx
-// - Test_Extractor_Image_WithWidthAttributeHeightCSSPx
-// - Test_Extractor_Image_WithWidthAttributeHeightCSS
-// - Test_Extractor_Image_WithAttributeCSS
-// - Test_Extractor_Image_WithAttributesCSSHeightCMAndWidthAttrb
-// - Test_Extractor_Image_WithAttributesCSSHeightCM
+// - Test_Embed_Image_WithSettingDimension
+// - Test_Embed_Image_WithHeightCSS
+// - Test_Embed_Image_WithWidthHeightCSSPx
+// - Test_Embed_Image_WithWidthAttributeHeightCSSPx
+// - Test_Embed_Image_WithWidthAttributeHeightCSS
+// - Test_Embed_Image_WithAttributeCSS
+// - Test_Embed_Image_WithAttributesCSSHeightCMAndWidthAttrb
+// - Test_Embed_Image_WithAttributesCSSHeightCM
 
-func Test_Extractor_Image_HasWidthHeightAttributes(t *testing.T) {
+func Test_Embed_Image_HasWidthHeightAttributes(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", imageBase64)
 	dom.SetAttribute(img, "width", "32")
 	dom.SetAttribute(img, "height", "32")
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -42,10 +42,10 @@ func Test_Extractor_Image_HasWidthHeightAttributes(t *testing.T) {
 	assert.Equal(t, 32, result.Height)
 }
 
-func Test_Extractor_Image_HasNoAttributes(t *testing.T) {
+func Test_Embed_Image_HasNoAttributes(t *testing.T) {
 	img := dom.CreateElement("img")
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -53,12 +53,12 @@ func Test_Extractor_Image_HasNoAttributes(t *testing.T) {
 	assert.Equal(t, 0, result.Height)
 }
 
-func Test_Extractor_Image_HasWidthAttribute(t *testing.T) {
+func Test_Embed_Image_HasWidthAttribute(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "src", imageBase64)
 	dom.SetAttribute(img, "width", "32")
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -66,7 +66,7 @@ func Test_Extractor_Image_HasWidthAttribute(t *testing.T) {
 	assert.Equal(t, 0, result.Height)
 }
 
-func Test_Extractor_Image_LazyLoadedImage(t *testing.T) {
+func Test_Embed_Image_LazyLoadedImage(t *testing.T) {
 	extractLazyLoadedImage(t, "data-src")
 	extractLazyLoadedImage(t, "datasrc")
 	extractLazyLoadedImage(t, "data-original")
@@ -78,7 +78,7 @@ func Test_Extractor_Image_LazyLoadedImage(t *testing.T) {
 	extractLazyLoadedFigure(t, "data-url")
 }
 
-func Test_Extractor_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
+func Test_Embed_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")
 	dom.SetAttribute(img, "height", "100")
@@ -91,7 +91,7 @@ func Test_Extractor_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, noscript)
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	// In original dom-distiller the text is not included because by default
@@ -108,16 +108,16 @@ func Test_Extractor_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 	assert.Equal(t, expected, result.GenerateOutput(false))
 }
 
-func Test_Extractor_Image_FigureWithoutImageAndCaption(t *testing.T) {
+func Test_Embed_Image_FigureWithoutImageAndCaption(t *testing.T) {
 	figure := dom.CreateElement("figure")
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	assert.Nil(t, result)
 }
 
-func Test_Extractor_Image_FigureCaptionTextOnly(t *testing.T) {
+func Test_Embed_Image_FigureCaptionTextOnly(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")
 	dom.SetAttribute(img, "height", "100")
@@ -130,14 +130,14 @@ func Test_Extractor_Image_FigureCaptionTextOnly(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, figcaption)
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result := extractor.Extract(figure)
 
 	assert.NotNil(t, result)
 	assert.Equal(t, "This is a caption", result.GenerateOutput(true))
 }
 
-func Test_Extractor_Image_FigureCaptionWithAnchor(t *testing.T) {
+func Test_Embed_Image_FigureCaptionWithAnchor(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")
 	dom.SetAttribute(img, "height", "100")
@@ -158,7 +158,7 @@ func Test_Extractor_Image_FigureCaptionWithAnchor(t *testing.T) {
 	dom.AppendChild(figure, figcaption)
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := extractor.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL)
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
@@ -173,7 +173,7 @@ func Test_Extractor_Image_FigureCaptionWithAnchor(t *testing.T) {
 	assert.Equal(t, "This is a caption\nlink", result.GenerateOutput(true))
 }
 
-func Test_Extractor_Image_FigureCaptionWithoutAnchor(t *testing.T) {
+func Test_Embed_Image_FigureCaptionWithoutAnchor(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")
 	dom.SetAttribute(img, "height", "100")
@@ -186,7 +186,7 @@ func Test_Extractor_Image_FigureCaptionWithoutAnchor(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, figcaption)
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	expected := `<figure>` +
@@ -201,7 +201,7 @@ func Test_Extractor_Image_FigureCaptionWithoutAnchor(t *testing.T) {
 	assert.Equal(t, "This is a caption", result.GenerateOutput(true))
 }
 
-func Test_Extractor_Image_FigureDivCaption(t *testing.T) {
+func Test_Embed_Image_FigureDivCaption(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")
 	dom.SetAttribute(img, "height", "100")
@@ -214,7 +214,7 @@ func Test_Extractor_Image_FigureDivCaption(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, div)
 
-	extractor := extractor.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil)
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
@@ -232,7 +232,7 @@ func extractLazyLoadedImage(t *testing.T, attr string) {
 	dom.SetAttribute(img, attr, "image.png")
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := extractor.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL)
 
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 	assert.NotNil(t, result)
@@ -248,7 +248,7 @@ func extractLazyLoadedFigure(t *testing.T, attr string) {
 	dom.AppendChild(figure, img)
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := extractor.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL)
 
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 	assert.NotNil(t, result)
