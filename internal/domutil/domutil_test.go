@@ -335,3 +335,20 @@ func Test_DomUtil_GetOutputNodesNestedTable(t *testing.T) {
 	contentNodes := domutil.GetOutputNodes(table)
 	assert.Len(t, contentNodes, 11)
 }
+
+func Test_DomUtil_NodeDepth(t *testing.T) {
+	div := testutil.CreateDiv(1)
+	div2 := testutil.CreateDiv(2)
+	div3 := testutil.CreateDiv(3)
+
+	dom.AppendChild(div, div2)
+	dom.AppendChild(div2, div3)
+
+	assert.Equal(t, 2, domutil.GetNodeDepth(div3))
+}
+
+func Test_DomUtil_ZeroOrNoNodeDepth(t *testing.T) {
+	div := testutil.CreateDiv(0)
+	assert.Equal(t, 0, domutil.GetNodeDepth(div))
+	assert.Equal(t, -1, domutil.GetNodeDepth(nil))
+}

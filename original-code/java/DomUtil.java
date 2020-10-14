@@ -187,30 +187,6 @@ public class DomUtil {
     }-*/;
 
     /**
-     * Get a list of all the parents of this node starting with the node itself.
-     * @param n The node to get the parents of.
-     * @return A list of the provided node's parents.
-     */
-    public static List<Node> getParentNodes(Node n) {
-        ArrayList<Node> result = new ArrayList<>();
-        Node curr = n;
-        while (curr != null) {
-            result.add(curr);
-            curr = curr.getParentNode();
-        }
-        return result;
-    }
-
-    /**
-     * Get the depth of the given node in the DOM tree (only counting elements).
-     * @param n The node to find the depth of.
-     * @return The depth of the provided node; -1 if n is null.
-     */
-    public static int getNodeDepth(final Node n) {
-        return getParentNodes(n).size()-1;
-    }
-
-    /**
      * Get all text from a tree/sub-tree. The node is added to the DOM for rendering, so that the
      * innerText has all the line breaks even if the node is not originally rendered.
      * See https://crbug.com/859410.

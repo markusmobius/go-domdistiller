@@ -353,6 +353,22 @@ func GetOutputNodes(root *html.Node) []*html.Node {
 	return outputNodes
 }
 
+// GetParentNodes returns list of all the parents of this node starting with the node itself.
+func GetParentNodes(node *html.Node) []*html.Node {
+	result := []*html.Node{}
+	current := node
+	for current != nil {
+		result = append(result, current)
+		current = current.Parent
+	}
+	return result
+}
+
+// GetNodeDepth the depth of the given node in the DOM tree.
+func GetNodeDepth(node *html.Node) int {
+	return len(GetParentNodes(node)) - 1
+}
+
 // makeSrcSetAbsolute makes `srcset` for this node absolute.
 func makeSrcSetAbsolute(node *html.Node, pageURL *nurl.URL) {
 	srcset := dom.GetAttribute(node, "srcset")

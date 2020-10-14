@@ -91,24 +91,6 @@ public class DomUtilTest extends DomDistillerJsTestCase {
         assertEquals(0, result.size());
     }
 
-    public void testNodeDepth() {
-        Element div = TestUtil.createDiv(1);
-
-        Element div2 = TestUtil.createDiv(2);
-        div.appendChild(div2);
-
-        Element div3 = TestUtil.createDiv(3);
-        div2.appendChild(div3);
-
-        assertEquals(2, DomUtil.getNodeDepth(div3));
-    }
-
-    public void testZeroOrNoNodeDepth() {
-        Element div = TestUtil.createDiv(0);
-        assertEquals(0, DomUtil.getNodeDepth(div));
-        assertEquals(-1, DomUtil.getNodeDepth(null));
-    }
-
     public void testIsVisibleByOffsetParentDisplayNone() {
         String html =
             "<div style=\"display: none;\">" +

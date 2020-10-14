@@ -12,6 +12,10 @@ type Document struct {
 	Elements []Element
 }
 
+func NewDocument() *Document {
+	return &Document{}
+}
+
 func (doc *Document) AddElements(elements ...Element) {
 	doc.Elements = append(doc.Elements, elements...)
 }
