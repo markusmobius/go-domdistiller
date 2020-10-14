@@ -10,24 +10,24 @@ import (
 	"golang.org/x/net/html"
 )
 
-// WebDocumentBuilder is a simple builder that just creates an html-like string
-// from the calls. Only used for test.
-type WebDocumentBuilder struct {
+// FakeWebDocumentBuilder is a simple builder that just creates an html-like string
+// from the calls. Only used for dom-converter test.
+type FakeWebDocumentBuilder struct {
 	buffer bytes.Buffer
 	nodes  []*html.Node
 }
 
-func NewWebDocumentBuilder() *WebDocumentBuilder {
-	return &WebDocumentBuilder{}
+func NewFakeWebDocumentBuilder() *FakeWebDocumentBuilder {
+	return &FakeWebDocumentBuilder{}
 }
 
-func (db *WebDocumentBuilder) Build() string {
+func (db *FakeWebDocumentBuilder) Build() string {
 	return db.buffer.String()
 }
 
-func (db *WebDocumentBuilder) SkipNode(e *html.Node) {}
+func (db *FakeWebDocumentBuilder) SkipNode(e *html.Node) {}
 
-func (db *WebDocumentBuilder) StartNode(e *html.Node) {
+func (db *FakeWebDocumentBuilder) StartNode(e *html.Node) {
 	db.nodes = append(db.nodes, e)
 	db.buffer.WriteString("<")
 	db.buffer.WriteString(dom.TagName(e))
@@ -41,24 +41,24 @@ func (db *WebDocumentBuilder) StartNode(e *html.Node) {
 	db.buffer.WriteString(">")
 }
 
-func (db *WebDocumentBuilder) EndNode() {
+func (db *FakeWebDocumentBuilder) EndNode() {
 	node := db.nodes[len(db.nodes)-1]
 	db.nodes = db.nodes[:len(db.nodes)-1]
 	db.buffer.WriteString("</" + dom.TagName(node) + ">")
 }
 
-func (db *WebDocumentBuilder) AddTextNode(textNode *html.Node) {
+func (db *FakeWebDocumentBuilder) AddTextNode(textNode *html.Node) {
 	db.buffer.WriteString(textNode.Data)
 }
 
-func (db *WebDocumentBuilder) AddLineBreak(node *html.Node) {
+func (db *FakeWebDocumentBuilder) AddLineBreak(node *html.Node) {
 	db.buffer.WriteString("\n")
 }
 
-func (db *WebDocumentBuilder) AddDataTable(e *html.Node) {
+func (db *FakeWebDocumentBuilder) AddDataTable(e *html.Node) {
 	db.buffer.WriteString("<datatable/>")
 }
 
-func (db *WebDocumentBuilder) AddTag(tag *webdoc.Tag) {}
+func (db *FakeWebDocumentBuilder) AddTag(tag *webdoc.Tag) {}
 
-func (db *WebDocumentBuilder) AddEmbed(embed webdoc.Element) {}
+func (db *FakeWebDocumentBuilder) AddEmbed(embed webdoc.Element) {}

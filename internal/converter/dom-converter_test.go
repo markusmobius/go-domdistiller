@@ -176,7 +176,7 @@ func runTest(t *testing.T, innerHTML, expectedHTML string) {
 	div := dom.CreateElement("div")
 	dom.SetInnerHTML(div, innerHTML)
 
-	builder := testutil.NewWebDocumentBuilder()
+	builder := testutil.NewFakeWebDocumentBuilder()
 	converter.NewDomConverter(builder, nil).Convert(div)
 
 	expected := "<div>" + expectedHTML + "</div>"
