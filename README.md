@@ -6,9 +6,17 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 47 files with 6,319 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 32 files with 5,497 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 14 October 2020
+
+- Port all `ImageScorer` in `webdocuments/filters/images/`
+- Port `LeadImageFinder` from `webdocuments/filters/LeadImageFinder.java`
+- Port `NestedElementRetainer` from `webdocuments/filters/NestedElementRetainer.java`
+- Port `RelevantElements` from `webdocuments/filters/RelevantElements.java`
+- Port `TestWebDocumentBuilder` from `javatest/webdocument/TestWebDocumentBuilder.java`
 
 ### 13 October 2020
 

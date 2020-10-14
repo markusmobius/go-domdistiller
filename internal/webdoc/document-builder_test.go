@@ -346,6 +346,60 @@ func Test_WebDoc_WebDocumentBuilder_EmptyBlockNotMergedWithNextBlock(t *testing.
 	assert.Equal(t, WdbText1+"\n", textBlocks[0].Text)
 }
 
+func Test_WebDoc_WebDocumentBuilder_Regression0(t *testing.T) {
+	html := `<blockquote><p>“There are plenty of instances where provocation comes into` +
+		` consideration, instigation comes into consideration, and I will be on the record` +
+		` right here on national television and say that I am sick and tired of men` +
+		` constantly being vilified and accused of things and we stop there,”` +
+		` <a href="http://deadspin.com/i-do-not-believe-women-provoke-violence-says-stephen` +
+		`-a-1611060016" target="_blank">Smith said.</a>  “I’m saying, “Can we go a step` +
+		` further?” Since we want to dig all deeper into Chad Johnson, can we dig in deep` +
+		` to her?”</p></blockquote>`
+
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, html)
+
+	root := testutil.CreateHTML()
+	body := dom.QuerySelector(root, "body")
+	dom.AppendChild(body, div)
+
+	document := testutil.NewTextDocumentFromPage(div, stringutil.FastWordCounter{}, nil)
+	textBlocks := document.TextBlocks
+	assert.Len(t, textBlocks, 1)
+
+	tb := textBlocks[0]
+	assert.Equal(t, 74, tb.NumWords)
+	assert.True(t, 0.1 > tb.LinkDensity)
+}
+
+func Test_WebDoc_WebDocumentBuilder_Regression1(t *testing.T) {
+	html := "<p>\n" +
+		"<a href=\"example\" target=\"_top\"><u>More news</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Search</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Features</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Blogs</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Horse Health</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Ask the Experts</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Horse Breeding</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Forms</u></a> | \n" +
+		"<a href=\"example\" target=\"_top\"><u>Home</u></a> </p>\n"
+
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, html)
+
+	root := testutil.CreateHTML()
+	body := dom.QuerySelector(root, "body")
+	dom.AppendChild(body, div)
+
+	document := testutil.NewTextDocumentFromPage(div, stringutil.FastWordCounter{}, nil)
+	textBlocks := document.TextBlocks
+	assert.Len(t, textBlocks, 1)
+
+	tb := textBlocks[0]
+	assert.Equal(t, 14, tb.NumWords)
+	assert.Equal(t, 1.0, tb.LinkDensity)
+}
+
 func wdbAssertInline(t *testing.T, builder *webdoc.WebDocumentBuilder) {
 	textBlocks := wdbGetBuilderTextBlocks(builder)
 	assert.Equal(t, 1, len(textBlocks))
