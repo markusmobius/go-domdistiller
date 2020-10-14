@@ -1,6 +1,6 @@
 // ORIGINAL: javatest/DocumentTitleGetterTest.java
 
-package internal
+package extractor
 
 import (
 	"testing"

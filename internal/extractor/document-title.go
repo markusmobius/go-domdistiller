@@ -1,6 +1,6 @@
 // ORIGINAL: java/DocumentTitleGetter.java
 
-package internal
+package extractor
 
 import (
 	"regexp"
