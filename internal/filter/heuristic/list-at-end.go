@@ -23,15 +23,17 @@ func (f *ListAtEnd) Process(doc *webdoc.TextDocument) bool {
 	for _, tb := range doc.TextBlocks {
 		if tb.IsContent() && tb.HasLabel(label.VeryLikelyContent) {
 			tagLevel = tb.TagLevel
-		} else {
-			if tb.TagLevel > tagLevel && tb.HasLabel(label.MightBeContent) &&
-				tb.HasLabel(label.Li) && tb.LinkDensity == 0 {
-				tb.SetIsContent(true)
-				changes = true
-			} else {
-				tagLevel = math.MaxInt16
-			}
+			continue
 		}
+
+		if tb.TagLevel > tagLevel && tb.HasLabel(label.MightBeContent) &&
+			tb.HasLabel(label.Li) && tb.LinkDensity == 0 {
+			tb.SetIsContent(true)
+			changes = true
+			continue
+		}
+
+		tagLevel = math.MaxInt16
 	}
 
 	return changes

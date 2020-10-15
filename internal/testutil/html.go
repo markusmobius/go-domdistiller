@@ -69,6 +69,18 @@ func CreateSpan(text string) *html.Node {
 	return span
 }
 
+func CreateParagraph(text string) *html.Node {
+	p := dom.CreateElement("p")
+	dom.SetInnerHTML(p, text)
+	return p
+}
+
+func CreateListItem(text string) *html.Node {
+	li := dom.CreateElement("li")
+	dom.SetTextContent(li, text)
+	return li
+}
+
 func RemoveAllDirAttributes(str string) string {
 	return rxDirAttributes.ReplaceAllString(str, "")
 }

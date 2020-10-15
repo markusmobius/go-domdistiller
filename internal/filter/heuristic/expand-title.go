@@ -17,10 +17,9 @@ func NewExpandTitleToContent() *ExpandTitleToContent {
 }
 
 func (f *ExpandTitleToContent) Process(doc *webdoc.TextDocument) bool {
-	i := 0
 	title := -1
 	contentStart := -1
-	for _, tb := range doc.TextBlocks {
+	for i, tb := range doc.TextBlocks {
 		if contentStart == -1 && tb.HasLabel(label.Title) {
 			title = i
 			contentStart = -1
@@ -29,8 +28,6 @@ func (f *ExpandTitleToContent) Process(doc *webdoc.TextDocument) bool {
 		if contentStart == -1 && tb.IsContent() {
 			contentStart = i
 		}
-
-		i++
 	}
 
 	if contentStart <= title || title == -1 {

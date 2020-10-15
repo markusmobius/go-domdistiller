@@ -29,12 +29,11 @@ func (f *KeepLargestBlock) Process(doc *webdoc.TextDocument) bool {
 		return false
 	}
 
-	i := 0
 	maxNumWords := -1
 	largestBlockIndex := -1
 	var largestBlock *webdoc.TextBlock
 
-	for _, tb := range textBlocks {
+	for i, tb := range textBlocks {
 		if tb.IsContent() {
 			if tb.NumWords > maxNumWords {
 				largestBlock = tb
@@ -42,7 +41,6 @@ func (f *KeepLargestBlock) Process(doc *webdoc.TextDocument) bool {
 				largestBlockIndex = i
 			}
 		}
-		i++
 	}
 
 	for _, tb := range textBlocks {

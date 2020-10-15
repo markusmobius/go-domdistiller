@@ -71,6 +71,9 @@ func Test_Extractor_Content_ExtractsEssentialWhitespace(t *testing.T) {
 	body := dom.QuerySelector(doc, "body")
 	dom.AppendChild(body, div)
 
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
 	ce := extractor.NewContentExtractor(doc, nil)
 	extractedContent := ce.ExtractContent(false)
 	assert.Equal(t, "<div><span>"+contentText+"</span> "+
@@ -102,13 +105,6 @@ func Test_Extractor_Content_PrefersMarkupParserOverDocumentTitle(t *testing.T) {
 }
 
 func Test_Extractor_Content_Image(t *testing.T) {
-	// Test the absolute and different kinds of relative URLs for image sources,
-	// and also add an extra comma (,) as malformed srcset syntax for robustness.
-	// Also test images in WebImage and WebTable.
-	//
-	// The result of this test is different with the original dom-distiller because
-	// we can't compute stylesheet so our LeadImageFinder gives different result.
-	// NEED-COMPUTE-CSS
 	rawHTML := `<h1>` + contentText + `</h1>` +
 		`<img id="a" style="typo" align="left" src="image" srcset="image200 200w, //example.org/image400 400w"/>` +
 		`<figure><picture>` +
@@ -125,13 +121,30 @@ func Test_Extractor_Content_Image(t *testing.T) {
 		`</td></tr></tbody></table>` +
 		`<p>` + contentText + `</p>`
 
-	expected := `<img src="http://example.com/path/image" ` +
-		`srcset="http://example.com/path/image200 200w, ` +
-		`http://example.org/image400 400w"/>`
+	expected := `<h1>` + contentText + `</h1>` +
+		`<img src="http://example.com/path/image" ` +
+		`srcset="http://example.com/path/image200 200w, http://example.org/image400 400w"/>` +
+		`<figure><picture>` +
+		`<source srcset="http://example.com/path/image200 200w, http://example.org/image400 400w"/>` +
+		`<source srcset="http://example.com/path/image100 100w, http://example.org/image300 300w"/>` +
+		`<img/>` +
+		`</picture></figure>` +
+		`<img srcset="http://example.com/image2x 2x" src="http://example.com/image" ` +
+		`width="20" height="10"/>` +
+		`<img alt="b" src="http://example.com/path/image2"/>` +
+		`<table role="grid"><tbody><tr><td>` +
+		`<img alt="b" src="http://example.com/image" ` +
+		`srcset="https://example.com/image2x 2x, http://example.com/image4x 4x,"/>` +
+		`<img src="http://example.com/image2"/>` +
+		`</td></tr></tbody></table>` +
+		`<p>` + contentText + `</p>`
 
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	dom.SetInnerHTML(body, rawHTML)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
 	ce := extractor.NewContentExtractor(doc, pageURL)
@@ -140,8 +153,7 @@ func Test_Extractor_Content_Image(t *testing.T) {
 
 func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
 	// The result of this test is different with the original dom-distiller because
-	// we can't compute stylesheet so our LeadImageFinder gives different result.
-	// NEED-COMPUTE-CSS
+	// we can't compute stylesheet. NEED-COMPUTE-CSS
 	outerFontTag := dom.CreateElement("font")
 	dom.SetAttribute(outerFontTag, "color", "blue")
 
@@ -157,6 +169,9 @@ func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
 	body := dom.QuerySelector(doc, "body")
 	dom.AppendChild(body, outerFontTag)
 
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
 	expected := `<font>Lorem Ipsum Lorem Ipsum Lorem Ipsum.</font>` +
 		`<font>Lorem Ipsum Lorem Ipsum Lorem Ipsum.</font>` +
 		`<font>Lorem Ipsum Lorem Ipsum Lorem Ipsum.</font>`
@@ -166,18 +181,14 @@ func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
 }
 
 func Test_Extractor_Content_RemoveStyleAttributes(t *testing.T) {
-	rawHTML := `<h1 style="font-weight: folder">` +
-		contentText +
-		`</h1>` +
-		`<p style="">` +
-		contentText +
-		`</p>` +
-		`<img style="align: left" data-src="/test.png">` +
+	rawHTML := `<h1 style="font-weight: folder">` + contentText + `</h1>` +
+		`<p style="">` + contentText + `</p>` +
+		`<img style="align: left" data-src="/test.png"/>` +
 		`<table style="position: absolute">` +
 		`<tbody style="font-size: 2">` +
 		`<tr style="z-index: 0">` +
 		`<th style="top: 0px">` + contentText +
-		`<img style="align: left" src="/test.png">` +
+		`<img style="align: left" src="/test.png"/>` +
 		`</th>` +
 		`<th style="width: 20px">` + contentText + `</th>` +
 		`</tr><tr style="left: 0">` +
@@ -187,14 +198,364 @@ func Test_Extractor_Content_RemoveStyleAttributes(t *testing.T) {
 		`</tbody>` +
 		`</table>`
 
+	expected := `<h1>` + contentText + `</h1>` +
+		`<p>` + contentText + `</p>` +
+		`<img src="http://example.com/test.png"/>` +
+		`<table>` +
+		`<tbody>` +
+		`<tr>` +
+		`<th>` + contentText +
+		`<img src="http://example.com/test.png"/>` +
+		`</th>` +
+		`<th>` + contentText + `</th>` +
+		`</tr><tr>` +
+		`<td>` + contentText + `</td>` +
+		`<td>` + contentText + `</td>` +
+		`</tr>` +
+		`</tbody>` +
+		`</table>`
+
 	doc := testutil.CreateHTML()
 	body := dom.QuerySelector(doc, "body")
 	dom.SetInnerHTML(body, rawHTML)
 
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
 	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
 	ce := extractor.NewContentExtractor(doc, pageURL)
+	assert.Equal(t, expected, ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_RemoveNonAllowlistedAttributes(t *testing.T) {
+	rawHTML := `<h1 onclick="alert(0);">` +
+		contentText +
+		`</h1>` +
+		`<p larry="console.error(0);">` +
+		contentText +
+		`</p>` +
+		`<img sergey="alert(0);" data-src="/test.png">` +
+		`<video onkeydown="window.location.href = 'foo';">` +
+		`<source src="http://example.com/foo.ogg">` +
+		`<track src="http://example.com/foo.vtt">` +
+		`</video>` +
+		`<table onscroll="new XMLHttpRequest();">` +
+		`<tbody>` +
+		`<tr larry="1">` +
+		`<th>` + contentText +
+		`<img src="/test.png">` +
+		`</th>` +
+		`<th sergey="2">` + contentText + `</th>` +
+		`</tr><tr>` +
+		`<td>` + contentText + `</td>` +
+		`<td>` + contentText + `</td>` +
+		`</tr>` +
+		`</tbody>` +
+		`</table>`
+
+	expected := `<h1>` + contentText + `</h1>` +
+		`<p>` + contentText + `</p>` +
+		`<img src="http://example.com/test.png"/>` +
+		`<video>` +
+		`<source src="http://example.com/foo.ogg"/>` +
+		`<track src="http://example.com/foo.vtt"/>` +
+		`</video>` +
+		`<table>` +
+		`<tbody>` +
+		`<tr>` +
+		`<th>` + contentText +
+		`<img src="http://example.com/test.png"/>` +
+		`</th>` +
+		`<th>` + contentText + `</th>` +
+		`</tr><tr>` +
+		`<td>` + contentText + `</td>` +
+		`<td>` + contentText + `</td>` +
+		`</tr>` +
+		`</tbody>` +
+		`</table>`
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.SetInnerHTML(body, rawHTML)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
+	ce := extractor.NewContentExtractor(doc, pageURL)
+	assert.Equal(t, expected, ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_KeepingWidthAndHeightAttributes(t *testing.T) {
+	rawHTML := `<h1>` + contentText + `</h1>` +
+		`<p>` + contentText + `</p>` +
+		`<img style="align: left" src="/test.png" width="200" height="300"/>` +
+		`<img style="align: left" src="/test.png" width="200"/>` +
+		`<img style="align: left" src="/test.png"/>`
+
+	expected := `<h1>` + contentText + `</h1>` +
+		`<p>` + contentText + `</p>` +
+		`<img src="http://example.com/test.png" width="200" height="300"/>` +
+		`<img src="http://example.com/test.png" width="200"/>` +
+		`<img src="http://example.com/test.png"/>`
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.SetInnerHTML(body, rawHTML)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	ce := extractor.NewContentExtractor(doc, pageURL)
+	assert.Equal(t, expected, ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveOrderedList(t *testing.T) {
+	outerList := dom.CreateElement("ol")
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ol>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ol>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveOrderedListWithSpan(t *testing.T) {
+	li := dom.CreateElement("li")
+	dom.AppendChild(li, testutil.CreateSpan(contentText))
+
+	outerList := dom.CreateElement("ol")
+	dom.AppendChild(outerList, li)
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ol>"+
+		"<li><span>"+contentText+"</span></li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ol>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveNestedOrderedList(t *testing.T) {
+	// The result of this test is different with the original dom-distiller because
+	// we can't compute stylesheet. NEED-COMPUTE-CSS
+	innerList := dom.CreateElement("ol")
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+
+	outerListItem := dom.CreateElement("li")
+	dom.AppendChild(outerListItem, innerList)
+
+	outerList := dom.CreateElement("ol")
+	dom.AppendChild(outerList, outerListItem)
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ol>"+
+		"<li>"+"<ol>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ol>"+"</li>"+
+		"</ol>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveNestedOrderedListWithOtherElementsInside(t *testing.T) {
+	innerList := dom.CreateElement("ol")
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateParagraph(""))
+
+	outerListItem := dom.CreateElement("li")
+	dom.AppendChild(outerListItem, dom.CreateTextNode(contentText))
+	dom.AppendChild(outerListItem, testutil.CreateParagraph(contentText))
+	dom.AppendChild(outerListItem, innerList)
+
+	outerList := dom.CreateElement("ol")
+	dom.AppendChild(outerList, outerListItem)
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateParagraph(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ol>"+
+		"<li>"+contentText+
+		"<p>"+contentText+"</p>"+
+		"<ol>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ol>"+
+		"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<p>"+contentText+"</p>"+
+		"</ol>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveUnorderedList(t *testing.T) {
+	outerList := dom.CreateElement("ul")
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ul>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ul>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveNestedUnorderedList(t *testing.T) {
+	// The result of this test is different with the original dom-distiller because
+	// we can't compute stylesheet. NEED-COMPUTE-CSS
+	innerList := dom.CreateElement("ul")
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+
+	outerListItem := dom.CreateElement("li")
+	dom.AppendChild(outerListItem, innerList)
+
+	outerList := dom.CreateElement("ul")
+	dom.AppendChild(outerList, outerListItem)
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ul>"+
+		"<li>"+"<ul>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ul>"+"</li>"+
+		"</ul>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveNestedUnorderedListWithOtherElementsInside(t *testing.T) {
+	innerList := dom.CreateElement("ul")
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(innerList, testutil.CreateParagraph(""))
+
+	outerListItem := dom.CreateElement("li")
+	dom.AppendChild(outerListItem, dom.CreateTextNode(contentText))
+	dom.AppendChild(outerListItem, testutil.CreateParagraph(contentText))
+	dom.AppendChild(outerListItem, innerList)
+
+	outerList := dom.CreateElement("ul")
+	dom.AppendChild(outerList, outerListItem)
+	dom.AppendChild(outerList, testutil.CreateListItem(contentText))
+	dom.AppendChild(outerList, testutil.CreateParagraph(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, outerList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
+	assert.Equal(t, "<ul>"+
+		"<li>"+contentText+
+		"<p>"+contentText+"</p>"+
+		"<ul>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<li>"+contentText+"</li>"+
+		"</ul>"+
+		"</li>"+
+		"<li>"+contentText+"</li>"+
+		"<p>"+contentText+"</p>"+
+		"</ul>", ce.ExtractContent(false))
+}
+
+func Test_Extractor_Content_PreserveUnorderedListWithNestedOrderedList(t *testing.T) {
+	// The result of this test is different with the original dom-distiller because
+	// we can't compute stylesheet. NEED-COMPUTE-CSS
+	orderedList := dom.CreateElement("ol")
+	dom.AppendChild(orderedList, testutil.CreateListItem(contentText))
+	dom.AppendChild(orderedList, testutil.CreateListItem(contentText))
+
+	li := dom.CreateElement("li")
+	dom.AppendChild(li, orderedList)
+
+	unorderedList := dom.CreateElement("ul")
+	dom.AppendChild(unorderedList, li)
+	dom.AppendChild(unorderedList, testutil.CreateListItem(contentText))
+
+	doc := testutil.CreateHTML()
+	body := dom.QuerySelector(doc, "body")
+	dom.AppendChild(body, unorderedList)
+
+	head := dom.QuerySelector(doc, "head")
+	dom.AppendChild(head, testutil.CreateTitle(titleText))
+
+	ce := extractor.NewContentExtractor(doc, nil)
 	fmt.Println(ce.ExtractContent(false))
-	// assert.Equal(t, expected, ce.ExtractContent(false))
 }
 
 func createMeta(doc *html.Node, property, content string) {
