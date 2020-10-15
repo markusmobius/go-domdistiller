@@ -246,8 +246,7 @@ func Test_OpenGraph_Article(t *testing.T) {
 func Test_OpenGraph_OGAndProfilePrefixesInHtmlTag(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(root, "html")
-	dom.SetAttribute(htmlNode, "prefix", "tstog: http://ogp.me/ns# tstpf: http://ogp.me/ns/profile#")
+	dom.SetAttribute(root, "prefix", "tstog: http://ogp.me/ns# tstpf: http://ogp.me/ns/profile#")
 
 	// Create the required properties and description.
 	expectedTitle := "Testing customized OG and profile prefixes"
@@ -336,8 +335,7 @@ func Test_OpenGraph_ArticlePrefixInHeadTag(t *testing.T) {
 func Test_OpenGraph_IncorrectPrefix(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(root, "html")
-	dom.SetAttribute(htmlNode, "prefix", "tstog: http://ogp.me/ns#")
+	dom.SetAttribute(root, "prefix", "tstog: http://ogp.me/ns#")
 
 	// Create the required properties.
 	createCustomizedTitle(root)
@@ -357,9 +355,8 @@ func Test_OpenGraph_IncorrectPrefix(t *testing.T) {
 func Test_OpenGraph_OGAndProfileXmlns(t *testing.T) {
 	// Set xmlns attribute in HTML tag.
 	root := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(root, "html")
-	dom.SetAttribute(htmlNode, "xmlns:tstog", "http://ogp.me/ns#")
-	dom.SetAttribute(htmlNode, "xmlns:tstpf", "http://ogp.me/ns/profile#")
+	dom.SetAttribute(root, "xmlns:tstog", "http://ogp.me/ns#")
+	dom.SetAttribute(root, "xmlns:tstpf", "http://ogp.me/ns/profile#")
 
 	// Create the required properties and description.
 	expectedTitle := "Testing customized OG and profile xmlns"
@@ -411,9 +408,8 @@ func Test_OpenGraph_OGAndProfileXmlns(t *testing.T) {
 func Test_OpenGraph_ArticleXmlns(t *testing.T) {
 	// Set xmlns attribute in HTML tag.
 	root := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(root, "html")
-	dom.SetAttribute(htmlNode, "xmlns:tstog", "http://ogp.me/ns#")
-	dom.SetAttribute(htmlNode, "xmlns:tsta", "http://ogp.me/ns/article#")
+	dom.SetAttribute(root, "xmlns:tstog", "http://ogp.me/ns#")
+	dom.SetAttribute(root, "xmlns:tsta", "http://ogp.me/ns/article#")
 
 	// Create the required properties.
 	createCustomizedTitle(root)
@@ -452,8 +448,7 @@ func Test_OpenGraph_ArticleXmlns(t *testing.T) {
 func Test_OpenGraph_IncorrectXmlns(t *testing.T) {
 	// Set prefix attribute in HTML tag.
 	root := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(root, "html")
-	dom.SetAttribute(htmlNode, "xmlns:tstog", "http://ogp.me/ns#")
+	dom.SetAttribute(root, "xmlns:tstog", "http://ogp.me/ns#")
 
 	// Create the required properties.
 	createCustomizedTitle(root)

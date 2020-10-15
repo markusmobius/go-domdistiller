@@ -96,7 +96,7 @@ func CreateHTML() *html.Node {
 		</html>`
 
 	root, _ := html.Parse(strings.NewReader(rawHTML))
-	return root
+	return dom.GetElementsByTagName(root, "html")[0]
 }
 
 // GetPrettyHTML returns formatted outer HTML of the node.

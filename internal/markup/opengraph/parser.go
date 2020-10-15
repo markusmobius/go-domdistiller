@@ -84,9 +84,8 @@ func (ps *Parser) findPrefixes(root *html.Node) {
 	strPrefixes := ""
 
 	// See if HTML tag has "prefix" attribute.
-	htmlNode := dom.QuerySelector(root, "html")
-	if htmlNode != nil {
-		strPrefixes = dom.GetAttribute(htmlNode, "prefix")
+	if dom.TagName(root) == "html" {
+		strPrefixes = dom.GetAttribute(root, "prefix")
 	}
 
 	// Otherwise, see if HEAD tag has "prefix" attribute.
@@ -109,7 +108,7 @@ func (ps *Parser) findPrefixes(root *html.Node) {
 		// - "xmlns:og="http://ogp.me/ns#"
 		// - "xmlns:profile="http://ogp.me/ns/profile#"
 		// - "xmlns:article="http://ogp.me/ns/article#".
-		for _, attr := range htmlNode.Attr {
+		for _, attr := range root.Attr {
 			attrName := strings.ToLower(attr.Key)
 			nameMatch := rxOgpNsNonPrefixName.FindStringSubmatch(attrName)
 			if nameMatch == nil {

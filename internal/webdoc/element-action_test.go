@@ -48,9 +48,8 @@ func Test_WebDoc_ElementAction_CommentsLabels(t *testing.T) {
 	assert.False(t, actHasLabel(actForHtml(`<div></div>`), label.StrictlyNotContent))
 
 	doc := testutil.CreateHTML()
-	htmlNode := dom.QuerySelector(doc, "html")
-	dom.SetAttribute(htmlNode, "class", "comment")
-	assert.False(t, actHasLabel(webdoc.GetActionForElement(htmlNode), label.StrictlyNotContent))
+	dom.SetAttribute(doc, "class", "comment")
+	assert.False(t, actHasLabel(webdoc.GetActionForElement(doc), label.StrictlyNotContent))
 
 	body := dom.QuerySelector(doc, "body")
 	dom.SetAttribute(body, "class", "comment")
