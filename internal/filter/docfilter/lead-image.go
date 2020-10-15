@@ -28,7 +28,7 @@ func NewLeadImageFinder() *LeadImageFinder {
 }
 
 func (f *LeadImageFinder) Process(doc *webdoc.Document) bool {
-	candidates := []*webdoc.Image{}
+	candidates := []webdoc.Element{}
 	var firstContent, lastContent *webdoc.Text
 
 	// TODO: WebDocument should have a separate list that point to all images
@@ -50,23 +50,25 @@ func (f *LeadImageFinder) Process(doc *webdoc.Document) bool {
 		return false
 	}
 
+loop:
 	for _, e := range doc.Elements {
-		// If the element is an image and not already considered content.
-		webImage, isWebImage := e.(*webdoc.Image)
-		if (isWebImage && e.IsContent()) || e == lastContent {
+		switch image := e.(type) {
+		case *webdoc.Image, *webdoc.Figure:
 			// If we hit the last content or a image that is
 			// content, then we are no longer searching for a
 			// "lead" image.
-			break
-		} else if isWebImage {
-			candidates = append(candidates, webImage)
+			if e.IsContent() || e == lastContent {
+				break loop
+			}
+
+			candidates = append(candidates, image)
 		}
 	}
 
 	return f.findLeadImage(candidates, firstContent)
 }
 
-func (f *LeadImageFinder) findLeadImage(candidates []*webdoc.Image, firstContent *webdoc.Text) bool {
+func (f *LeadImageFinder) findLeadImage(candidates []webdoc.Element, firstContent *webdoc.Text) bool {
 	if len(candidates) == 0 {
 		return false
 	}
@@ -78,13 +80,13 @@ func (f *LeadImageFinder) findLeadImage(candidates []*webdoc.Image, firstContent
 
 	bestScore := 0
 	heuristics := f.getLeadHeuristics(contentElement)
-	var bestImage *webdoc.Image
+	var bestImage webdoc.Element
 
-	for _, wi := range candidates {
-		currentScore := f.getImageScore(wi, heuristics)
+	for _, candidate := range candidates {
+		currentScore := f.getImageScore(candidate, heuristics)
 		if currentScore > imageMinimumAcceptedScore {
 			if bestImage == nil || bestScore < currentScore {
-				bestImage = wi
+				bestImage = candidate
 				bestScore = currentScore
 			}
 		}
@@ -98,13 +100,23 @@ func (f *LeadImageFinder) findLeadImage(candidates []*webdoc.Image, firstContent
 	return true
 }
 
-func (f *LeadImageFinder) getImageScore(wi *webdoc.Image, heuristics []scorer.ImageScorer) int {
-	if wi == nil || len(heuristics) == 0 {
+func (f *LeadImageFinder) getImageScore(e webdoc.Element, heuristics []scorer.ImageScorer) int {
+	if e == nil || len(heuristics) == 0 {
 		return 0
 	}
 
+	var imgNode *html.Node
+	webImage, isImage := e.(*webdoc.Image)
+	webFigure, isFigure := e.(*webdoc.Figure)
+	if !isImage && !isFigure {
+		return 0
+	} else if isImage {
+		imgNode = webImage.Element
+	} else {
+		imgNode = webFigure.Element
+	}
+
 	score := 0
-	imgNode := wi.Element
 	for _, ir := range heuristics {
 		score += ir.GetImageScore(imgNode)
 	}
