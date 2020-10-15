@@ -40,7 +40,8 @@ func (f *ExpandTitleToContent) Process(doc *webdoc.TextDocument) bool {
 	changes := false
 	for _, tb := range doc.TextBlocks[title:contentStart] {
 		if tb.HasLabel(label.MightBeContent) {
-			changes = tb.SetIsContent(true) || changes
+			changed := tb.SetIsContent(true)
+			changes = changes || changed
 		}
 	}
 
