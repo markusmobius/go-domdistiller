@@ -50,18 +50,19 @@ func (f *LeadImageFinder) Process(doc *webdoc.Document) bool {
 		return false
 	}
 
-loop:
 	for _, e := range doc.Elements {
-		switch image := e.(type) {
-		case *webdoc.Image, *webdoc.Figure:
+		// If the element is an image and not already considered content.
+		webImage, isImage := e.(*webdoc.Image)
+		webFigure, isFigure := e.(*webdoc.Figure)
+		if ((isImage || isFigure) && e.IsContent()) || e == lastContent {
 			// If we hit the last content or a image that is
 			// content, then we are no longer searching for a
 			// "lead" image.
-			if e.IsContent() || e == lastContent {
-				break loop
-			}
-
-			candidates = append(candidates, image)
+			break
+		} else if isImage {
+			candidates = append(candidates, webImage)
+		} else if isFigure {
+			candidates = append(candidates, webFigure)
 		}
 	}
 
