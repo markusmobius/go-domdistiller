@@ -34,5 +34,6 @@ func (f *BoilerplateBlock) Process(doc *webdoc.TextDocument) bool {
 		}
 	}
 
+	doc.TextBlocks = textBlocks
 	return hasChanges
 }

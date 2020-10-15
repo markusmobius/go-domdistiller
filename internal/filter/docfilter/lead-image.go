@@ -114,8 +114,8 @@ func (f *LeadImageFinder) getImageScore(wi *webdoc.Image, heuristics []scorer.Im
 
 func (f *LeadImageFinder) getLeadHeuristics(firstContent *html.Node) []scorer.ImageScorer {
 	return []scorer.ImageScorer{
-		scorer.NewImageAreaScorer(25, 75_000, 200_000),
-		scorer.NewImageRatioScorer(25),
+		// scorer.NewImageAreaScorer(25, 75_000, 200_000),
+		// scorer.NewImageRatioScorer(25),
 		scorer.NewImageDomDistanceScorer(25, firstContent),
 		scorer.NewImageHasFigureScorer(15),
 	}

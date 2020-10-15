@@ -82,5 +82,6 @@ type DistillerResult struct {
 	TextDirection    string
 
 	// Represents an image found in the content of a page.
+	HTML          string
 	ContentImages []string
 }

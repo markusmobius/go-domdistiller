@@ -2,7 +2,9 @@
 
 package english
 
-import "github.com/markusmobius/go-domdistiller/internal/webdoc"
+import (
+	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+)
 
 // NumWordsRulesClassifier classifies several TextBlock as content or not-content through
 // rules that have been determined using the C4.8 machine learning algorithm, as described
@@ -43,11 +45,7 @@ func (f *NumWordsRulesClassifier) classify(prev, current, next *webdoc.TextBlock
 		if prev == nil || prev.LinkDensity <= 0.555556 {
 			if current.NumWords <= 16 {
 				if next == nil || next.NumWords <= 15 {
-					if prev == nil || prev.NumWords <= 4 {
-						isContent = false
-					} else {
-						isContent = true
-					}
+					isContent = prev != nil && prev.NumWords > 4
 				} else {
 					isContent = true
 				}
@@ -56,11 +54,7 @@ func (f *NumWordsRulesClassifier) classify(prev, current, next *webdoc.TextBlock
 			}
 		} else {
 			if current.NumWords <= 40 {
-				if next == nil || next.NumWords <= 17 {
-					isContent = false
-				} else {
-					isContent = true
-				}
+				isContent = next != nil && next.NumWords > 17
 			} else {
 				isContent = true
 			}

@@ -11,8 +11,8 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
 
-// ExtractArticle extracts TextDocument. It is tuned towards news articles.
-func ExtractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candidateTitles []string) bool {
+// extractArticle extracts TextDocument. It is tuned towards news articles.
+func extractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candidateTitles []string) bool {
 	// Prepare filters
 	terminatingBlocksFinder := english.NewTerminatingBlocksFinder()
 	documentTitleMatch := heuristic.NewDocumentTitleMatch(wc, candidateTitles...)
@@ -39,23 +39,20 @@ func ExtractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candida
 	listAtEnd := heuristic.NewListAtEnd()
 
 	// Run filters
-	changed := false
-
-	// Don't store changes for these two
 	terminatingBlocksFinder.Process(doc)
 	documentTitleMatch.Process(doc)
+	numWordsRulesClassifier.Process(doc)
+	labelNotContentToBoilerplate.Process(doc)
+	similarSiblingContentExpansion1.Process(doc)
+	similarSiblingContentExpansion2.Process(doc)
+	headingFusion.Process(doc)
+	blockProximityFusionPre.Process(doc)
+	boilerplateBlockKeepTitle.Process(doc)
+	blockProximityFusionPost.Process(doc)
+	keepLargestBlockExpandToSibling.Process(doc)
+	expandTitleToContent.Process(doc)
+	largeBlockSameTagLevel.Process(doc)
+	listAtEnd.Process(doc)
 
-	changed = changed || numWordsRulesClassifier.Process(doc)
-	changed = changed || labelNotContentToBoilerplate.Process(doc)
-	changed = changed || similarSiblingContentExpansion1.Process(doc)
-	changed = changed || similarSiblingContentExpansion2.Process(doc)
-	changed = changed || headingFusion.Process(doc)
-	changed = changed || blockProximityFusionPre.Process(doc)
-	changed = changed || boilerplateBlockKeepTitle.Process(doc)
-	changed = changed || blockProximityFusionPost.Process(doc)
-	changed = changed || keepLargestBlockExpandToSibling.Process(doc)
-	changed = changed || expandTitleToContent.Process(doc)
-	changed = changed || largeBlockSameTagLevel.Process(doc)
-	changed = changed || listAtEnd.Process(doc)
-	return changed
+	return true
 }

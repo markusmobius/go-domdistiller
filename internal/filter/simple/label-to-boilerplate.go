@@ -2,7 +2,9 @@
 
 package simple
 
-import "github.com/markusmobius/go-domdistiller/internal/webdoc"
+import (
+	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+)
 
 // LabelToBoilerplate marks all blocks that contain a given label as "boilerplate".
 type LabelToBoilerplate struct {

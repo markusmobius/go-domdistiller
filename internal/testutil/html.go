@@ -63,6 +63,12 @@ func CreateMetaName(name string, content string) *html.Node {
 	return meta
 }
 
+func CreateSpan(text string) *html.Node {
+	span := dom.CreateElement("span")
+	dom.SetInnerHTML(span, text)
+	return span
+}
+
 func RemoveAllDirAttributes(str string) string {
 	return rxDirAttributes.ReplaceAllString(str, "")
 }
