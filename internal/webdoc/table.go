@@ -19,6 +19,10 @@ type Table struct {
 	cloned *html.Node
 }
 
+func (t *Table) ElementType() string {
+	return "table"
+}
+
 func (t *Table) GenerateOutput(textOnly bool) string {
 	if t.cloned == nil {
 		t.cloned = domutil.CloneAndProcessTree(t.Element, t.PageURL)

@@ -13,6 +13,10 @@ type Figure struct {
 	Caption *html.Node
 }
 
+func (f *Figure) ElementType() string {
+	return "figure"
+}
+
 func (f *Figure) GenerateOutput(textOnly bool) string {
 	figCaption := domutil.CloneAndProcessTree(f.Caption, f.PageURL)
 	if textOnly {

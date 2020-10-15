@@ -18,6 +18,10 @@ type Embed struct {
 	Params  map[string]string
 }
 
+func (e *Embed) ElementType() string {
+	return "embed"
+}
+
 func (e *Embed) GenerateOutput(textOnly bool) string {
 	if textOnly {
 		return ""

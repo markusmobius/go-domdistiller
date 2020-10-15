@@ -30,6 +30,10 @@ func NewVideo(node *html.Node, pageURL *nurl.URL, width, height int) *Video {
 	}
 }
 
+func (v *Video) ElementType() string {
+	return "video"
+}
+
 func (v *Video) GenerateOutput(textOnly bool) string {
 	if textOnly {
 		return ""

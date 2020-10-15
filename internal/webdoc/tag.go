@@ -13,6 +13,10 @@ func NewTag(name string, tagType TagType) *Tag {
 	return &Tag{Name: name, Type: tagType}
 }
 
+func (t *Tag) ElementType() string {
+	return "tag"
+}
+
 func (t *Tag) GenerateOutput(textOnly bool) string {
 	if textOnly {
 		return ""

@@ -30,6 +30,10 @@ type Text struct {
 	LastWordNode  int
 }
 
+func (t *Text) ElementType() string {
+	return "text"
+}
+
 func (t *Text) GenerateOutput(textOnly bool) string {
 	if t.HasLabel(label.Title) {
 		return ""

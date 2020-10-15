@@ -24,6 +24,10 @@ type Image struct {
 	cloned *html.Node
 }
 
+func (i *Image) ElementType() string {
+	return "image"
+}
+
 func (i *Image) GenerateOutput(textOnly bool) string {
 	if textOnly {
 		return ""

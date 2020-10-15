@@ -8,6 +8,7 @@ type Element interface {
 	GenerateOutput(textOnly bool) string
 	IsContent() bool
 	SetIsContent(bool)
+	ElementType() string
 }
 
 // BaseElement is base of any other element.
