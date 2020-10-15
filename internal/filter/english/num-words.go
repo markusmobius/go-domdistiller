@@ -28,11 +28,12 @@ func (f *NumWordsRulesClassifier) Process(doc *webdoc.TextDocument) bool {
 		if i > 0 {
 			prevBlock = textBlocks[i-1]
 		}
-		if i < len(textBlocks)-1 {
+		if i+1 < len(textBlocks) {
 			nextBlock = textBlocks[i+1]
 		}
 
-		hasChanges = hasChanges || f.classify(prevBlock, block, nextBlock)
+		changed := f.classify(prevBlock, block, nextBlock)
+		hasChanges = hasChanges || changed
 	}
 
 	return hasChanges
@@ -41,7 +42,7 @@ func (f *NumWordsRulesClassifier) Process(doc *webdoc.TextDocument) bool {
 func (f *NumWordsRulesClassifier) classify(prev, current, next *webdoc.TextBlock) bool {
 	isContent := false
 
-	if current.LinkDensity < 0.333333 {
+	if current.LinkDensity <= 0.333333 {
 		if prev == nil || prev.LinkDensity <= 0.555556 {
 			if current.NumWords <= 16 {
 				if next == nil || next.NumWords <= 15 {
