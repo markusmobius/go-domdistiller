@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 32 files with 5,497 lines of code that haven’t been ported, so there is still long way to go.
+This package is still in development and the port process is still not finished. There are 30 files with 4,753 lines of code that haven’t been ported, so there is still long way to go.
 
 ## Changelog
+
+### 16 October 2020
+
+- Port `ContentExtractor` from `ContentExtractor.java`
 
 ### 14 October 2020
 

@@ -14,9 +14,11 @@ import (
 const maxClassCount = 2
 
 var (
-	rxComment       = regexp.MustCompile(`(?i)\bcomments?\b`)
-	rxDisplay       = regexp.MustCompile(`(?i)display:\s*`)
-	rxInlineDisplay = regexp.MustCompile(`(?i)display:\s*inline`)
+	rxComment           = regexp.MustCompile(`(?i)\bcomments?\b`)
+	rxDisplay           = regexp.MustCompile(`(?i)display:\s*`)
+	rxNoneDisplay       = regexp.MustCompile(`(?i)display:\s*none(?:\s|;|$)`)
+	rxInlineDisplay     = regexp.MustCompile(`(?i)display:\s*inline(?:\s|;|$)`)
+	rxInlineFlexDisplay = regexp.MustCompile(`(?i)display:\s*inline-flex(?:\s|;|$)`)
 )
 
 type ElementAction struct {
@@ -30,23 +32,43 @@ func GetActionForElement(element *html.Node) ElementAction {
 	tagName := dom.TagName(element)
 	styleAttr := dom.GetAttribute(element, "style")
 
+	// NEED-COMPUTE-CSS
 	// In original dom-distiller, the `flush` and `changesTagLevel` values are decided depending
 	// on element display syle. For example, inline element shouldn't change tag level. Unfortunately,
-	// this is not possible since we can't compute stylesheet. As fallback, here we simply check if
-	// tag is inline by default (see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements).
-	// We also check if element's inline style has `display: inline`. NEED-COMPUTE-CSS.
-	action := ElementAction{Labels: make([]string, 0)}
-	_, isInlineElement := inlineTagNames[tagName]
-	hasDisplayStyleAttr := rxDisplay.MatchString(styleAttr)
-	hasInlineDisplayStyleAttr := rxInlineDisplay.MatchString(styleAttr)
+	// this is not possible since we can't compute stylesheet. As fallback, here we simply check if:
+	// - Tag has display style attribute and it's set to `inline`.
+	// - Tag is inline by default (see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements).
+	// - Tag is nested inside list item (which make it inline by default).
+	action := ElementAction{
+		Labels:          make([]string, 0),
+		Flush:           true,
+		ChangesTagLevel: true,
+	}
 
-	switch {
-	case isInlineElement && !hasDisplayStyleAttr,
-		hasInlineDisplayStyleAttr:
+	// Check if display specified in style attribute.
+	if rxDisplay.MatchString(styleAttr) {
+		switch {
+		case rxInlineFlexDisplay.MatchString(styleAttr):
+			action.Flush = false
 
-	default:
-		action.Flush = true
-		action.ChangesTagLevel = true
+		case rxInlineDisplay.MatchString(styleAttr),
+			rxNoneDisplay.MatchString(styleAttr):
+			action.Flush = false
+			action.ChangesTagLevel = false
+		}
+	} else if _, isInline := inlineTagNames[tagName]; isInline {
+		// Check if tag is inline by default
+		action.Flush = false
+		action.ChangesTagLevel = false
+	} else if element.Type == html.ElementNode {
+		// Check if item is inside list item
+		for parent := element.Parent; parent != nil; parent = parent.Parent {
+			if dom.TagName(parent) == "li" {
+				action.Flush = false
+				action.ChangesTagLevel = false
+				break
+			}
+		}
 	}
 
 	if tagName != "html" && tagName != "body" && tagName != "article" {
