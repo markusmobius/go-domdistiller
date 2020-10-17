@@ -1,4 +1,5 @@
-// ORIGINAL: java/PageParamInfo.java
+// ORIGINAL: java/PageParamInfo.java and
+//           java/MonotonicPageInfosGroups.java
 
 package info
 
@@ -14,4 +15,9 @@ type PageInfo struct {
 
 func (pi *PageInfo) String() string {
 	return fmt.Sprintf("pg%d: %s", pi.PageNumber, pi.URL)
+}
+
+type PageInfoGroup struct {
+	List      []*PageInfo
+	DeltaSign int
 }

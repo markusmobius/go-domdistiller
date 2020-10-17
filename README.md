@@ -6,7 +6,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 25 files with 4,134 lines of code that haven’t been ported, so there is still a bit more to go.
+This package is still in development and the port process is still not finished. There are 23 files with 3,948 lines of code that haven’t been ported, so there is still a bit more to go.
 
 ## Changelog
 
@@ -14,6 +14,7 @@ This package is still in development and the port process is still not finished.
 
 - Port `PageLinkInfo` from `PageLinkInfo.java`
 - Port `PageParamInfo` from `PageParamInfo.java`
+- Port `MonotonicPageInfosGroups` from `MonotonicPageInfosGroups.java`
 
 ### 16 October 2020
 
