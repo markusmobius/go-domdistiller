@@ -1,11 +1,11 @@
 // ORIGINAL: javatest/PageParamInfoTest.java
 
-package pagination_test
+package info_test
 
 import (
 	"testing"
 
-	"github.com/markusmobius/go-domdistiller/internal/pagination"
+	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -60,21 +60,21 @@ func Test_Pagination_PLI_GetPageNumbersState(t *testing.T) {
 	assert.False(t, state.IsConsecutive)
 }
 
-func getPageNumbersState(selectedNums, allNums []int) *pagination.PageNumbersState {
-	ascendingNumbers := []*pagination.PageInfo{}
+func getPageNumbersState(selectedNums, allNums []int) *info.PageNumbersState {
+	ascendingNumbers := []*info.PageInfo{}
 	numberToPos := make(map[int]int)
 
 	for i := 0; i < len(allNums); i++ {
 		number := allNums[i]
 		numberToPos[number] = i
-		ascendingNumbers = append(ascendingNumbers, &pagination.PageInfo{
+		ascendingNumbers = append(ascendingNumbers, &info.PageInfo{
 			PageNumber: number,
 		})
 	}
 
-	allLinkInfo := pagination.ListLinkInfo{}
+	allLinkInfo := info.ListLinkInfo{}
 	for _, number := range selectedNums {
-		allLinkInfo = append(allLinkInfo, &pagination.PageLinkInfo{
+		allLinkInfo = append(allLinkInfo, &info.PageLinkInfo{
 			PageNumber:         number,
 			PageParamValue:     number,
 			PosInAscendingList: numberToPos[number],

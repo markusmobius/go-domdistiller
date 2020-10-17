@@ -1,6 +1,6 @@
 // ORIGINAL: javatest/PageParamContentInfo.java
 
-package pagination_test
+package info_test
 
 type PageParamContentType uint
 

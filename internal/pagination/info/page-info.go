@@ -1,6 +1,6 @@
 // ORIGINAL: java/PageParamInfo.java
 
-package pagination
+package info
 
 import "fmt"
 

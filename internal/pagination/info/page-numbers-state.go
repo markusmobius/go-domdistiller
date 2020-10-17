@@ -1,6 +1,6 @@
 // ORIGINAL: java/PageParamInfo.java
 
-package pagination
+package info
 
 // PageNumbersState is struct that returned by getPageNumbersState() after it
 // has checked if the given list of PageLinkInfo's and PageInfo's are adjacent

@@ -1,4 +1,4 @@
-package pagination
+package info
 
 func maxInt(a, b int) int {
 	if a > b {

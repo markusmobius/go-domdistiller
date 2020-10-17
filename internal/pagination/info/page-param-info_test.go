@@ -1,17 +1,17 @@
 // ORIGINAL: javatest/PageParamInfoTest.java
 
-package pagination_test
+package info_test
 
 import (
 	"testing"
 
-	"github.com/markusmobius/go-domdistiller/internal/pagination"
+	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
-	info := &pagination.PageParamInfo{}
-	info.Type = pagination.PageNumber
+	paramInfo := &info.PageParamInfo{}
+	paramInfo.Type = info.PageNumber
 
 	{
 		testURL := "http://www.google.com/article/bar"
@@ -21,23 +21,23 @@ func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
 			ppciExNumericOutlink("http://www.google.com/article/bar?page=3", 3, true),
 		}
 
-		canInsert := canInsertFirstPage(testURL, allContentInfo, info)
+		canInsert := canInsertFirstPage(testURL, allContentInfo, paramInfo)
 		assert.True(t, canInsert)
-		assert.Len(t, info.AllPageInfo, 2)
+		assert.Len(t, paramInfo.AllPageInfo, 2)
 
 		// The current document is inserted as first page.
-		info.InsertFirstPage(testURL)
-		assert.Len(t, info.AllPageInfo, 3)
+		paramInfo.InsertFirstPage(testURL)
+		assert.Len(t, paramInfo.AllPageInfo, 3)
 
-		page := info.AllPageInfo[0]
+		page := paramInfo.AllPageInfo[0]
 		assert.Equal(t, 1, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar", page.URL)
 
-		page = info.AllPageInfo[1]
+		page = paramInfo.AllPageInfo[1]
 		assert.Equal(t, 2, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar?page=2", page.URL)
 
-		page = info.AllPageInfo[2]
+		page = paramInfo.AllPageInfo[2]
 		assert.Equal(t, 3, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar?page=3", page.URL)
 	}
@@ -52,9 +52,9 @@ func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
 			ppciExNumericOutlink("http://www.google.com/article/bar?page=3", 3, true),
 		}
 
-		canInsert := canInsertFirstPage(testURL, allContentInfo, info)
+		canInsert := canInsertFirstPage(testURL, allContentInfo, paramInfo)
 		assert.False(t, canInsert)
-		assert.Len(t, info.AllPageInfo, 2)
+		assert.Len(t, paramInfo.AllPageInfo, 2)
 	}
 
 	// Current document url is the last page, so shouldn't be inserted as first page.
@@ -67,9 +67,9 @@ func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
 			ppciExNumberInPlainText(4),
 		}
 
-		canInsert := canInsertFirstPage(testURL, allContentInfo, info)
+		canInsert := canInsertFirstPage(testURL, allContentInfo, paramInfo)
 		assert.False(t, canInsert)
-		assert.Len(t, info.AllPageInfo, 2)
+		assert.Len(t, paramInfo.AllPageInfo, 2)
 	}
 
 	// Page one has an outlink to itself, should be inserted as first page.
@@ -81,22 +81,22 @@ func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
 			ppciExNumericOutlink("http://www.google.com/article/bar?page=3", 3, true),
 		}
 
-		canInsert := canInsertFirstPage(testURL, allContentInfo, info)
+		canInsert := canInsertFirstPage(testURL, allContentInfo, paramInfo)
 		assert.True(t, canInsert)
-		assert.Len(t, info.AllPageInfo, 2)
+		assert.Len(t, paramInfo.AllPageInfo, 2)
 
-		info.InsertFirstPage(testURL)
-		assert.Len(t, info.AllPageInfo, 3)
+		paramInfo.InsertFirstPage(testURL)
+		assert.Len(t, paramInfo.AllPageInfo, 3)
 
-		page := info.AllPageInfo[0]
+		page := paramInfo.AllPageInfo[0]
 		assert.Equal(t, 1, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar", page.URL)
 
-		page = info.AllPageInfo[1]
+		page = paramInfo.AllPageInfo[1]
 		assert.Equal(t, 2, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar?page=2", page.URL)
 
-		page = info.AllPageInfo[2]
+		page = paramInfo.AllPageInfo[2]
 		assert.Equal(t, 3, page.PageNumber)
 		assert.Equal(t, "http://www.google.com/article/bar?page=3", page.URL)
 	}
@@ -120,19 +120,19 @@ func ppciExNumericOutlink(targetURL string, number int, isPageInfo bool) *pagePa
 	}
 }
 
-func canInsertFirstPage(docURL string, allContentInfo []*pageParamContentInfoEx, pageParamInfo *pagination.PageParamInfo) bool {
-	ascendingNumbers := []*pagination.PageInfo{}
-	pageParamInfo.AllPageInfo = []*pagination.PageInfo{}
+func canInsertFirstPage(docURL string, allContentInfo []*pageParamContentInfoEx, pageParamInfo *info.PageParamInfo) bool {
+	ascendingNumbers := []*info.PageInfo{}
+	pageParamInfo.AllPageInfo = []*info.PageInfo{}
 
 	for _, ex := range allContentInfo {
 		switch ex.contentInfo.Type {
 		case NumberInPlainText:
-			ascendingNumbers = append(ascendingNumbers, &pagination.PageInfo{
+			ascendingNumbers = append(ascendingNumbers, &info.PageInfo{
 				PageNumber: ex.contentInfo.Number,
 			})
 
 		case NumericOutlink:
-			page := &pagination.PageInfo{
+			page := &info.PageInfo{
 				PageNumber: ex.contentInfo.Number,
 				URL:        ex.contentInfo.TargetURL,
 			}

@@ -1,6 +1,8 @@
 // ORIGINAL: java/PageLinkInfo.java and java/PageParamInfo.java
 
-package pagination
+package info
+
+import "github.com/markusmobius/go-domdistiller/internal/pagination/detector"
 
 // PageLinkInfo stores information about the link (anchor) after PageParameterDetector
 // has detected the page parameter:
@@ -16,7 +18,7 @@ type PageLinkInfo struct {
 
 type ListLinkInfo []*PageLinkInfo
 
-func (allLinkInfo ListLinkInfo) Evaluate(pagePattern PagePattern, ascendingNumbers []*PageInfo, firstPageURL string) *PageParamInfo {
+func (allLinkInfo ListLinkInfo) Evaluate(pagePattern detector.PagePattern, ascendingNumbers []*PageInfo, firstPageURL string) *PageParamInfo {
 	if len(allLinkInfo) >= minLinksToJustifyLinearMap {
 		state := allLinkInfo.PageNumbersState(ascendingNumbers)
 		if !state.IsAdjacent {
@@ -65,7 +67,7 @@ func (allLinkInfo ListLinkInfo) Evaluate(pagePattern PagePattern, ascendingNumbe
 
 		// 1 PageLinkInfo means ascendingNumbers has >= 1 element.
 		if ascendingNumbers[0].PageNumber == 1 && (secondPageIsOutLink || thirdPageIsOutLink) &&
-			pagePattern.isPagingURL(firstPageURL) {
+			pagePattern.IsPagingURL(firstPageURL) {
 			// Has valid PageParamInfo, create and populate it.
 			var coefficient int
 			delta := onlyLink.PageParamValue - onlyLink.PageNumber
