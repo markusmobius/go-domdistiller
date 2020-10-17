@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	rxNonWhitespace = regexp.MustCompile(`(?i)\S`)
+	rxAllDigits = regexp.MustCompile(`^\d+$`)
 )
 
 func IsStringAllWhitespace(str string) bool {
@@ -22,6 +22,10 @@ func IsStringAllWhitespace(str string) bool {
 		}
 	}
 	return true
+}
+
+func IsStringAllDigit(str string) bool {
+	return rxAllDigits.MatchString(str)
 }
 
 // =================================================================================
