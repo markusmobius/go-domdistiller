@@ -1,6 +1,6 @@
 // ORIGINAL: java/QueryParamPagePattern.java
 
-package detector
+package pattern
 
 import (
 	"errors"

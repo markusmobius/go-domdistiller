@@ -1,17 +1,17 @@
 // ORIGINAL: javatest/QueryParamPagePatternTest.java
 
-package detector_test
+package pattern_test
 
 import (
 	nurl "net/url"
 	"strings"
 	"testing"
 
-	"github.com/markusmobius/go-domdistiller/internal/pagination/detector"
+	"github.com/markusmobius/go-domdistiller/internal/pagination/pattern"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Pagination_Detector_PCPP_IsPagingURL(t *testing.T) {
+func Test_Pagination_Pattern_PCPP_IsPagingURL(t *testing.T) {
 	pcppAssertPagingURL(t, true, "http://www.foo.com/a/abc-2.html", "http://www.foo.com/a/abc-[*!].html")
 	pcppAssertPagingURL(t, true, "http://www.foo.com/a/abc.html", "http://www.foo.com/a/abc-[*!].html")
 	pcppAssertPagingURL(t, true, "http://www.foo.com/a/abc", "http://www.foo.com/a/abc-[*!]")
@@ -35,7 +35,7 @@ func Test_Pagination_Detector_PCPP_IsPagingURL(t *testing.T) {
 	pcppAssertPagingURL(t, false, "http://www.foo.com/m/page/2", "http://www.foo.com/p/page/[*!]")
 }
 
-func Test_Pagination_Detector_PCPP_IsPagePatternValid(t *testing.T) {
+func Test_Pagination_Pattern_PCPP_IsPagePatternValid(t *testing.T) {
 	pcppAssertPagePatternValid(t, true,
 		"http://www.google.com/forum-12",
 		"http://www.google.com/forum-12/page/[*!]")
@@ -71,7 +71,7 @@ func Test_Pagination_Detector_PCPP_IsPagePatternValid(t *testing.T) {
 		"http://www.google.com/thread/12/[*!]/foo")
 }
 
-func Test_Pagination_Detector_PCPP_IsLastNumericPathComponentBad(t *testing.T) {
+func Test_Pagination_Pattern_PCPP_IsLastNumericPathComponentBad(t *testing.T) {
 	// Path component is not numeric i.e. contains non-digits.
 	url, _ := nurl.Parse("http://www.foo.com/a2")
 	digitStart := strings.Index(url.Path, "2")
@@ -131,11 +131,11 @@ func pcppAssertPagePatternValid(t *testing.T, expected bool, strURL string, strP
 }
 
 func pcppAssertLastNumericPathComponentBad(t *testing.T, expected bool, urlPath string, digitStart int) {
-	isBad := detector.IsLastNumericPathComponentBad(urlPath, digitStart, digitStart+1)
+	isBad := pattern.IsLastNumericPathComponentBad(urlPath, digitStart, digitStart+1)
 	assert.Equal(t, expected, isBad)
 }
 
-func createPathComponentPagePattern(strPattern string) detector.PagePattern {
+func createPathComponentPagePattern(strPattern string) pattern.PagePattern {
 	// Parse pattern
 	url, err := nurl.ParseRequestURI(strPattern)
 	if err != nil {
@@ -143,13 +143,13 @@ func createPathComponentPagePattern(strPattern string) detector.PagePattern {
 	}
 
 	// Get digit location
-	digitStart := strings.Index(url.Path, detector.PageParamPlaceholder)
+	digitStart := strings.Index(url.Path, pattern.PageParamPlaceholder)
 	digitEnd := digitStart + 1
 
 	// Convert pattern placholder to number
-	url.Path = strings.Replace(url.Path, detector.PageParamPlaceholder, "8", 1)
+	url.Path = strings.Replace(url.Path, pattern.PageParamPlaceholder, "8", 1)
 	url.RawPath = url.Path
 
-	pattern, _ := detector.NewPathComponentPagePattern(url, digitStart, digitEnd)
+	pattern, _ := pattern.NewPathComponentPagePattern(url, digitStart, digitEnd)
 	return pattern
 }

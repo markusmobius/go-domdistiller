@@ -1,6 +1,6 @@
 // ORIGINAL: java/PathComponentPagePattern.java
 
-package detector
+package pattern
 
 import (
 	"errors"

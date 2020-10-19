@@ -1,6 +1,6 @@
 // ORIGINAL: java/PageParameterDetector.java
 
-package detector
+package pattern
 
 import "regexp"
 

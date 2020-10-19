@@ -2,13 +2,13 @@
 
 package info
 
-import "github.com/markusmobius/go-domdistiller/internal/pagination/detector"
+import "github.com/markusmobius/go-domdistiller/internal/pagination/pattern"
 
 // PageLinkInfo stores information about the link (anchor) after PageParameterDetector
 // has detected the page parameter:
 // - the page number (as represented by the original plain text) for the link
 // - the original page parameter numeric component in the URL (this component would be replaced
-//   by PageParameterDetector.PAGE_PARAM_PLACEHOLDER in the URL pattern)
+//   by pattern.PageParamPlaceholder in the URL pattern)
 // - the position of this link in the list of ascending numbers.
 type PageLinkInfo struct {
 	PageNumber         int
@@ -18,7 +18,7 @@ type PageLinkInfo struct {
 
 type ListLinkInfo []*PageLinkInfo
 
-func (allLinkInfo ListLinkInfo) Evaluate(pagePattern detector.PagePattern, ascendingNumbers []*PageInfo, firstPageURL string) *PageParamInfo {
+func (allLinkInfo ListLinkInfo) Evaluate(pagePattern pattern.PagePattern, ascendingNumbers []*PageInfo, firstPageURL string) *PageParamInfo {
 	if len(allLinkInfo) >= minLinksToJustifyLinearMap {
 		state := allLinkInfo.PageNumbersState(ascendingNumbers)
 		if !state.IsAdjacent {

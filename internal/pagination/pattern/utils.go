@@ -1,4 +1,4 @@
-package detector
+package pattern
 
 import (
 	nurl "net/url"

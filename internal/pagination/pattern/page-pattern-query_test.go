@@ -1,16 +1,16 @@
 // ORIGINAL: javatest/QueryParamPagePatternTest.java
 
-package detector_test
+package pattern_test
 
 import (
 	nurl "net/url"
 	"testing"
 
-	"github.com/markusmobius/go-domdistiller/internal/pagination/detector"
+	"github.com/markusmobius/go-domdistiller/internal/pagination/pattern"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Pagination_Detector_QPPP_IsPagingURL(t *testing.T) {
+func Test_Pagination_Pattern_QPPP_IsPagingURL(t *testing.T) {
 	qpppAssertPagingURL(t, true,
 		"http://www.foo.com/a/b?queryA=v1&queryB=4&queryC=v3",
 		"http://www.foo.com/a/b?queryA=v1&queryB=[*!]&queryC=v3")
@@ -55,7 +55,7 @@ func Test_Pagination_Detector_QPPP_IsPagingURL(t *testing.T) {
 		"http://www.foo.com/a/b?queryA=v1&queryB=[*!]&queryC=v3")
 }
 
-func Test_Pagination_Detector_QPPP_IsPagePatternValid(t *testing.T) {
+func Test_Pagination_Pattern_QPPP_IsPagePatternValid(t *testing.T) {
 	qpppAssertPagePatternValid(t, true,
 		"http://www.google.com/forum-12",
 		"http://www.google.com/forum-12?page=[*!]")
@@ -86,7 +86,7 @@ func qpppAssertPagePatternValid(t *testing.T, expected bool, strURL string, strP
 	assert.Equal(t, expected, pattern.IsValidFor(parsedURL))
 }
 
-func createQueryParamPagePattern(strPattern string) detector.PagePattern {
+func createQueryParamPagePattern(strPattern string) pattern.PagePattern {
 	url, err := nurl.ParseRequestURI(strPattern)
 	if err != nil {
 		return nil
@@ -94,8 +94,8 @@ func createQueryParamPagePattern(strPattern string) detector.PagePattern {
 
 	for key, values := range url.Query() {
 		for _, value := range values {
-			if value == detector.PageParamPlaceholder {
-				pattern, _ := detector.NewQueryParamPagePattern(url, key, "8")
+			if value == pattern.PageParamPlaceholder {
+				pattern, _ := pattern.NewQueryParamPagePattern(url, key, "8")
 				return pattern
 			}
 		}
