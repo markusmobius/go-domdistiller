@@ -1,6 +1,6 @@
 // ORIGINAL: javatest/PageParamContentInfo.java
 
-package info_test
+package testutil
 
 type PageParamContentType uint
 
@@ -16,18 +16,18 @@ type PageParamContentInfo struct {
 	Number    int
 }
 
-func ppciUnrelatedTerms() *PageParamContentInfo {
+func PPCIUnrelatedTerms() *PageParamContentInfo {
 	return &PageParamContentInfo{Type: UnrelatedTerms}
 }
 
-func ppciNumberInPlainText(number int) *PageParamContentInfo {
+func PPCINumberInPlainText(number int) *PageParamContentInfo {
 	return &PageParamContentInfo{
 		Type:   NumberInPlainText,
 		Number: number,
 	}
 }
 
-func ppciNumericOutlink(targetURL string, number int) *PageParamContentInfo {
+func PPCINumericOutlink(targetURL string, number int) *PageParamContentInfo {
 	return &PageParamContentInfo{
 		Type:      NumericOutlink,
 		TargetURL: targetURL,

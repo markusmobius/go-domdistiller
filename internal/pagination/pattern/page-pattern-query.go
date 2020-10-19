@@ -24,6 +24,12 @@ type QueryParamPagePattern struct {
 }
 
 func NewQueryParamPagePattern(url *nurl.URL, queryName, queryValue string) (*QueryParamPagePattern, error) {
+	// Clone URL to make sure we don't mutate the original
+	// Since we assume original URL is already absolute, here we only parse
+	// without checking error.
+	clonedURL, _ := nurl.Parse(url.String())
+
+	// Validate function parameters
 	if queryName == "" {
 		return nil, errors.New("query name must not empty")
 	}
@@ -45,12 +51,30 @@ func NewQueryParamPagePattern(url *nurl.URL, queryName, queryValue string) (*Que
 		return nil, errors.New("query value is invalid number: " + queryValue)
 	}
 
-	newURL := replaceUrlQueryValue(url, queryName, PageParamPlaceholder)
+	// Replace URL queries to PageParamPlaceholder
+	queries := clonedURL.Query()
+	queries.Set(queryName, PageParamPlaceholder)
+	clonedURL.RawQuery = queries.Encode()
+
 	return &QueryParamPagePattern{
-		url:        newURL,
-		strURL:     newURL.String(),
+		url:        clonedURL,
+		strURL:     clonedURL.String(),
 		pageNumber: value,
 	}, nil
+}
+
+func QueryParamPagePatternsFromURL(url *nurl.URL) []PagePattern {
+	patterns := []PagePattern{}
+	for key, values := range url.Query() {
+		for _, value := range values {
+			pattern, err := NewQueryParamPagePattern(url, key, value)
+			if err == nil && pattern != nil {
+				patterns = append(patterns, pattern)
+			}
+		}
+	}
+
+	return patterns
 }
 
 func (pp *QueryParamPagePattern) String() string {

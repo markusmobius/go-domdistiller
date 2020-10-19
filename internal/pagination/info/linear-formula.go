@@ -9,17 +9,17 @@ import (
 // LinearFormula stores the coefficient and delta values of the linear formula:
 // pageParamValue = coefficient * pageNum + delta.
 type LinearFormula struct {
-	coefficient int
-	delta       int
+	Coefficient int
+	Delta       int
 }
 
 func NewLinearFormula(coefficient, delta int) *LinearFormula {
 	return &LinearFormula{
-		coefficient: coefficient,
-		delta:       delta,
+		Coefficient: coefficient,
+		Delta:       delta,
 	}
 }
 
 func (lf *LinearFormula) String() string {
-	return fmt.Sprintf("coefficient=%d, delta=%d", lf.coefficient, lf.delta)
+	return fmt.Sprintf("coefficient=%d, delta=%d", lf.Coefficient, lf.Delta)
 }

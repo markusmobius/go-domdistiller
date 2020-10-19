@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
+	tu "github.com/markusmobius/go-domdistiller/internal/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -103,19 +104,19 @@ func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
 }
 
 type pageParamContentInfoEx struct {
-	contentInfo *PageParamContentInfo
+	contentInfo *tu.PageParamContentInfo
 	isPageInfo  bool
 }
 
 func ppciExNumberInPlainText(number int) *pageParamContentInfoEx {
 	return &pageParamContentInfoEx{
-		contentInfo: ppciNumberInPlainText(number),
+		contentInfo: tu.PPCINumberInPlainText(number),
 	}
 }
 
 func ppciExNumericOutlink(targetURL string, number int, isPageInfo bool) *pageParamContentInfoEx {
 	return &pageParamContentInfoEx{
-		contentInfo: ppciNumericOutlink(targetURL, number),
+		contentInfo: tu.PPCINumericOutlink(targetURL, number),
 		isPageInfo:  isPageInfo,
 	}
 }
@@ -126,12 +127,12 @@ func canInsertFirstPage(docURL string, allContentInfo []*pageParamContentInfoEx,
 
 	for _, ex := range allContentInfo {
 		switch ex.contentInfo.Type {
-		case NumberInPlainText:
+		case tu.NumberInPlainText:
 			ascendingNumbers = append(ascendingNumbers, &info.PageInfo{
 				PageNumber: ex.contentInfo.Number,
 			})
 
-		case NumericOutlink:
+		case tu.NumericOutlink:
 			page := &info.PageInfo{
 				PageNumber: ex.contentInfo.Number,
 				URL:        ex.contentInfo.TargetURL,

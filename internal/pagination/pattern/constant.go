@@ -9,6 +9,7 @@ const (
 )
 
 var (
+	rxNumber             = regexp.MustCompile(`(?i)(\d+)`)
 	rxEndOrHasSHTML      = regexp.MustCompile(`(?i)(.s?html?)?$`)
 	rxLastPathComponent  = regexp.MustCompile(`(?i)([^/]*)/$`)
 	rxTrailingSlashHTML  = regexp.MustCompile(`(?i)(?:/|(.html?))$`)

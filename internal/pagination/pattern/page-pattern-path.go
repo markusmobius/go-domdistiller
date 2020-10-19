@@ -35,7 +35,6 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 	clonedURL, _ := nurl.Parse(url.String())
 
 	// Clean all fragment and queries from URL
-	clonedURL.Fragment = ""
 	clonedURL.RawQuery = ""
 
 	// Make sure last numeric path is good
@@ -74,11 +73,20 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 
 	// Determine placeholder param index
 	paramIndex := -1
-	for i, pathComponent := range strings.Split(patternPath, "/") {
+	pathComponents := strings.Split(patternPath, "/")
+	for i, pathComponent := range pathComponents {
 		if strings.Contains(pathComponent, PageParamPlaceholder) {
 			paramIndex = i
 			break
 		}
+	}
+
+	// Make sure the placeholder is not the first path component if:
+	// - pattern doesn't have suffix; and
+	// - placeholder is located at the start of path component.
+	if paramIndex == 1 && len(pathComponents) == 2 && suffix == "" &&
+		placeholderStart-1 == placeholderSegmentStart {
+		return nil, errors.New("page number is in the first path component")
 	}
 
 	return &PathComponentPagePattern{
@@ -92,6 +100,24 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 		prefix:                  prefix,
 		suffix:                  suffix,
 	}, nil
+}
+
+func PathComponentPagePatternsFromURL(url *nurl.URL) []PagePattern {
+	path := strings.Trim(url.Path, "/")
+	if path == "" || !rxNumber.MatchString(path) {
+		return nil
+	}
+
+	patterns := []PagePattern{}
+	for _, indexes := range rxNumber.FindAllStringIndex(url.Path, -1) {
+		start, end := indexes[0], indexes[1]
+		pattern, err := NewPathComponentPagePattern(url, start, end)
+		if err == nil && pattern != nil {
+			patterns = append(patterns, pattern)
+		}
+	}
+
+	return patterns
 }
 
 func (pp *PathComponentPagePattern) String() string {
