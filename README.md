@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 21 files with 3,792 lines of code that haven’t been ported, so there is still a bit more to go.
+This package is still in development and the port process is still not finished. There are 19 files with 3,475 lines of code that haven’t been ported, so there is still a bit more to go.
 
 ## Changelog
+
+### 19 October 2020
+
+- Port `PathComponentPagePattern` from `PathComponentPagePattern.java`
 
 ### 17 October 2020
 

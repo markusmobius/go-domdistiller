@@ -1,6 +1,8 @@
 package detector
 
-import nurl "net/url"
+import (
+	nurl "net/url"
+)
 
 // replaceUrlQueryValue replaces query value of the specified URL. The original URL
 // is preserved and not changed. Returns the mutated URL after its query changed.

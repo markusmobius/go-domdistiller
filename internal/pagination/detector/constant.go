@@ -8,7 +8,12 @@ const (
 	PageParamPlaceholder = "[*!]"
 )
 
-var rxTrailingSlashHTML = regexp.MustCompile(`(?i)(?:/|(.html?))$`)
+var (
+	rxEndOrHasSHTML      = regexp.MustCompile(`(?i)(.s?html?)?$`)
+	rxLastPathComponent  = regexp.MustCompile(`(?i)([^/]*)/$`)
+	rxTrailingSlashHTML  = regexp.MustCompile(`(?i)(?:/|(.html?))$`)
+	rxPageParamSeparator = regexp.MustCompile(`[-_;,]`)
+)
 
 var badPageParamNames = map[string]struct{}{
 	"baixar-gratis":  {},
