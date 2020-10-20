@@ -42,11 +42,25 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 	}
 
 	if nodeTagName == "figure" {
-		img := domutil.GetFirstElementByTagNameInc(node, "picture")
-		if img == nil {
-			img = domutil.GetFirstElementByTagNameInc(node, "img")
-			if img == nil {
+		image := domutil.GetFirstElementByTagNameInc(node, "picture")
+		if image == nil {
+			image = domutil.GetFirstElementByTagNameInc(node, "img")
+			if image == nil {
 				return nil
+			}
+		}
+
+		// Sometimes there are sites that use <picture> without any <img> inside it.
+		// For these cases, we use one of the <source> as <img>.
+		if dom.TagName(image) == "picture" {
+			sources := dom.GetElementsByTagName(image, "source")
+			imgElements := dom.GetElementsByTagName(image, "img")
+			if len(imgElements) == 0 && len(sources) > 0 {
+				srcset := dom.GetAttribute(sources[0], "srcset")
+
+				img := dom.CreateElement("img")
+				dom.SetAttribute(img, "srcset", srcset)
+				dom.AppendChild(image, img)
 			}
 		}
 
@@ -63,11 +77,11 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 			}
 		}
 
-		imgSrc, width, height := ie.extractImageAttrs(img)
+		imgSrc, width, height := ie.extractImageAttrs(image)
 
 		return &webdoc.Figure{
 			Image: webdoc.Image{
-				Element:   img,
+				Element:   image,
 				SourceURL: imgSrc,
 				Width:     width,
 				Height:    height,

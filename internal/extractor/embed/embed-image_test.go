@@ -117,6 +117,42 @@ func Test_Embed_Image_FigureWithoutImageAndCaption(t *testing.T) {
 	assert.Nil(t, result)
 }
 
+func Test_Embed_Image_FigureWithPictureWithoutImg(t *testing.T) {
+	source := dom.CreateElement("source")
+	dom.SetAttribute(source, "srcset", "http://www.example.com/image-240-200.jpg")
+	dom.SetAttribute(source, "media", "(min-width: 800px)")
+
+	picture := dom.CreateElement("picture")
+	dom.AppendChild(picture, source)
+
+	figure := dom.CreateElement("figure")
+	dom.AppendChild(figure, picture)
+
+	extractor := embed.NewImageExtractor(nil)
+	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
+
+	expected := `<figure><picture>` +
+		`<source srcset="http://www.example.com/image-240-200.jpg" media="(min-width: 800px)"/>` +
+		`<img srcset="http://www.example.com/image-240-200.jpg"/>` +
+		`</picture></figure>`
+
+	assert.NotNil(t, result)
+	assert.Equal(t, expected, result.GenerateOutput(false))
+}
+
+func Test_Embed_Image_FigureWithPictureWithoutSourceAndImg(t *testing.T) {
+	picture := dom.CreateElement("picture")
+	figure := dom.CreateElement("figure")
+	dom.AppendChild(figure, picture)
+
+	extractor := embed.NewImageExtractor(nil)
+	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
+	expected := `<figure><picture></picture></figure>`
+
+	assert.NotNil(t, result)
+	assert.Equal(t, expected, result.GenerateOutput(false))
+}
+
 func Test_Embed_Image_FigureCaptionTextOnly(t *testing.T) {
 	img := dom.CreateElement("img")
 	dom.SetAttribute(img, "width", "100")

@@ -68,3 +68,19 @@ func Test_WebDoc_Image_GetSrcListInPicture(t *testing.T) {
 	assert.Equal(t, "http://example.com/image100", urls[2])
 	assert.Equal(t, "http://example.org/image300", urls[3])
 }
+
+func Test_WebDoc_Image_PictureWithoutImg(t *testing.T) {
+	html := `<picture>` +
+		`<source srcset="image"/>` +
+		`</picture>`
+
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, html)
+
+	picture := dom.QuerySelector(div, "picture")
+	baseURL, _ := nurl.ParseRequestURI("http://example.com/")
+	webImage := webdoc.Image{Element: picture, PageURL: baseURL}
+
+	expected := `<picture><source srcset="http://example.com/image"/></picture>`
+	assert.Equal(t, expected, webImage.GenerateOutput(false))
+}

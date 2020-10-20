@@ -65,16 +65,19 @@ func (i *Image) getProcessedNode() *html.Node {
 func (i *Image) cloneAndProcessNode() *html.Node {
 	cloned := dom.Clone(i.Element, true)
 	img := domutil.GetFirstElementByTagNameInc(cloned, "img")
-	if i.SourceURL != "" {
-		i.SourceURL = stringutil.CreateAbsoluteURL(i.SourceURL, i.PageURL)
-		dom.SetAttribute(img, "src", i.SourceURL)
-	}
+	if img != nil {
+		if i.SourceURL != "" {
+			i.SourceURL = stringutil.CreateAbsoluteURL(i.SourceURL, i.PageURL)
+			dom.SetAttribute(img, "src", i.SourceURL)
+		}
 
-	if i.Width > 0 && i.Height > 0 {
-		dom.SetAttribute(img, "width", strconv.Itoa(i.Width))
-		dom.SetAttribute(img, "height", strconv.Itoa(i.Height))
+		if i.Width > 0 && i.Height > 0 {
+			dom.SetAttribute(img, "width", strconv.Itoa(i.Width))
+			dom.SetAttribute(img, "height", strconv.Itoa(i.Height))
+		}
+
+		domutil.StripImageElement(img)
 	}
-	domutil.StripImageElement(img)
 
 	for _, source := range dom.GetElementsByTagName(cloned, "source") {
 		for lazyAttrName, realAttrName := range lazyImageAttrs {
