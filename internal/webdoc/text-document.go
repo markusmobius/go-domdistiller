@@ -3,6 +3,8 @@
 
 package webdoc
 
+import "bytes"
+
 // TextDocument is a text document, consisting of one or more TextBlock.
 type TextDocument struct {
 	TextBlocks []*TextBlock
@@ -18,6 +20,7 @@ func (td *TextDocument) ApplyToModel() {
 	}
 }
 
+// CountWordsInContent returns the sum of number of words in content blocks.
 func (td *TextDocument) CountWordsInContent() int {
 	numWords := 0
 	for _, tb := range td.TextBlocks {
@@ -26,4 +29,13 @@ func (td *TextDocument) CountWordsInContent() int {
 		}
 	}
 	return numWords
+}
+
+// DebugString returns detailed debugging information about the contained TextBlocks.
+func (td *TextDocument) DebugString() string {
+	buffer := bytes.NewBuffer(nil)
+	for _, tb := range td.TextBlocks {
+		buffer.WriteString(tb.String() + "\n")
+	}
+	return buffer.String()
 }
