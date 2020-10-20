@@ -3,7 +3,6 @@
 package parser
 
 import (
-	"fmt"
 	nurl "net/url"
 	"strings"
 
@@ -141,7 +140,6 @@ func newDetectionStateFromMonotonicNumbers(monotonicNumbers []*info.PageInfo, is
 
 			pathPatterns := pattern.PathComponentPagePatternsFromURL(url)
 			for _, pathPattern := range pathPatterns {
-				fmt.Println(pathPattern.String())
 				pageCandidates.add(pathPattern, &info.PageLinkInfo{
 					PageNumber:         page.PageNumber,
 					PageParamValue:     pathPattern.PageNumber(),

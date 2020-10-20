@@ -6,9 +6,14 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 17 files with 2,421 lines of code that haven’t been ported, so there is still a bit more to go.
+This package is still in development and the port process is still not finished. There are 15 files with 1,963 lines of code that haven’t been ported, so there is still a bit more to go.
 
 ## Changelog
+
+### 20 October 2020
+
+- Port `PageParameterParser` from `PageParameterParser.java`
+- Fix panic when generating image output 
 
 ### 19 October 2020
 

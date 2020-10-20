@@ -79,7 +79,7 @@ func (mig *MonotonicPageInfoGroups) AddNumber(number int, url string) {
 
 // CleanUp removes last empty adjacent number group.
 func (mig *MonotonicPageInfoGroups) CleanUp() {
-	if len(mig.Groups) == 0 && len(mig.lastGroup().List) == 0 {
+	if len(mig.Groups) != 0 && len(mig.lastGroup().List) == 0 {
 		lastIdx := len(mig.Groups) - 1
 		mig.Groups[lastIdx] = nil
 		mig.Groups = mig.Groups[:lastIdx]

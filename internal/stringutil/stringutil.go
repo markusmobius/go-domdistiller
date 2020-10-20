@@ -55,6 +55,11 @@ func CreateAbsoluteURL(url string, base *nurl.URL) string {
 		return url
 	}
 
+	// If it is javascript URI, return as it is
+	if strings.HasPrefix(url, "javascript:") {
+		return url
+	}
+
 	// If it is already an absolute URL, return as it is
 	tmp, err := nurl.ParseRequestURI(url)
 	if err == nil && tmp.Scheme != "" && tmp.Hostname() != "" {
