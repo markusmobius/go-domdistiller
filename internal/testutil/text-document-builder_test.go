@@ -1,4 +1,4 @@
-// ORIGINAL: javatest/webdocument/TextDocumentConstructionTest.java
+// ORIGINAL: javatest/TextDocumentConstructionTest.java
 
 package testutil_test
 
