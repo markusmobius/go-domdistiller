@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Pagination_PLI_GetPageNumbersState(t *testing.T) {
+func Test_Pagination_Info_PLI_GetPageNumbersState(t *testing.T) {
 	allNums := []int{1, 2}
 	selectedNums := []int{1, 2}
 	state := getPageNumbersState(selectedNums, allNums)

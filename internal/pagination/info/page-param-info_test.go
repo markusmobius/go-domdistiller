@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Pagination_PPI_InsertFirstPage(t *testing.T) {
+func Test_Pagination_Info_PPI_InsertFirstPage(t *testing.T) {
 	paramInfo := &info.PageParamInfo{}
 	paramInfo.Type = info.PageNumber
 
