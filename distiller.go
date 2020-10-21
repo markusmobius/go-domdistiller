@@ -66,7 +66,7 @@ func ApplyForURL(url string, timeout time.Duration, opts *Options) (*model.Disti
 	}
 
 	opts.OriginalURL = parsedURL
-	return Apply(resp.Body, opts)
+	return ApplyForReader(resp.Body, opts)
 }
 
 // ApplyForFile runs distiller for the specified file.
@@ -79,17 +79,24 @@ func ApplyForFile(path string, opts *Options) (*model.DistillerResult, error) {
 	defer f.Close()
 
 	// Apply distiller to file
-	return Apply(f, opts)
+	return ApplyForReader(f, opts)
 }
 
 // Apply runs distiller for the specified io.Reader.
-func Apply(r io.Reader, opts *Options) (*model.DistillerResult, error) {
+func ApplyForReader(r io.Reader, opts *Options) (*model.DistillerResult, error) {
 	// Parse input
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}
 
+	// Apply distiller to doc
+	return Apply(doc, opts)
+}
+
+// Apply runs distiller for the specified parsed doc
+func Apply(doc *html.Node, opts *Options) (*model.DistillerResult, error) {
+	//check whether doc is valid
 	if doc.Type != html.ElementNode {
 		doc = dom.QuerySelector(doc, "*")
 		if doc == nil {
