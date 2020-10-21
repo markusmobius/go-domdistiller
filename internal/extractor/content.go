@@ -17,15 +17,13 @@ import (
 )
 
 type ContentExtractor struct {
-	Parser        *markup.Parser
-	TimingInfo    *model.TimingInfo
-	StatisticInfo model.StatisticsInfo
-	ImageURLs     []string
+	Parser     *markup.Parser
+	TimingInfo *model.TimingInfo
+	ImageURLs  []string
 
 	pageURL         *nurl.URL
 	documentElement *html.Node
 	candidateTitles []string
-	textDirection   string
 	wordCounter     stringutil.WordCounter
 }
 
@@ -61,13 +59,13 @@ func (ce *ContentExtractor) ExtractTitle() string {
 	return ""
 }
 
-func (ce *ContentExtractor) ExtractContent(textOnly bool) string {
+func (ce *ContentExtractor) ExtractContent(textOnly bool) (string, int) {
 	start := time.Now()
 	webDocument := ce.createWebDocumentInfoFromPage()
 	ce.TimingInfo.DocumentConstructionTime = time.Now().Sub(start)
 
 	start = time.Now()
-	ce.processDocument(webDocument)
+	wordCount := ce.processDocument(webDocument)
 	docfilter.NewRelevantElements().Process(webDocument)
 	docfilter.NewLeadImageFinder().Process(webDocument)
 	docfilter.NewNestedElementRetainer().Process(webDocument)
@@ -78,16 +76,7 @@ func (ce *ContentExtractor) ExtractContent(textOnly bool) string {
 	ce.TimingInfo.FormattingTime = time.Now().Sub(start)
 
 	ce.ImageURLs = webDocument.GetImageURLs()
-	return strHTML
-}
-
-// TextDirection returns text directionality ("ltr", "rtl", or "auto").
-// Default is "auto".
-func (ce *ContentExtractor) TextDirection() string {
-	if ce.textDirection == "" {
-		return "auto"
-	}
-	return ce.textDirection
+	return strHTML, wordCount
 }
 
 // ensureTitleInitialized populates list of candidate titles in
@@ -121,10 +110,13 @@ func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
 }
 
 // processDocument do the actual analysis of the page content,
-// identifying the core elements of the page.
-func (ce *ContentExtractor) processDocument(doc *webdoc.Document) {
+// identifying the core elements of the page. Returns word count
+// inside document.
+func (ce *ContentExtractor) processDocument(doc *webdoc.Document) int {
 	textDocument := doc.CreateTextDocument()
 	extractArticle(textDocument, ce.wordCounter, ce.candidateTitles)
-	ce.StatisticInfo.WordCount = textDocument.CountWordsInContent()
+	wordCount := textDocument.CountWordsInContent()
+
 	textDocument.ApplyToModel()
+	return wordCount
 }

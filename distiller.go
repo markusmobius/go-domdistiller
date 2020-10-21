@@ -16,6 +16,37 @@ import (
 	"golang.org/x/net/html"
 )
 
+// Result is the final output of the distiller
+type Result struct {
+	// Title is the title of the processed page.
+	Title string
+
+	// MarkupInfo is the metadata of the page. The metadata is extracted following three markup
+	// specifications: OpenGraphProtocol, IEReadingView and SchemaOrg. For now, OpenGraph protocol
+	// takes precedence because it uses specific meta tags and hence the fastest. The other
+	// specifications is used as fallback in case some metadata not found.
+	MarkupInfo model.MarkupInfo
+
+	// TimingInfo is the record of the time it takes to do each step in the process of content extraction.
+	TimingInfo model.TimingInfo
+
+	// DebugInfo contains log of all process.
+	DebugInfo model.DebugInfo
+
+	// PaginationInfo contains link to previous and next partial page. This is useful for long article or
+	// that may be partitioned into several partial pages by its webmaster.
+	PaginationInfo model.PaginationInfo
+
+	// WordCount is the count of words within document.
+	WordCount int
+
+	// HTML is the string which contains the distilled content in HTML format.
+	HTML string
+
+	// ContentImages is list of image URLs that used within the distilled content.
+	ContentImages []string
+}
+
 // Options is configuration for the distiller.
 type Options struct {
 	// Whether to extract only the text (or to include the containing html).
@@ -33,13 +64,13 @@ type Options struct {
 	OriginalURL *nurl.URL
 
 	// Which algorithm to use for next page detection:
-	// "next" : detect anchors with "next" text
+	// "next"    : detect anchors with "next" text
 	// "pagenum" : detect anchors with numeric page numbers
 	PaginationAlgo string
 }
 
 // ApplyForURL runs distiller for the specified URL.
-func ApplyForURL(url string, timeout time.Duration, opts *Options) (*model.DistillerResult, error) {
+func ApplyForURL(url string, timeout time.Duration, opts *Options) (*Result, error) {
 	// Make sure URL absolute
 	parsedURL, err := nurl.ParseRequestURI(url)
 	if err != nil {
@@ -70,7 +101,7 @@ func ApplyForURL(url string, timeout time.Duration, opts *Options) (*model.Disti
 }
 
 // ApplyForFile runs distiller for the specified file.
-func ApplyForFile(path string, opts *Options) (*model.DistillerResult, error) {
+func ApplyForFile(path string, opts *Options) (*Result, error) {
 	// Open file
 	f, err := os.Open(path)
 	if err != nil {
@@ -83,7 +114,7 @@ func ApplyForFile(path string, opts *Options) (*model.DistillerResult, error) {
 }
 
 // Apply runs distiller for the specified io.Reader.
-func ApplyForReader(r io.Reader, opts *Options) (*model.DistillerResult, error) {
+func ApplyForReader(r io.Reader, opts *Options) (*Result, error) {
 	// Parse input
 	doc, err := html.Parse(r)
 	if err != nil {
@@ -95,7 +126,7 @@ func ApplyForReader(r io.Reader, opts *Options) (*model.DistillerResult, error) 
 }
 
 // Apply runs distiller for the specified parsed doc
-func Apply(doc *html.Node, opts *Options) (*model.DistillerResult, error) {
+func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	//check whether doc is valid
 	if doc.Type != html.ElementNode {
 		doc = dom.QuerySelector(doc, "*")
@@ -110,15 +141,15 @@ func Apply(doc *html.Node, opts *Options) (*model.DistillerResult, error) {
 	}
 
 	// Start extractor
-	result := model.DistillerResult{}
 	ce := extractor.NewContentExtractor(doc, opts.OriginalURL)
+	content, wordCount := ce.ExtractContent(opts.ExtractTextOnly)
 
-	result.HTML = ce.ExtractContent(opts.ExtractTextOnly)
+	result := Result{}
+	result.HTML = content
+	result.WordCount = wordCount
 	result.Title = ce.ExtractTitle()
 	result.ContentImages = ce.ImageURLs
-	result.TextDirection = ce.TextDirection()
 	result.MarkupInfo = ce.Parser.MarkupInfo()
-	result.StatisticsInfo = ce.StatisticInfo
 
 	return &result, nil
 }

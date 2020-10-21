@@ -4,10 +4,6 @@ package model
 
 import "time"
 
-type DistilledContent struct {
-	HTML string
-}
-
 type PaginationInfo struct {
 	NextPage      string
 	PrevPage      string
@@ -65,23 +61,4 @@ type TimingInfo struct {
 
 type DebugInfo struct {
 	Log string
-}
-
-type StatisticsInfo struct {
-	WordCount int
-}
-
-type DistillerResult struct {
-	Title            string
-	DistilledContent DistilledContent
-	PaginationInfo   PaginationInfo
-	MarkupInfo       MarkupInfo
-	TimingInfo       TimingInfo
-	DebugInfo        DebugInfo
-	StatisticsInfo   StatisticsInfo
-	TextDirection    string
-
-	// Represents an image found in the content of a page.
-	HTML          string
-	ContentImages []string
 }

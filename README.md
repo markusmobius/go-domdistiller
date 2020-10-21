@@ -13,6 +13,7 @@ This package is still in development and the port process is still not finished.
 ### 21 October 2020
 
 - Port `PagingLinksFinder` from `PagingLinksFinder.java`
+- Restructure models by moving distiller `Result` out of internal directory and remove unused data fields.
 
 ### 20 October 2020
 

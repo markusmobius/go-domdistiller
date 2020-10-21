@@ -48,7 +48,7 @@ func Test_Extractor_Content_DoesNotExtractTitleInContent(t *testing.T) {
 
 	// Title hasn't been set yet, everything should be content.
 	ce := extractor.NewContentExtractor(doc, nil)
-	extractedContent := ce.ExtractContent(false)
+	extractedContent := extractContent(ce)
 	assert.True(t, strings.Contains(extractedContent, domutil.InnerText(contentDiv1)))
 	assert.True(t, strings.Contains(extractedContent, domutil.InnerText(titleDiv)))
 
@@ -57,7 +57,7 @@ func Test_Extractor_Content_DoesNotExtractTitleInContent(t *testing.T) {
 	dom.AppendChild(head, testutil.CreateTitle(titleText))
 
 	ce = extractor.NewContentExtractor(doc, nil)
-	extractedContent = ce.ExtractContent(false)
+	extractedContent = extractContent(ce)
 	assert.True(t, strings.Contains(extractedContent, domutil.InnerText(contentDiv1)))
 	assert.False(t, strings.Contains(extractedContent, domutil.InnerText(titleDiv)))
 }
@@ -75,7 +75,7 @@ func Test_Extractor_Content_ExtractsEssentialWhitespace(t *testing.T) {
 	dom.AppendChild(body, div)
 
 	ce := extractor.NewContentExtractor(doc, nil)
-	extractedContent := ce.ExtractContent(false)
+	extractedContent := extractContent(ce)
 	assert.Equal(t, "<div><span>"+contentText+"</span> "+
 		"<span>"+contentText+"</span>\n"+
 		"<span>"+contentText+"</span> </div>",
@@ -144,7 +144,7 @@ func Test_Extractor_Content_Image(t *testing.T) {
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
 	ce := extractor.NewContentExtractor(doc, pageURL)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
@@ -169,7 +169,7 @@ func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
 		`<font>` + contentText + `</font>`
 
 	ce := extractor.NewContentExtractor(doc, nil)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_RemoveStyleAttributes(t *testing.T) {
@@ -212,7 +212,7 @@ func Test_Extractor_Content_RemoveStyleAttributes(t *testing.T) {
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
 	ce := extractor.NewContentExtractor(doc, pageURL)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_RemoveNonAllowlistedAttributes(t *testing.T) {
@@ -267,7 +267,7 @@ func Test_Extractor_Content_RemoveNonAllowlistedAttributes(t *testing.T) {
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com/path/")
 	ce := extractor.NewContentExtractor(doc, pageURL)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_KeepingWidthAndHeightAttributes(t *testing.T) {
@@ -288,7 +288,7 @@ func Test_Extractor_Content_KeepingWidthAndHeightAttributes(t *testing.T) {
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
 	ce := extractor.NewContentExtractor(doc, pageURL)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveOrderedList(t *testing.T) {
@@ -307,7 +307,7 @@ func Test_Extractor_Content_PreserveOrderedList(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveOrderedListWithSpan(t *testing.T) {
@@ -329,7 +329,7 @@ func Test_Extractor_Content_PreserveOrderedListWithSpan(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveNestedOrderedList(t *testing.T) {
@@ -358,7 +358,7 @@ func Test_Extractor_Content_PreserveNestedOrderedList(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		"</ol>"+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveNestedOrderedListWithOtherElementsInside(t *testing.T) {
@@ -395,7 +395,7 @@ func Test_Extractor_Content_PreserveNestedOrderedListWithOtherElementsInside(t *
 		"</li>"+
 		"<li>"+contentText+"</li>"+
 		"<p>"+contentText+"</p>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveUnorderedList(t *testing.T) {
@@ -414,7 +414,7 @@ func Test_Extractor_Content_PreserveUnorderedList(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ul>", ce.ExtractContent(false))
+		"</ul>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveNestedUnorderedList(t *testing.T) {
@@ -443,7 +443,7 @@ func Test_Extractor_Content_PreserveNestedUnorderedList(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		"</ul>"+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ul>", ce.ExtractContent(false))
+		"</ul>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveNestedUnorderedListWithOtherElementsInside(t *testing.T) {
@@ -480,7 +480,7 @@ func Test_Extractor_Content_PreserveNestedUnorderedListWithOtherElementsInside(t
 		"</li>"+
 		"<li>"+contentText+"</li>"+
 		"<p>"+contentText+"</p>"+
-		"</ul>", ce.ExtractContent(false))
+		"</ul>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveUnorderedListWithNestedOrderedList(t *testing.T) {
@@ -505,7 +505,7 @@ func Test_Extractor_Content_PreserveUnorderedListWithNestedOrderedList(t *testin
 		"<li>"+contentText+"</li>"+
 		"</ol></li>"+
 		"<li>"+contentText+"</li>"+
-		"</ul>", ce.ExtractContent(false))
+		"</ul>", extractContent(ce))
 }
 
 func Test_Extractor_Content_MalformedListStructureWithExtraLiTagEnd(t *testing.T) {
@@ -519,7 +519,7 @@ func Test_Extractor_Content_MalformedListStructureWithExtraLiTagEnd(t *testing.T
 	assert.Equal(t, "<ul>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ul>", ce.ExtractContent(false))
+		"</ul>", extractContent(ce))
 }
 
 func Test_Extractor_Content_MalformedListStructureWithExtraLiTagStart(t *testing.T) {
@@ -533,7 +533,7 @@ func Test_Extractor_Content_MalformedListStructureWithExtraLiTagStart(t *testing
 	assert.Equal(t, "<ol>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_MalformedListStructureWithExtraOlTagStart(t *testing.T) {
@@ -547,7 +547,7 @@ func Test_Extractor_Content_MalformedListStructureWithExtraOlTagStart(t *testing
 	assert.Equal(t, "<ol><ol>"+
 		"<li>"+contentText+"</li>"+
 		"<li>"+contentText+"</li>"+
-		"</ol></ol>", ce.ExtractContent(false))
+		"</ol></ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_MalformedListStructureWithoutLiTag(t *testing.T) {
@@ -565,7 +565,7 @@ func Test_Extractor_Content_MalformedListStructureWithoutLiTag(t *testing.T) {
 		"<li>"+contentText+"</li>"+
 		contentText+
 		"<li>"+contentText+"</li>"+
-		"</ol>", ce.ExtractContent(false))
+		"</ol>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveChildElementWithinBlockquote(t *testing.T) {
@@ -579,7 +579,7 @@ func Test_Extractor_Content_PreserveChildElementWithinBlockquote(t *testing.T) {
 	ce := extractor.NewContentExtractor(doc, nil)
 	assert.Equal(t, "<blockquote>"+
 		"<p>"+contentText+contentText+contentText+contentText+"</p>"+
-		"</blockquote>", ce.ExtractContent(false))
+		"</blockquote>", extractContent(ce))
 }
 
 func Test_Extractor_Content_PreserveChildrenElementsWithinBlockquote(t *testing.T) {
@@ -596,7 +596,7 @@ func Test_Extractor_Content_PreserveChildrenElementsWithinBlockquote(t *testing.
 		"<p>"+contentText+"</p>"+
 		"<p>"+contentText+"</p>"+
 		"<p>"+contentText+"</p>"+
-		"</blockquote>", ce.ExtractContent(false))
+		"</blockquote>", extractContent(ce))
 }
 
 func Test_Extractor_Content_DiscardBlockquoteWithoutContent(t *testing.T) {
@@ -620,7 +620,7 @@ func Test_Extractor_Content_DropCap(t *testing.T) {
 	dom.SetInnerHTML(body, html)
 
 	ce := extractor.NewContentExtractor(doc, nil)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
 }
 
 func Test_Extractor_Content_BlockyArticle(t *testing.T) {
@@ -707,5 +707,10 @@ func assertContentExtractor(t *testing.T, expected, rawHTML string) {
 	dom.SetInnerHTML(body, rawHTML)
 
 	ce := extractor.NewContentExtractor(doc, nil)
-	assert.Equal(t, expected, ce.ExtractContent(false))
+	assert.Equal(t, expected, extractContent(ce))
+}
+
+func extractContent(ce *extractor.ContentExtractor) string {
+	extractedContent, _ := ce.ExtractContent(false)
+	return extractedContent
 }
