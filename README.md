@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 13 files with 1,550 lines of code that haven’t been ported, so there is still a bit more to go.
+This package is still in development and the port process is still not finished. There are 11 files with 926 lines of code that haven’t been ported, so there is only a bit more to go.
 
 ## Changelog
+
+### 21 October 2020
+
+- Port `PagingLinksFinder` from `PagingLinksFinder.java`
 
 ### 20 October 2020
 

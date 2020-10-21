@@ -33,6 +33,16 @@ func IsStringAllDigit(str string) bool {
 // Dom-Distiller, but useful for handling string.
 // =================================================================================
 
+// EqualsIgnoreCase checks if two string is similar in case-insensitive mode.
+func EqualsIgnoreCase(str1, str2 string) bool {
+	return strings.ToLower(str1) == strings.ToLower(str2)
+}
+
+// HasPrefixIgnoreCase checks if str is stared with prefix in case-insensitive mode.
+func HasPrefixIgnoreCase(str, prefix string) bool {
+	return strings.HasPrefix(strings.ToLower(str), strings.ToLower(prefix))
+}
+
 // CharCount returns number of char in str.
 func CharCount(str string) int {
 	return utf8.RuneCountInString(str)

@@ -36,6 +36,8 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 
 	// Clean all fragment and queries from URL
 	clonedURL.RawQuery = ""
+	clonedURL.Fragment = ""
+	clonedURL.RawFragment = ""
 
 	// Make sure last numeric path is good
 	if IsLastNumericPathComponentBad(clonedURL.Path, digitStart, digitEnd) {

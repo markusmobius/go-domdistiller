@@ -104,6 +104,7 @@ func (pnf *PageNumberFinder) getPageInfoAndText(link *html.Node, pageURL *nurl.U
 		hrefURL.Path = strings.TrimSuffix(hrefURL.Path, "/")
 		hrefURL.RawPath = hrefURL.Path
 		hrefURL.Fragment = ""
+		hrefURL.RawFragment = ""
 	}
 
 	if isEmptyHref || isJavascriptLink {

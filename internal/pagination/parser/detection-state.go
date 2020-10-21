@@ -114,6 +114,7 @@ func newDetectionStateFromMonotonicNumbers(monotonicNumbers []*info.PageInfo, is
 		url, _ = nurl.Parse(page.URL)
 		url.User = nil
 		url.Fragment = ""
+		url.RawFragment = ""
 		parsedURLs[i] = url
 
 		queryPatterns := pattern.QueryParamPagePatternsFromURL(url)
