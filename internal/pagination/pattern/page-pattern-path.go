@@ -5,6 +5,7 @@ package pattern
 import (
 	"errors"
 	nurl "net/url"
+	"path"
 	"strconv"
 	"strings"
 
@@ -107,8 +108,8 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 }
 
 func PathComponentPagePatternsFromURL(url *nurl.URL) []PagePattern {
-	path := strings.Trim(url.Path, "/")
-	if path == "" || !rxNumber.MatchString(path) {
+	urlPath := strings.Trim(url.Path, "/")
+	if urlPath == "" || !rxNumber.MatchString(urlPath) {
 		return nil
 	}
 
@@ -116,6 +117,26 @@ func PathComponentPagePatternsFromURL(url *nurl.URL) []PagePattern {
 	for _, indexes := range rxNumber.FindAllStringIndex(url.Path, -1) {
 		start, end := indexes[0], indexes[1]
 		pattern, err := NewPathComponentPagePattern(url, start, end)
+		if err == nil && pattern != nil {
+			patterns = append(patterns, pattern)
+		}
+	}
+
+	// Sometimes there are URL without number, eg:
+	// http://example.com/foo/bar
+	// There is possibility that it's the first page, so we'll add it to pattern as well.
+	if len(patterns) == 0 {
+		newPath := path.Join(url.Path, PageParamPlaceholder)
+		start := strings.Index(newPath, PageParamPlaceholder)
+
+		newPath = strings.Replace(newPath, PageParamPlaceholder, "1", 1)
+		end := start + 1
+
+		cloned := *url
+		cloned.Path = newPath
+		cloned.RawPath = newPath
+
+		pattern, err := NewPathComponentPagePattern(&cloned, start, end)
 		if err == nil && pattern != nil {
 			patterns = append(patterns, pattern)
 		}
@@ -225,8 +246,14 @@ func (pp *PathComponentPagePattern) getLongestCommonSuffixLength(str1, str2 stri
 // - doc URL is /thread/12/foo, pattern is /thread/12/[*!]/foo
 //   returns true because "foo" in doc URL would match "foo" in pattern whose page param path
 //   component is skipped when matching.
+// - doc URL is /thread/foo.html, pattern is /thread/foo/[*!]
+//   returns true because "foo.html" in doc URL would match "foo" in pattern whose trailing
+//   html extension is skipped when matching.
 func (pp *PathComponentPagePattern) hasSamePathComponentsAs(parsedURL *nurl.URL) bool {
-	urlComponents := strings.Split(parsedURL.Path, "/")
+	// Trim trailing shtml extension from doc URL path
+	parsedURLPath := rxEndOrHasSHTML.ReplaceAllString(parsedURL.Path, "")
+
+	urlComponents := strings.Split(parsedURLPath, "/")
 	patternComponents := strings.Split(pp.url.Path, "/")
 	passedParamComponent := false
 
@@ -242,7 +269,7 @@ func (pp *PathComponentPagePattern) hasSamePathComponentsAs(parsedURL *nurl.URL)
 			continue
 		}
 
-		if strings.ToLower(urlComponents[i]) != strings.ToLower(patternComponents[j]) {
+		if !stringutil.EqualsIgnoreCase(urlComponents[i], patternComponents[j]) {
 			return false
 		}
 	}

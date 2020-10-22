@@ -13,6 +13,7 @@ This package is still in development and the port process is still not finished.
 ### 22 October 2020
 
 - Merge pagination finder. Now pagination link to previous and next partial page is accessible via `Result.PaginationInfo`.
+- Improve page number pagination finder to also find page numbers in web page where its page number are not all consecutive (like in ArsTechnica).
 
 ### 21 October 2020
 
