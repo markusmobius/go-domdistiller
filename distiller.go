@@ -64,6 +64,9 @@ type Options struct {
 	// detecting next/prev page links.
 	OriginalURL *nurl.URL
 
+	// Set to true to skip process for finding pagination.
+	SkipPagination bool
+
 	// Which algorithm to use for next page detection:
 	// "next"    : detect anchors with "next" text
 	// "pagenum" : detect anchors with numeric page numbers
@@ -153,7 +156,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	result.MarkupInfo = ce.Parser.MarkupInfo()
 
 	// Find pagination
-	if opts.OriginalURL != nil {
+	if !opts.SkipPagination && opts.OriginalURL != nil {
 		if opts.PaginationAlgo == "pagenum" {
 			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
