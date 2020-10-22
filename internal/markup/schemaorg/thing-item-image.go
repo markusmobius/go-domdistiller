@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/data"
 	"golang.org/x/net/html"
 )
 
@@ -31,7 +31,7 @@ func (ii *ImageItem) isRepresentativeOfPage() bool {
 	return strings.ToLower(propValue) == "true"
 }
 
-func (ii *ImageItem) getImage() *model.MarkupImage {
+func (ii *ImageItem) getImage() *data.MarkupImage {
 	width, _ := strconv.Atoi(ii.getStringProperty(WidthProp))
 	height, _ := strconv.Atoi(ii.getStringProperty(HeightProp))
 	imageURL := ii.getStringProperty(ContentURLProp)
@@ -39,7 +39,7 @@ func (ii *ImageItem) getImage() *model.MarkupImage {
 		imageURL = ii.getStringProperty(URLProp)
 	}
 
-	return &model.MarkupImage{
+	return &data.MarkupImage{
 		URL:     imageURL,
 		Type:    ii.getStringProperty(EncodingFormatProp),
 		Caption: ii.getStringProperty(CaptionProp),

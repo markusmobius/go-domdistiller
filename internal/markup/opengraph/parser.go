@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/logutil"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"golang.org/x/net/html"
 )
 
@@ -44,7 +44,7 @@ type Parser struct {
 	articleParser ArticlePropParser
 }
 
-func NewParser(root *html.Node, timingInfo *model.TimingInfo) (*Parser, error) {
+func NewParser(root *html.Node, timingInfo *data.TimingInfo) (*Parser, error) {
 	// Initiate parser
 	ps := &Parser{}
 	ps.prefixes = make(PrefixNameList)

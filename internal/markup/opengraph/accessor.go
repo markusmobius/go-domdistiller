@@ -5,7 +5,7 @@ package opengraph
 import (
 	"strings"
 
-	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/data"
 )
 
 // Title returns the required "title" of the document.
@@ -32,7 +32,7 @@ func (ps *Parser) URL() string {
 // Images returns the structured properties of all "image"
 // structures. Each "image" structure consists of image, image:url,
 // image:secure_url, image:type, image:width, and image:height.
-func (ps *Parser) Images() []model.MarkupImage {
+func (ps *Parser) Images() []data.MarkupImage {
 	return ps.imageParser.ImageList
 }
 
@@ -62,8 +62,8 @@ func (ps *Parser) Author() string {
 // value of "og:type" is "article". The properties are published_time,
 // modified_time and expiration_time, section, and a list of URLs
 // to each author's profile.
-func (ps *Parser) Article() *model.MarkupArticle {
-	article := model.MarkupArticle{
+func (ps *Parser) Article() *data.MarkupArticle {
+	article := data.MarkupArticle{
 		PublishedTime:  ps.propertyTable[ArticlePublishedTimeProp],
 		ModifiedTime:   ps.propertyTable[ArticleModifiedTimeProp],
 		ExpirationTime: ps.propertyTable[ArticleExpirationTimeProp],

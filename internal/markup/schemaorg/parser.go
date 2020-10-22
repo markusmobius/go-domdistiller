@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/logutil"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"golang.org/x/net/html"
 )
 
@@ -34,7 +34,7 @@ type Parser struct {
 	authorFromRel string
 }
 
-func NewParser(root *html.Node, timingInfo *model.TimingInfo) *Parser {
+func NewParser(root *html.Node, timingInfo *data.TimingInfo) *Parser {
 	// Initiate parser
 	ps := &Parser{}
 	ps.itemElement = make(map[*html.Node]ThingItem)

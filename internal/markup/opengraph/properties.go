@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/data"
 )
 
 type PropParser interface {
@@ -14,20 +14,20 @@ type PropParser interface {
 }
 
 type ImagePropParser struct {
-	ImageList []model.MarkupImage
+	ImageList []data.MarkupImage
 }
 
 func (pp *ImagePropParser) Parse(property, content string, propertyTable map[string]string) bool {
 	// Root property means end of current structure.
 	if property == ImageProp {
-		image := model.MarkupImage{Root: content}
+		image := data.MarkupImage{Root: content}
 		pp.ImageList = append(pp.ImageList, image)
 		return false
 	}
 
 	// Non ImageProp property means it's for current structure.
 	currentIdx := len(pp.ImageList) - 1
-	image := model.MarkupImage{}
+	image := data.MarkupImage{}
 	if currentIdx >= 0 {
 		image = pp.ImageList[currentIdx]
 	}
@@ -60,7 +60,7 @@ func (pp *ImagePropParser) Parse(property, content string, propertyTable map[str
 }
 
 func (pp *ImagePropParser) Verify() {
-	validImages := []model.MarkupImage{}
+	validImages := []data.MarkupImage{}
 
 	for _, img := range pp.ImageList {
 		if img.Root == "" {

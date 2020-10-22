@@ -1,6 +1,6 @@
 // ORIGINAL: Protobuf model in proto/dom_distiller.proto
 
-package model
+package data
 
 import "time"
 

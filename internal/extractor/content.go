@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/converter"
 	"github.com/markusmobius/go-domdistiller/internal/filter/docfilter"
 	"github.com/markusmobius/go-domdistiller/internal/markup"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
@@ -18,7 +18,7 @@ import (
 
 type ContentExtractor struct {
 	Parser      *markup.Parser
-	TimingInfo  *model.TimingInfo
+	TimingInfo  *data.TimingInfo
 	ImageURLs   []string
 	WordCounter stringutil.WordCounter
 
@@ -28,7 +28,7 @@ type ContentExtractor struct {
 }
 
 func NewContentExtractor(root *html.Node, pageURL *nurl.URL) *ContentExtractor {
-	timingInfo := &model.TimingInfo{}
+	timingInfo := &data.TimingInfo{}
 
 	document := dom.QuerySelector(root, "html")
 	if document == nil {

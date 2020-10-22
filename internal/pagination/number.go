@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/parser"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
@@ -20,12 +20,12 @@ import (
 // outlinks with digital anchor text.
 type PageNumberFinder struct {
 	wordCounter              stringutil.WordCounter
-	timingInfo               *model.TimingInfo
+	timingInfo               *data.TimingInfo
 	adjacentNumberGroups     *info.MonotonicPageInfoGroups
 	numForwardLinksProcessed int
 }
 
-func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *model.TimingInfo) *PageNumberFinder {
+func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo) *PageNumberFinder {
 	return &PageNumberFinder{
 		wordCounter:          wc,
 		timingInfo:           timingInfo,
@@ -33,7 +33,7 @@ func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *model.TimingInfo
 	}
 }
 
-func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) (pagination model.PaginationInfo) {
+func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) (pagination data.PaginationInfo) {
 	paramInfo := pnf.FindOutlink(root, pageURL)
 	if paramInfo.Type != info.PageNumber {
 		return

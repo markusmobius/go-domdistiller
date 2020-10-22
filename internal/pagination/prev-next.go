@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"golang.org/x/net/html"
 )
@@ -37,8 +37,8 @@ func NewPrevNextFinder() *PrevNextFinder {
 	return &PrevNextFinder{}
 }
 
-func (pnf *PrevNextFinder) FindPagination(root *html.Node, pageURL *nurl.URL) model.PaginationInfo {
-	return model.PaginationInfo{
+func (pnf *PrevNextFinder) FindPagination(root *html.Node, pageURL *nurl.URL) data.PaginationInfo {
+	return data.PaginationInfo{
 		PrevPage: pnf.FindOutlink(root, pageURL, false),
 		NextPage: pnf.FindOutlink(root, pageURL, true),
 	}

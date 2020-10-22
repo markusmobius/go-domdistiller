@@ -5,12 +5,12 @@ package logutil
 import (
 	"time"
 
-	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/data"
 )
 
-func AddTimingInfo(timingInfo *model.TimingInfo, start time.Time, name string) {
+func AddTimingInfo(timingInfo *data.TimingInfo, start time.Time, name string) {
 	if timingInfo != nil {
-		entry := model.TimingEntry{
+		entry := data.TimingEntry{
 			Name: name,
 			Time: time.Now().Sub(start),
 		}

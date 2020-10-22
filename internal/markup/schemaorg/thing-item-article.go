@@ -3,7 +3,7 @@
 package schemaorg
 
 import (
-	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/data"
 	"golang.org/x/net/html"
 )
 
@@ -35,7 +35,7 @@ func NewArticleItem(element *html.Node) *ArticleItem {
 	return item
 }
 
-func (ai *ArticleItem) getArticle() *model.MarkupArticle {
+func (ai *ArticleItem) getArticle() *data.MarkupArticle {
 	author := ai.getPersonOrOrganizationName(AuthorProp)
 	if author == "" {
 		author = ai.getPersonOrOrganizationName(CreatorProp)
@@ -46,7 +46,7 @@ func (ai *ArticleItem) getArticle() *model.MarkupArticle {
 		authors = []string{author}
 	}
 
-	return &model.MarkupArticle{
+	return &data.MarkupArticle{
 		PublishedTime: ai.getStringProperty(DatePublishedProp),
 		ModifiedTime:  ai.getStringProperty(DateModifiedProp),
 		Section:       ai.getStringProperty(SectionProp),
@@ -110,12 +110,12 @@ func (ai *ArticleItem) getRepresentativeImageItem() *ImageItem {
 	return nil
 }
 
-func (ai *ArticleItem) getImage() *model.MarkupImage {
+func (ai *ArticleItem) getImage() *data.MarkupImage {
 	// Use value of "image" property to create a MarkupParser.Image.
 	imageURL := ai.getStringProperty(ImageProp)
 	if imageURL == "" {
 		return nil
 	}
 
-	return &model.MarkupImage{URL: imageURL}
+	return &data.MarkupImage{URL: imageURL}
 }

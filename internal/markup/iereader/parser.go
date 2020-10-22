@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"golang.org/x/net/html"
 )
 
@@ -29,7 +29,7 @@ type Parser struct {
 	publisher string
 	copyright string
 	optOut    bool
-	images    []model.MarkupImage
+	images    []data.MarkupImage
 }
 
 func NewParser(root *html.Node) *Parser {
@@ -55,7 +55,7 @@ func (p *Parser) URL() string {
 	return ""
 }
 
-func (p *Parser) Images() []model.MarkupImage {
+func (p *Parser) Images() []data.MarkupImage {
 	if _, determined := p.determinedProps["images"]; !determined {
 		p.findImages()
 	}
@@ -90,13 +90,13 @@ func (p *Parser) Author() string {
 	return p.author
 }
 
-func (p *Parser) Article() *model.MarkupArticle {
+func (p *Parser) Article() *data.MarkupArticle {
 	if _, determined := p.determinedProps["date"]; !determined {
 		p.findDate()
 	}
 
 	author := p.Author()
-	article := &model.MarkupArticle{}
+	article := &data.MarkupArticle{}
 	article.PublishedTime = p.date
 	if author != "" {
 		article.Authors = []string{author}
@@ -149,7 +149,7 @@ func (p *Parser) findImages() {
 			width, _ := strconv.Atoi(dom.GetAttribute(img, "width"))
 			height, _ := strconv.Atoi(dom.GetAttribute(img, "height"))
 
-			p.images = append(p.images, model.MarkupImage{
+			p.images = append(p.images, data.MarkupImage{
 				URL:     dom.GetAttribute(img, "src"),
 				Caption: caption,
 				Width:   width,

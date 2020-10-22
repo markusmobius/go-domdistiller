@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/extractor"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"github.com/markusmobius/go-domdistiller/internal/pagination"
 	"golang.org/x/net/html"
 )
@@ -26,17 +26,17 @@ type Result struct {
 	// specifications: OpenGraphProtocol, IEReadingView and SchemaOrg. For now, OpenGraph protocol
 	// takes precedence because it uses specific meta tags and hence the fastest. The other
 	// specifications is used as fallback in case some metadata not found.
-	MarkupInfo model.MarkupInfo
+	MarkupInfo data.MarkupInfo
 
 	// TimingInfo is the record of the time it takes to do each step in the process of content extraction.
-	TimingInfo model.TimingInfo
+	TimingInfo data.TimingInfo
 
 	// DebugInfo contains log of all process.
-	DebugInfo model.DebugInfo
+	DebugInfo data.DebugInfo
 
 	// PaginationInfo contains link to previous and next partial page. This is useful for long article or
 	// that may be partitioned into several partial pages by its webmaster.
-	PaginationInfo model.PaginationInfo
+	PaginationInfo data.PaginationInfo
 
 	// WordCount is the count of words within document.
 	WordCount int

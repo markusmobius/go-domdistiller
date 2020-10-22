@@ -2,7 +2,7 @@
 
 package markup
 
-import "github.com/markusmobius/go-domdistiller/internal/model"
+import "github.com/markusmobius/go-domdistiller/data"
 
 // Accessor is the interface that all parsers must implement so that Parser
 // can retrieve their properties.
@@ -18,7 +18,7 @@ type Accessor interface {
 
 	// Images returns the properties of all markup images in the document.
 	// The first image is the dominant (i.e. top or salient) one.
-	Images() []model.MarkupImage
+	Images() []data.MarkupImage
 
 	// Description returns the markup description of the document, empty if none.
 	Description() string
@@ -33,7 +33,7 @@ type Accessor interface {
 	Author() string
 
 	// Article returns the properties of the markup "article" object, null if none.
-	Article() *model.MarkupArticle
+	Article() *data.MarkupArticle
 
 	// OptOut returns true if page owner has opted out of distillation.
 	OptOut() bool

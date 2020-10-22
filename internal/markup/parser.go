@@ -5,11 +5,11 @@ package markup
 import (
 	"time"
 
+	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/markup/iereader"
 	"github.com/markusmobius/go-domdistiller/internal/markup/opengraph"
 	"github.com/markusmobius/go-domdistiller/internal/markup/schemaorg"
-	"github.com/markusmobius/go-domdistiller/internal/model"
 	"golang.org/x/net/html"
 )
 
@@ -36,7 +36,7 @@ type Parser struct {
 	accessors []Accessor
 }
 
-func NewParser(root *html.Node, timingInfo *model.TimingInfo) *Parser {
+func NewParser(root *html.Node, timingInfo *data.TimingInfo) *Parser {
 	// Initiate parser
 	ps := &Parser{}
 	ps.accessors = make([]Accessor, 0)
@@ -89,7 +89,7 @@ func (ps *Parser) URL() string {
 	return ""
 }
 
-func (ps *Parser) Images() []model.MarkupImage {
+func (ps *Parser) Images() []data.MarkupImage {
 	for _, accessor := range ps.accessors {
 		if images := accessor.Images(); len(images) > 0 {
 			return images
@@ -134,7 +134,7 @@ func (ps *Parser) Author() string {
 	return ""
 }
 
-func (ps *Parser) Article() *model.MarkupArticle {
+func (ps *Parser) Article() *data.MarkupArticle {
 	for _, accessor := range ps.accessors {
 		if article := accessor.Article(); article != nil {
 			return article
@@ -152,12 +152,12 @@ func (ps *Parser) OptOut() bool {
 	return false
 }
 
-func (ps *Parser) MarkupInfo() model.MarkupInfo {
+func (ps *Parser) MarkupInfo() data.MarkupInfo {
 	if ps.OptOut() {
-		return model.MarkupInfo{}
+		return data.MarkupInfo{}
 	}
 
-	info := model.MarkupInfo{
+	info := data.MarkupInfo{
 		Title:       ps.Title(),
 		Type:        ps.Type(),
 		URL:         ps.URL(),
@@ -169,7 +169,7 @@ func (ps *Parser) MarkupInfo() model.MarkupInfo {
 
 	article := ps.Article()
 	if article != nil {
-		info.Article = model.MarkupArticle{
+		info.Article = data.MarkupArticle{
 			PublishedTime:  article.PublishedTime,
 			ModifiedTime:   article.ModifiedTime,
 			ExpirationTime: article.ExpirationTime,
@@ -179,7 +179,7 @@ func (ps *Parser) MarkupInfo() model.MarkupInfo {
 	}
 
 	for _, image := range ps.Images() {
-		info.Images = append(info.Images, model.MarkupImage{
+		info.Images = append(info.Images, data.MarkupImage{
 			URL:       image.URL,
 			SecureURL: image.SecureURL,
 			Type:      image.Type,

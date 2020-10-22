@@ -2,9 +2,7 @@
 
 package schemaorg
 
-import (
-	"github.com/markusmobius/go-domdistiller/internal/model"
-)
+import "github.com/markusmobius/go-domdistiller/data"
 
 func (ps *Parser) Title() string {
 	// In original dom-distiller they sort the articles by their area in
@@ -42,13 +40,13 @@ func (ps *Parser) URL() string {
 	return ""
 }
 
-func (ps *Parser) Images() []model.MarkupImage {
+func (ps *Parser) Images() []data.MarkupImage {
 	// Images are ordered as follows:
 	// 1) the "associatedMedia" or "encoding" image of the article that first declares it,
 	// 2) or the first ImageObject with "representativeOfPage" as "true",
 	// 3) then, the list of "image" property of remaining articles,
 	// 4) lastly, the list of ImageObject's.
-	images := []model.MarkupImage{}
+	images := []data.MarkupImage{}
 
 	// First, get images from ArticleItem's.
 	var associatedImageOfArticle *ImageItem
@@ -77,7 +75,7 @@ func (ps *Parser) Images() []model.MarkupImage {
 		// article, or it's the first image that's representative of page.
 		if item == associatedImageOfArticle || (!hasRepresentativeImage && item.isRepresentativeOfPage()) {
 			hasRepresentativeImage = true
-			images = append([]model.MarkupImage{*image}, images...)
+			images = append([]data.MarkupImage{*image}, images...)
 		} else {
 			images = append(images, *image)
 		}
@@ -138,7 +136,7 @@ func (ps *Parser) Author() string {
 	return author
 }
 
-func (ps *Parser) Article() *model.MarkupArticle {
+func (ps *Parser) Article() *data.MarkupArticle {
 	articles := ps.getArticleItems()
 	if len(articles) == 0 {
 		return nil

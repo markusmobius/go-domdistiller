@@ -14,6 +14,7 @@ This package is still in development and the port process is still not finished.
 
 - Merge pagination finder. Now pagination link to previous and next partial page is accessible via `Result.PaginationInfo`.
 - Improve page number pagination finder to also find page numbers in web page where its page number are not all consecutive (like in ArsTechnica).
+- Move all models from `internal/model` directory (which can't be imported by package's user) to `data` directory.
 
 ### 21 October 2020
 
