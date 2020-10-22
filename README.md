@@ -10,6 +10,10 @@ This package is still in development and the port process is still not finished.
 
 ## Changelog
 
+### 22 October 2020
+
+- Merge pagination finder. Now pagination link to previous and next partial page is accessible via `Result.PaginationInfo`.
+
 ### 21 October 2020
 
 - Port `PagingLinksFinder` from `PagingLinksFinder.java`

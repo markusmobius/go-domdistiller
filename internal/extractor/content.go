@@ -17,14 +17,14 @@ import (
 )
 
 type ContentExtractor struct {
-	Parser     *markup.Parser
-	TimingInfo *model.TimingInfo
-	ImageURLs  []string
+	Parser      *markup.Parser
+	TimingInfo  *model.TimingInfo
+	ImageURLs   []string
+	WordCounter stringutil.WordCounter
 
 	pageURL         *nurl.URL
 	documentElement *html.Node
 	candidateTitles []string
-	wordCounter     stringutil.WordCounter
 }
 
 func NewContentExtractor(root *html.Node, pageURL *nurl.URL) *ContentExtractor {
@@ -42,10 +42,10 @@ func NewContentExtractor(root *html.Node, pageURL *nurl.URL) *ContentExtractor {
 	wordCounter := stringutil.SelectWordCounter(textContent)
 
 	return &ContentExtractor{
-		Parser:     parser,
-		TimingInfo: timingInfo,
+		Parser:      parser,
+		TimingInfo:  timingInfo,
+		WordCounter: wordCounter,
 
-		wordCounter:     wordCounter,
 		documentElement: document,
 		pageURL:         pageURL,
 	}
@@ -94,14 +94,14 @@ func (ce *ContentExtractor) ensureTitleInitialized() {
 		ce.candidateTitles = append(ce.candidateTitles, title)
 	}
 
-	documentTitle := getDocumentTitle(ce.documentElement, ce.wordCounter)
+	documentTitle := getDocumentTitle(ce.documentElement, ce.WordCounter)
 	ce.candidateTitles = append(ce.candidateTitles, documentTitle)
 }
 
 // createWebDocumentInfoFromPage converts the original HTML page into a
 // webdoc.Document for analysis.
 func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
-	docBuilder := webdoc.NewWebDocumentBuilder(ce.wordCounter, ce.pageURL)
+	docBuilder := webdoc.NewWebDocumentBuilder(ce.WordCounter, ce.pageURL)
 	converter.NewDomConverter(docBuilder, ce.pageURL).Convert(ce.documentElement)
 
 	webDocument := docBuilder.Build()
@@ -114,7 +114,7 @@ func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
 // inside document.
 func (ce *ContentExtractor) processDocument(doc *webdoc.Document) int {
 	textDocument := doc.CreateTextDocument()
-	extractArticle(textDocument, ce.wordCounter, ce.candidateTitles)
+	extractArticle(textDocument, ce.WordCounter, ce.candidateTitles)
 	wordCount := textDocument.CountWordsInContent()
 
 	textDocument.ApplyToModel()

@@ -33,6 +33,42 @@ func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *model.TimingInfo
 	}
 }
 
+func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) (pagination model.PaginationInfo) {
+	paramInfo := pnf.FindOutlink(root, pageURL)
+	if paramInfo.Type != info.PageNumber {
+		return
+	}
+
+	pagination.PrevPage = ""
+	pagination.NextPage = paramInfo.NextPagingURL
+
+	// If next page URL is empty but there are related page info, it means we are in
+	// the last page, so the last page info is for previous page.
+	nPageInfo := len(paramInfo.AllPageInfo)
+	if pagination.NextPage == "" && nPageInfo > 0 {
+		pagination.PrevPage = paramInfo.AllPageInfo[nPageInfo-1].URL
+		return
+	}
+
+	// If next page URL is not empty, find it in list of page info.
+	// The page info before it will point to previous page.
+	if pagination.NextPage != "" {
+		nextPageIdx := -1
+		for i, pageInfo := range paramInfo.AllPageInfo {
+			if pageInfo.URL == pagination.NextPage {
+				nextPageIdx = i
+				break
+			}
+		}
+
+		if nextPageIdx > 0 {
+			pagination.PrevPage = paramInfo.AllPageInfo[nextPageIdx-1].URL
+		}
+	}
+
+	return
+}
+
 // FindOutlink parses the document to collect outlinks with numeric anchor text and numeric text
 // around them. Returns PageParamInfo, always (never null). If no page parameter is detected or
 // determined to be best, its Type is info.Unset.
@@ -77,7 +113,7 @@ func (pnf *PageNumberFinder) FindOutlink(root *html.Node, pageURL *nurl.URL) *in
 // adjacentNumbersGroups. Otherwise, returns null if link is to be ignored. "javascript:"
 // links with numeric text are considered valid links to be added.
 func (pnf *PageNumberFinder) getPageInfoAndText(link *html.Node, pageURL *nurl.URL) (*info.PageInfo, string) {
-	// In original dom-distiller they ignore the invisible link. Unfortyunately it's
+	// In original dom-distiller they ignore the invisible link. Unfortunately it's
 	// impossible to do that here. NEED-COMPUTE-CSS.
 
 	// Get visible text using innerText instead of textContent

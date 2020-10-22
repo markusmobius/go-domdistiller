@@ -5,9 +5,8 @@ package model
 import "time"
 
 type PaginationInfo struct {
-	NextPage      string
-	PrevPage      string
-	CanonicalPage string
+	NextPage string
+	PrevPage string
 }
 
 // MarkupArticle is object to contains the properties of an article document.

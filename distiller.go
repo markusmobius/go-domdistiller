@@ -13,6 +13,7 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/extractor"
 	"github.com/markusmobius/go-domdistiller/internal/model"
+	"github.com/markusmobius/go-domdistiller/internal/pagination"
 	"golang.org/x/net/html"
 )
 
@@ -150,6 +151,17 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	result.Title = ce.ExtractTitle()
 	result.ContentImages = ce.ImageURLs
 	result.MarkupInfo = ce.Parser.MarkupInfo()
+
+	// Find pagination
+	if opts.OriginalURL != nil {
+		if opts.PaginationAlgo == "pagenum" {
+			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil)
+			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
+		} else {
+			finder := pagination.NewPrevNextFinder()
+			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
+		}
+	}
 
 	return &result, nil
 }
