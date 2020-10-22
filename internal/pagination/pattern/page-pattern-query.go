@@ -58,7 +58,7 @@ func NewQueryParamPagePattern(url *nurl.URL, queryName, queryValue string) (*Que
 
 	return &QueryParamPagePattern{
 		url:        clonedURL,
-		strURL:     clonedURL.String(),
+		strURL:     stringutil.UnescapedString(clonedURL),
 		pageNumber: value,
 	}, nil
 }

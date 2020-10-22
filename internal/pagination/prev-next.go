@@ -55,19 +55,19 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	// other href's whose trailing '/' are also removed.
 	tmp.Path = strings.TrimSuffix(tmp.Path, "/")
 	tmp.RawPath = tmp.Path
-	currentURL := tmp.String()
+	currentURL := stringutil.UnescapedString(tmp)
 
 	// Create folder URL
 	tmp.Path = strings.TrimSuffix(path.Dir(tmp.Path), "/")
 	tmp.RawPath = tmp.Path
-	folderURL := tmp.String()
+	folderURL := stringutil.UnescapedString(tmp)
 
 	// Create allowed prefix
 	// The trailing "/" is essential to ensure the whole hostname is matched, and not just the
 	// prefix of the hostname. It also maintains the requirement of having a "path" in the URL.
 	tmp.Path = "/"
 	tmp.RawPath = tmp.Path
-	allowedPrefix := tmp.String()
+	allowedPrefix := stringutil.UnescapedString(tmp)
 	lenPrefix := len(allowedPrefix)
 
 	// Loop through all links, looking for hints that they may be next- or previous- page links.
@@ -107,7 +107,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		tmp.RawFragment = ""
 		tmp.Path = strings.TrimSuffix(tmp.Path, "/")
 		tmp.RawPath = tmp.Path
-		linkHref = tmp.String()
+		linkHref = stringutil.UnescapedString(tmp)
 
 		// Ignore page link that is the same as current window location.
 		// If the page link is same as the folder URL:

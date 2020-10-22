@@ -403,5 +403,5 @@ func normalizeLinkHref(linkHref string, pageURL *nurl.URL) string {
 	tmp.RawFragment = ""
 	tmp.Path = strings.TrimSuffix(tmp.Path, "/")
 	tmp.RawPath = tmp.Path
-	return tmp.String()
+	return stringutil.UnescapedString(tmp)
 }

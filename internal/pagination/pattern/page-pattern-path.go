@@ -7,6 +7,8 @@ import (
 	nurl "net/url"
 	"strconv"
 	"strings"
+
+	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 )
 
 // PathComponentPagePattern detects the page parameter in the path of a potential pagination URL.
@@ -55,7 +57,7 @@ func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*Path
 	patternPath := clonedURL.Path[:digitStart] + PageParamPlaceholder + clonedURL.Path[digitEnd:]
 	clonedURL.Path = patternPath
 	clonedURL.RawPath = patternPath
-	strURL := clonedURL.String()
+	strURL := stringutil.UnescapedString(clonedURL)
 
 	// Calculate placeholder location
 	placeholderStart := strings.Index(strURL, PageParamPlaceholder)
