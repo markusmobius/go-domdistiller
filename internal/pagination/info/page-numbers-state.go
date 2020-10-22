@@ -74,6 +74,11 @@ func (pns *PageNumbersState) isPageNumberSequence(ascendingNumbers []*PageInfo) 
 		}
 	}
 
+	// If the longest sequence is too small, stop
+	if maxSequenceLength == 1 {
+		return false
+	}
+
 	// Make sure the longest group contains one page info without URL (which indicates
 	// the page info is for our current page)
 	nEmptyURL := 0
