@@ -32,14 +32,15 @@ func (e *Embed) GenerateOutput(textOnly bool) string {
 	dom.SetAttribute(embed, "data-type", e.Type)
 	dom.SetAttribute(embed, "data-id", e.ID)
 
-	// TODO:
+	// Radhi:
 	// I just realize the embed element never used in original dom-distiller. No wonder
 	// Chromium doesn't render any embedded element. To be fair Readability.js doesn't
-	// render it as well citing security concerns. In my opinion since dom-distiller
-	// usually only used in page that we already visit, the embedded iframe should
-	// automatically be trustworthy enough. Just to be save we should sanitize it.
-	// For now I'll just allow blockquote for Twitter.
-	if dom.TagName(e.Element) == "blockquote" {
+	// render some embed  as well citing security concerns. In my opinion since dom-
+	// distiller usually only used in page that we already visit, the embedded iframe
+	// should automatically be trustworthy enough.
+	// TODO: Maybe just to be save we should sanitize it.
+	tagName := dom.TagName(e.Element)
+	if tagName == "blockquote" || tagName == "iframe" {
 		dom.AppendChild(embed, e.Element)
 	}
 

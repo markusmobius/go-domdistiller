@@ -3,6 +3,7 @@
 package embed
 
 import (
+	"fmt"
 	nurl "net/url"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -41,15 +43,25 @@ func (te *TwitterExtractor) Extract(node *html.Node) webdoc.Element {
 		return nil
 	}
 
+	// Twitter embeds are blockquote tags operated on by some javascript.
+	var result *webdoc.Embed
 	if nodeTagName == "blockquote" {
-		return te.extractNonRendered(node)
+		result = te.extractNonRendered(node)
 	} else {
-		return te.extractRendered(node)
+		result = te.extractRendered(node)
 	}
+
+	if result != nil {
+		logMsg := fmt.Sprintf("Twitter embed extracted (ID: %s)", result.ID)
+		logger.PrintVisibilityInfo(logMsg)
+		return result
+	}
+
+	return nil
 }
 
 // extractNonRendered handle a Twitter embed that has not yet been rendered.
-func (te *TwitterExtractor) extractNonRendered(node *html.Node) webdoc.Element {
+func (te *TwitterExtractor) extractNonRendered(node *html.Node) *webdoc.Embed {
 	// Make sure the characteristic class name for Twitter exists.
 	if !strings.Contains(dom.GetAttribute(node, "class"), "twitter-tweet") {
 		return nil
@@ -81,7 +93,7 @@ func (te *TwitterExtractor) extractNonRendered(node *html.Node) webdoc.Element {
 }
 
 // extractRendered handle a Twitter embed that has been rendered.
-func (te *TwitterExtractor) extractRendered(node *html.Node) webdoc.Element {
+func (te *TwitterExtractor) extractRendered(node *html.Node) *webdoc.Embed {
 	// Rendered tweet must be iframe
 	if dom.TagName(node) != "iframe" {
 		return nil

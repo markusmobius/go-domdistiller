@@ -6,6 +6,7 @@ import (
 	nurl "net/url"
 
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
+	"github.com/markusmobius/go-domdistiller/logger"
 )
 
 // DetectParamInfo creates a PageParamInfo based on outlinks and numeric text around them.
@@ -45,7 +46,7 @@ func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL 
 	// For now, if there're multiple page patterns, we take the first one.
 	// If this doesn't work for most sites, we might have to return nothing.
 	if detectionState.hasMultiPagePatterns {
-		// TODO: make some log
+		logger.PrintPaginationInfo("Detected multiple page pattern")
 	}
 
 	bestPageParamInfo := detectionState.bestPageParamInfo

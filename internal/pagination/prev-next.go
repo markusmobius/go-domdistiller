@@ -3,6 +3,7 @@
 package pagination
 
 import (
+	"fmt"
 	nurl "net/url"
 	"path"
 	"strconv"
@@ -12,6 +13,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -31,10 +33,16 @@ type pagingLinkScore struct {
 // information. If it passes, its score is then determined by applying various heuristics on its
 // href, text, class name and ID, Lastly, the page link with the highest score of at least 50 is
 // considered to have enough confidence as the next or previous page link.
-type PrevNextFinder struct{}
+type PrevNextFinder struct {
+	linkDebugInfo     map[*html.Node]string
+	linkDebugMessages map[*html.Node]map[string]struct{}
+}
 
 func NewPrevNextFinder() *PrevNextFinder {
-	return &PrevNextFinder{}
+	return &PrevNextFinder{
+		linkDebugInfo:     make(map[*html.Node]string),
+		linkDebugMessages: make(map[*html.Node]map[string]struct{}),
+	}
 }
 
 func (pnf *PrevNextFinder) FindPagination(root *html.Node, pageURL *nurl.URL) data.PaginationInfo {
@@ -77,7 +85,8 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	// After we do that, assign each page a score.
 	bannedURLs := make(map[string]struct{})
 	candidates := make([]pagingLinkScore, 0)
-	for i, link := range dom.GetElementsByTagName(root, "a") {
+	allLinks := dom.GetElementsByTagName(root, "a")
+	for i, link := range allLinks {
 		// Try to convert relative URL in link href to absolute URL
 		linkHref := dom.GetAttribute(link, "href")
 		linkHref = stringutil.CreateAbsoluteURL(linkHref, pageURL)
@@ -85,15 +94,18 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		// Make sure the link href is absolute
 		_, err := nurl.ParseRequestURI(linkHref)
 		if err != nil {
+			pnf.appendDebugStrForLink(link, "ignored: can't converted to abs url")
 			continue
 		}
 
 		// Make sure the href is related with current page
 		if !stringutil.HasPrefixIgnoreCase(linkHref, allowedPrefix) {
+			pnf.appendDebugStrForLink(link, "ignored: not prefix")
 			continue
 		}
 
 		if findNext && !rxNumber.MatchString(linkHref[lenPrefix:]) {
+			pnf.appendDebugStrForLink(link, "ignored: not prefix + number")
 			continue
 		}
 
@@ -116,6 +128,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		//                       folder URL for the first page.
 		if stringutil.EqualsIgnoreCase(linkHref, currentURL) ||
 			(findNext && stringutil.EqualsIgnoreCase(linkHref, folderURL)) {
+			pnf.appendDebugStrForLink(link, "ignored: same as current or folder url "+folderURL)
 			continue
 		}
 
@@ -125,12 +138,14 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 
 		// If the linkText looks like it's not the next or previous page, skip it.
 		if len(linkText) > 25 {
+			pnf.appendDebugStrForLink(link, "ignored: link text too long")
 			continue
 		}
 
 		// If the linkText contains banned text, skip it, and also ban other anchors with the
 		// same link URL.
 		if rxExtraneous.MatchString(linkText) {
+			pnf.appendDebugStrForLink(link, "ignored: one of extra")
 			bannedURLs[linkHref] = struct{}{}
 			continue
 		}
@@ -148,6 +163,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			}
 
 			if !rxNumber.MatchString(remainingLinkHref) {
+				pnf.appendDebugStrForLink(link, "ignored: no number beyond folder url "+folderURL)
 				continue
 			}
 		}
@@ -165,6 +181,10 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		// Example: http://www.actionscript.org/resources/articles/745/1/JavaScript-and-VBScript-Injection-in-ActionScript-3/Page1.html.
 		if !strings.HasPrefix(linkHref, folderURL) {
 			linkObj.score -= 25
+
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, not part of folder url %s",
+				linkObj.score, folderURL))
 		}
 
 		// Concatenate the link text with class name and id, and determine the score based on
@@ -174,10 +194,18 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		if (findNext && rxNextLink.MatchString(linkData)) ||
 			(!findNext && rxPrevLink.MatchString(linkData)) {
 			linkObj.score += 50
+
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, has %s",
+				linkObj.score, pnf.rxDebugName(findNext)))
 		}
 
 		if rxPagination.MatchString(linkData) {
 			linkObj.score += 25
+
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, has pag* word",
+				linkObj.score))
 		}
 
 		if rxFirstLast.MatchString(linkData) {
@@ -188,16 +216,26 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			if (findNext && !rxNextLink.MatchString(linkText)) ||
 				(!findNext && !rxPrevLink.MatchString(linkText)) {
 				linkObj.score -= 65
+
+				pnf.appendDebugStrForLink(link, fmt.Sprintf(
+					"score %d, has first|last but no %s",
+					linkObj.score, pnf.rxDebugName(findNext)))
 			}
 		}
 
 		if rxNegative.MatchString(linkData) || rxExtraneous.MatchString(linkData) {
 			linkObj.score -= 50
+			pnf.appendDebugStrForLink(link,
+				fmt.Sprintf("score %d, has negative or extra regex", linkObj.score))
 		}
 
 		if (findNext && rxPrevLink.MatchString(linkData)) ||
 			(!findNext && rxNextLink.MatchString(linkData)) {
 			linkObj.score -= 200
+
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, has opp of %s",
+				linkObj.score, pnf.rxDebugName(findNext)))
 		}
 
 		// Check if a parent element contains page or paging or paginate.
@@ -209,6 +247,9 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			if !positiveMatch && rxPagination.MatchString(parentData) {
 				linkObj.score += 25
 				positiveMatch = true
+				pnf.appendDebugStrForLink(link, fmt.Sprintf(
+					"score %d, positive parent - %s",
+					linkObj.score, parentData))
 			}
 
 			// TODO(kuan): to get 1st page for prev page link, this can't be applied; however,
@@ -220,6 +261,9 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				if !rxPositive.MatchString(parentData) {
 					linkObj.score -= 25
 					negativeMatch = true
+					pnf.appendDebugStrForLink(link, fmt.Sprintf(
+						"score %d, negative parent - %s",
+						linkObj.score, parentData))
 				}
 			}
 
@@ -230,16 +274,22 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		// Things like /page/2/, /pagenum/2, ?p=3, ?page=11, ?pagination=34.
 		if rxLinkPagination.MatchString(linkHref) || rxPagination.MatchString(linkHref) {
 			linkObj.score += 25
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, has paging info", linkObj.score))
 		}
 
 		// If the URL contains negative values, give a slight decrease.
 		if rxExtraneous.MatchString(linkHref) {
 			linkObj.score -= 15
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, has extra regex", linkObj.score))
 		}
 
 		// If the link text is too long, penalize the link.
 		if len(linkText) > 10 {
 			linkObj.score -= len(linkText)
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, text too long", linkObj.score))
 		}
 
 		// If the link text can be parsed as a number, give it a minor bonus, with a slight bias
@@ -260,12 +310,19 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				}
 				linkObj.score += additionalScore
 			}
+
+			pnf.appendDebugStrForLink(link, fmt.Sprintf(
+				"score %d, link text is a number (%d)",
+				linkObj.score, linkTextAsNumber))
 		}
 
 		diff, valid := pnf.getPageDiff(currentURL, linkHref, len(allowedPrefix))
 		if valid {
 			if (findNext && diff == 1) || (!findNext && diff == -1) {
 				linkObj.score += 25
+
+				pnf.appendDebugStrForLink(link, fmt.Sprintf(
+					"score %d, diff (%d)", linkObj.score, diff))
 			}
 		}
 
@@ -276,18 +333,27 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	// Loop through all of the possible pages from above and find the top candidate for the next
 	// page URL. Require at least a score of 50, which is a relatively high confidence that
 	// this page is the next link.
-	var topPage pagingLinkScore
-	for _, pageObj := range candidates {
+	var topPage *pagingLinkScore
+	for i, pageObj := range candidates {
 		if _, exist := bannedURLs[pageObj.linkHref]; exist {
 			continue
 		}
 
-		if pageObj.score >= 50 && topPage.score < pageObj.score {
-			topPage = pageObj
+		if pageObj.score >= 50 && (topPage == nil || topPage.score < pageObj.score) {
+			topPage = &candidates[i]
 		}
 	}
 
-	return topPage.linkHref
+	pagingHref := ""
+	if topPage != nil {
+		pagingHref = topPage.linkHref
+		pnf.appendDebugStrForLink(allLinks[topPage.linkIndex], fmt.Sprintf(
+			"found: score %d, text=[%s] %s",
+			topPage.score, topPage.linkText, topPage.linkHref))
+	}
+
+	pnf.printDebugInfo(findNext, pagingHref, allLinks)
+	return pagingHref
 }
 
 func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int, bool) {
@@ -319,4 +385,71 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 	}
 
 	return 0, false
+}
+
+func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string) {
+	if !logger.HasFlag(logger.PaginationInfo) {
+		return
+	}
+
+	// Check if this message already used for this link
+	messageHasBeenUsed := false
+	currentMessages, exist := pnf.linkDebugMessages[link]
+	if exist && currentMessages != nil {
+		_, messageHasBeenUsed = currentMessages[message]
+	} else {
+		pnf.linkDebugMessages[link] = make(map[string]struct{})
+	}
+
+	if messageHasBeenUsed {
+		return
+	}
+
+	// Combine existing debug message with the new one
+	strDebug := ""
+	if str, exist := pnf.linkDebugInfo[link]; exist {
+		strDebug = str
+	}
+
+	if strDebug != "" {
+		strDebug += "; "
+	}
+
+	strDebug += message
+	pnf.linkDebugInfo[link] = strDebug
+	pnf.linkDebugMessages[link][message] = struct{}{}
+}
+
+func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allLinks []*html.Node) {
+	// This logs the following to the console:
+	// - number of links processed
+	// - the next or previous page link found
+	// - for each link: its href, text, concatenated debug string.
+	direction := "next"
+	if !findNext {
+		direction = "prev"
+	}
+
+	logger.PrintPaginationInfo(fmt.Sprintf(
+		"nLinks=%d, found %s: %s",
+		len(allLinks), direction, pagingHref))
+
+	for i, link := range allLinks {
+		text := domutil.InnerText(link)
+		text = strings.Join(strings.Fields(text), " ")
+		href := dom.GetAttribute(link, "href")
+		debugMsg := pnf.linkDebugInfo[link]
+
+		logger.PrintPaginationInfo(fmt.Sprintf(
+			"%d) %s, txt=[%s], dbg=[%s]",
+			i, href, text, debugMsg))
+	}
+}
+
+func (pnf *PrevNextFinder) rxDebugName(findNext bool) string {
+	if findNext {
+		return "next regex"
+	}
+
+	return "prev regex"
 }

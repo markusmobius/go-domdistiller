@@ -3,6 +3,7 @@
 package embed
 
 import (
+	"fmt"
 	nurl "net/url"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -50,6 +52,9 @@ func (ve *VimeoExtractor) Extract(node *html.Node) webdoc.Element {
 	if vimeoID == "" {
 		return nil
 	}
+
+	logMsg := fmt.Sprintf("Vimeo embed extracted (ID: %s)", vimeoID)
+	logger.PrintVisibilityInfo(logMsg)
 
 	return &webdoc.Embed{
 		Element: node,

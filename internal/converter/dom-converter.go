@@ -11,6 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -129,6 +130,7 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 
 	case "table":
 		tableType, _ := tableclass.Classify(node)
+		logTableInfo(node, tableType)
 		if tableType == tableclass.Data {
 			dc.builder.AddDataTable(node)
 			return false
@@ -150,4 +152,39 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 
 	dc.builder.StartNode(node)
 	return true
+}
+
+func logTableInfo(table *html.Node, tableType tableclass.Type) {
+	if !logger.HasFlag(logger.VisibilityInfo) {
+		return
+	}
+
+	id := dom.GetAttribute(table, "id")
+	class := dom.GetAttribute(table, "class")
+
+	logMsg := "Table: " + tableType.String()
+	if id != "" {
+		logMsg += " #" + id
+	}
+	if class != "" {
+		logMsg += " class=" + class
+	}
+
+	parent := domutil.GetParentElement(table)
+	if parent != nil {
+		tagName := dom.TagName(parent)
+		id := dom.GetAttribute(parent, "id")
+		class := dom.GetAttribute(parent, "class")
+
+		logMsg += ", parent=[" + tagName
+		if id != "" {
+			logMsg += " #" + id
+		}
+		if class != "" {
+			logMsg += " class=" + class
+		}
+		logMsg += "]"
+	}
+
+	logger.PrintVisibilityInfo(logMsg)
 }

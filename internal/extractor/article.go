@@ -9,6 +9,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/label"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 )
 
 // extractArticle extracts TextDocument. It is tuned towards news articles.
@@ -38,21 +39,59 @@ func extractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candida
 	largeBlockSameTagLevel := heuristic.NewLargeBlockSameTagLevelToContent()
 	listAtEnd := heuristic.NewListAtEnd()
 
+	printArticleLog(doc, true, "Start")
+
 	// Run filters
+	// Intentionally don't print changes from these two
 	terminatingBlocksFinder.Process(doc)
 	documentTitleMatch.Process(doc)
-	numWordsRulesClassifier.Process(doc)
-	labelNotContentToBoilerplate.Process(doc)
-	similarSiblingContentExpansion1.Process(doc)
-	similarSiblingContentExpansion2.Process(doc)
-	headingFusion.Process(doc)
-	blockProximityFusionPre.Process(doc)
-	boilerplateBlockKeepTitle.Process(doc)
-	blockProximityFusionPost.Process(doc)
-	keepLargestBlockExpandToSibling.Process(doc)
-	expandTitleToContent.Process(doc)
-	largeBlockSameTagLevel.Process(doc)
-	listAtEnd.Process(doc)
+
+	changed := numWordsRulesClassifier.Process(doc)
+	printArticleLog(doc, changed, "Classification complete")
+
+	changed = labelNotContentToBoilerplate.Process(doc)
+	printArticleLog(doc, changed, "Ignore strictly not content blocks")
+
+	changed = similarSiblingContentExpansion1.Process(doc)
+	printArticleLog(doc, changed, "Cross headings SimilarSiblingContentExpansion")
+
+	changed = similarSiblingContentExpansion2.Process(doc)
+	printArticleLog(doc, changed, "Mixed tags SimilarSiblingContentExpansion")
+
+	changed = headingFusion.Process(doc)
+	printArticleLog(doc, changed, "HeadingFusion")
+
+	changed = blockProximityFusionPre.Process(doc)
+	printArticleLog(doc, changed, "BlockProximityFusion for distance=1")
+
+	changed = boilerplateBlockKeepTitle.Process(doc)
+	printArticleLog(doc, changed, "BlockFilter keep title")
+
+	changed = blockProximityFusionPost.Process(doc)
+	printArticleLog(doc, changed, "BlockProximityFusion for same level content-only")
+
+	changed = keepLargestBlockExpandToSibling.Process(doc)
+	printArticleLog(doc, changed, "Keep largest block")
+
+	changed = expandTitleToContent.Process(doc)
+	printArticleLog(doc, changed, "Expand title to content")
+
+	changed = largeBlockSameTagLevel.Process(doc)
+	printArticleLog(doc, changed, "Largest block with same tag level to content")
+
+	changed = listAtEnd.Process(doc)
+	printArticleLog(doc, changed, "List at end filter")
 
 	return true
+}
+
+func printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
+	logMsg := ""
+	if !changed {
+		logMsg = header + ": NO CHANGES"
+	} else {
+		logMsg = header + ":\n" + doc.DebugString()
+	}
+
+	logger.PrintDistillPhaseInfo(logMsg)
 }

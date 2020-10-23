@@ -3,8 +3,12 @@
 package docfilter
 
 import (
+	"fmt"
+
+	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/filter/docfilter/scorer"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -122,6 +126,7 @@ func (f *LeadImageFinder) getImageScore(e webdoc.Element, heuristics []scorer.Im
 		score += ir.GetImageScore(imgNode)
 	}
 
+	f.logFinalScore(imgNode, score)
 	return score
 }
 
@@ -132,4 +137,14 @@ func (f *LeadImageFinder) getLeadHeuristics(firstContent *html.Node) []scorer.Im
 		scorer.NewImageDomDistanceScorer(25, firstContent),
 		scorer.NewImageHasFigureScorer(15),
 	}
+}
+
+func (f *LeadImageFinder) logFinalScore(node *html.Node, score int) {
+	logMsg := "null image can't be scored"
+	if node != nil {
+		src := dom.GetAttribute(node, "src")
+		logMsg = fmt.Sprintf("Final image score: %d : %s", score, src)
+	}
+
+	logger.PrintVisibilityInfo(logMsg)
 }

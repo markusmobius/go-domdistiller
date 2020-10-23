@@ -2,38 +2,6 @@
 
 package tableclass
 
-type Type uint
-type Reason uint
-
-const (
-	Data Type = iota
-	Layout
-)
-
-const (
-	Unknown Reason = iota
-	InsideEditableArea
-	RoleTable
-	RoleDescendant
-	Datatable0
-	CaptionTheadTfootColgroupColTh
-	AbbrHeadersScope
-	OnlyHasAbbr
-	More95PercentDocWidth
-	Summary
-	NestedTable
-	LessEq1Row
-	LessEq1Col
-	MoreEq5Cols
-	CellsHaveBorder
-	DifferentlyColoredRows
-	MoreEq20Rows
-	LessEq10Cells
-	EmbedObjectAppletIframe
-	More90PercentDocHeight
-	Default
-)
-
 var headerTags = map[string]bool{
 	"colgroup": false,
 	"col":      false,

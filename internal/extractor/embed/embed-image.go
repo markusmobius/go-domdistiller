@@ -10,6 +10,7 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logger"
 	"golang.org/x/net/html"
 )
 
@@ -140,6 +141,8 @@ func (ie *ImageExtractor) extractImageAttrs(img *html.Node) (string, int, int) {
 
 	width, _ := strconv.Atoi(dom.GetAttribute(img, "width"))
 	height, _ := strconv.Atoi(dom.GetAttribute(img, "height"))
+
+	logger.PrintVisibilityInfo("Extracted Image:", imgSrc)
 	return imgSrc, width, height
 }
 
