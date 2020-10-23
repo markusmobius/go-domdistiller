@@ -83,6 +83,8 @@ func (doc *Document) GetImageURLs() []string {
 		switch element := e.(type) {
 		case *Image:
 			imageURLs = append(imageURLs, element.GetURLs()...)
+		case *Figure:
+			imageURLs = append(imageURLs, element.GetURLs()...)
 		case *Table:
 			imageURLs = append(imageURLs, element.GetImageURLs()...)
 		}
