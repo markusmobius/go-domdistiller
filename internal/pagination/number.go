@@ -37,6 +37,7 @@ func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) 
 	url := *pageURL
 	url.Path = strings.TrimSuffix(url.Path, "/")
 	url.RawPath = url.Path
+	strPageURL := stringutil.UnescapedString(&url)
 
 	paramInfo := pnf.FindOutlink(root, &url)
 	if paramInfo.Type != info.PageNumber {
@@ -50,7 +51,13 @@ func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) 
 	// the last page, so the last page info is for previous page.
 	nPageInfo := len(paramInfo.AllPageInfo)
 	if pagination.NextPage == "" && nPageInfo > 0 {
-		pagination.PrevPage = paramInfo.AllPageInfo[nPageInfo-1].URL
+		for i := nPageInfo - 1; i >= 0; i-- {
+			currentInfo := paramInfo.AllPageInfo[i]
+			if currentInfo.URL != strPageURL {
+				pagination.PrevPage = currentInfo.URL
+				break
+			}
+		}
 		return
 	}
 
@@ -65,7 +72,6 @@ func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) 
 			}
 		}
 
-		strPageURL := stringutil.UnescapedString(&url)
 		for i := nextPageIdx - 1; i >= 0; i-- {
 			currentURL := paramInfo.AllPageInfo[i].URL
 			if currentURL == "" || currentURL != strPageURL {
