@@ -9,7 +9,7 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -257,6 +257,6 @@ func getRowAndColumnCount(t *html.Node) (int, int) {
 }
 
 func logAndReturn(tableType Type, reason Reason) (Type, Reason) {
-	logger.PrintVisibilityInfo(reason, "=>", tableType)
+	logutil.PrintVisibilityInfo(reason, "=>", tableType)
 	return tableType, reason
 }

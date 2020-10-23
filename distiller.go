@@ -14,7 +14,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/extractor"
 	"github.com/markusmobius/go-domdistiller/internal/pagination"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -55,7 +55,7 @@ type Options struct {
 	ExtractTextOnly bool
 
 	// Flags to specify which info to dump to log.
-	LogFlags logger.Flag
+	LogFlags logutil.Flag
 
 	// Original URL of the page, which is used in the heuristics in
 	// detecting next/prev page links.
@@ -142,7 +142,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	}
 
 	// Prepare logger
-	logger.SetFlags(opts.LogFlags)
+	logutil.SetFlags(opts.LogFlags)
 
 	// Start extractor
 	ce := extractor.NewContentExtractor(doc, opts.OriginalURL)
@@ -160,13 +160,13 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 		if opts.PaginationAlgo == "pagenum" {
 			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
-			logger.PrintPaginationInfo("Paging by PageNum, prev: " + result.PaginationInfo.PrevPage)
-			logger.PrintPaginationInfo("Paging by PageNum, next: " + result.PaginationInfo.NextPage)
+			logutil.PrintPaginationInfo("Paging by PageNum, prev: " + result.PaginationInfo.PrevPage)
+			logutil.PrintPaginationInfo("Paging by PageNum, next: " + result.PaginationInfo.NextPage)
 		} else {
 			finder := pagination.NewPrevNextFinder()
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
-			logger.PrintPaginationInfo("Paging by PrevNext, prev: " + result.PaginationInfo.PrevPage)
-			logger.PrintPaginationInfo("Paging by PrevNext, next: " + result.PaginationInfo.NextPage)
+			logutil.PrintPaginationInfo("Paging by PrevNext, prev: " + result.PaginationInfo.PrevPage)
+			logutil.PrintPaginationInfo("Paging by PrevNext, next: " + result.PaginationInfo.NextPage)
 		}
 	}
 

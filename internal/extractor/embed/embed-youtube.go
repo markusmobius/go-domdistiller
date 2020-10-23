@@ -11,7 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -75,7 +75,7 @@ func (ye *YouTubeExtractor) Extract(node *html.Node) webdoc.Element {
 	}
 
 	logMsg := fmt.Sprintf("YouTube embed extracted (ID: %s)", youtubeID)
-	logger.PrintVisibilityInfo(logMsg)
+	logutil.PrintVisibilityInfo(logMsg)
 
 	return &webdoc.Embed{
 		Element: node,

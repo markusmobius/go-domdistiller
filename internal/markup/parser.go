@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/markusmobius/go-domdistiller/data"
-	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/markup/iereader"
 	"github.com/markusmobius/go-domdistiller/internal/markup/opengraph"
 	"github.com/markusmobius/go-domdistiller/internal/markup/schemaorg"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 

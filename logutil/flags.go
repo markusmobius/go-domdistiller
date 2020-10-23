@@ -1,6 +1,6 @@
 // ORIGINAL: java/LogUtil.java
 
-package logger
+package logutil
 
 // Flag is enum to specify logging level.
 type Flag uint

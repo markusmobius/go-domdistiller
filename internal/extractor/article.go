@@ -9,7 +9,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/label"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 )
 
 // extractArticle extracts TextDocument. It is tuned towards news articles.
@@ -93,5 +93,5 @@ func printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
 		logMsg = header + ":\n" + doc.DebugString()
 	}
 
-	logger.PrintDistillPhaseInfo(logMsg)
+	logutil.PrintDistillPhaseInfo(logMsg)
 }

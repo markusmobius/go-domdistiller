@@ -13,7 +13,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -388,7 +388,7 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 }
 
 func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string) {
-	if !logger.HasFlag(logger.PaginationInfo) {
+	if !logutil.HasFlag(logutil.PaginationInfo) {
 		return
 	}
 
@@ -430,7 +430,7 @@ func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allL
 		direction = "prev"
 	}
 
-	logger.PrintPaginationInfo(fmt.Sprintf(
+	logutil.PrintPaginationInfo(fmt.Sprintf(
 		"nLinks=%d, found %s: %s",
 		len(allLinks), direction, pagingHref))
 
@@ -440,7 +440,7 @@ func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allL
 		href := dom.GetAttribute(link, "href")
 		debugMsg := pnf.linkDebugInfo[link]
 
-		logger.PrintPaginationInfo(fmt.Sprintf(
+		logutil.PrintPaginationInfo(fmt.Sprintf(
 			"%d) %s, txt=[%s], dbg=[%s]",
 			i, href, text, debugMsg))
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -53,7 +53,7 @@ func (te *TwitterExtractor) Extract(node *html.Node) webdoc.Element {
 
 	if result != nil {
 		logMsg := fmt.Sprintf("Twitter embed extracted (ID: %s)", result.ID)
-		logger.PrintVisibilityInfo(logMsg)
+		logutil.PrintVisibilityInfo(logMsg)
 		return result
 	}
 

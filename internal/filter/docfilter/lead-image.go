@@ -8,7 +8,7 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/filter/docfilter/scorer"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -146,5 +146,5 @@ func (f *LeadImageFinder) logFinalScore(node *html.Node, score int) {
 		logMsg = fmt.Sprintf("Final image score: %d : %s", score, src)
 	}
 
-	logger.PrintVisibilityInfo(logMsg)
+	logutil.PrintVisibilityInfo(logMsg)
 }

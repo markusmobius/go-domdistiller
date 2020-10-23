@@ -11,7 +11,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logger"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -155,7 +155,7 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 }
 
 func logTableInfo(table *html.Node, tableType tableclass.Type) {
-	if !logger.HasFlag(logger.VisibilityInfo) {
+	if !logutil.HasFlag(logutil.VisibilityInfo) {
 		return
 	}
 
@@ -186,5 +186,5 @@ func logTableInfo(table *html.Node, tableType tableclass.Type) {
 		logMsg += "]"
 	}
 
-	logger.PrintVisibilityInfo(logMsg)
+	logutil.PrintVisibilityInfo(logMsg)
 }

@@ -1,6 +1,6 @@
 // ORIGINAL: java/LogUtil.java
 
-package logger
+package logutil
 
 import "github.com/sirupsen/logrus"
 
