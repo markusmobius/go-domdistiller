@@ -18,10 +18,14 @@ import (
 // VimeoExtractor is used for extracting Vimeo videos and relevant information.
 type VimeoExtractor struct {
 	PageURL *nurl.URL
+	logger  *logutil.Logger
 }
 
-func NewVimeoExtractor(pageURL *nurl.URL) *VimeoExtractor {
-	return &VimeoExtractor{PageURL: pageURL}
+func NewVimeoExtractor(pageURL *nurl.URL, logger *logutil.Logger) *VimeoExtractor {
+	return &VimeoExtractor{
+		PageURL: pageURL,
+		logger:  logger,
+	}
 }
 
 func (ve *VimeoExtractor) RelevantTagNames() []string {
@@ -54,7 +58,7 @@ func (ve *VimeoExtractor) Extract(node *html.Node) webdoc.Element {
 	}
 
 	logMsg := fmt.Sprintf("Vimeo embed extracted (ID: %s)", vimeoID)
-	logutil.PrintVisibilityInfo(logMsg)
+	ve.printLog(logMsg)
 
 	return &webdoc.Embed{
 		Element: node,
@@ -99,4 +103,10 @@ func (ve *VimeoExtractor) getDataFromSrcURL(srcURL string) (string, map[string]s
 	}
 
 	return videoID, params
+}
+
+func (ve *VimeoExtractor) printLog(args ...interface{}) {
+	if ve.logger != nil {
+		ve.logger.PrintVisibilityInfo(args...)
+	}
 }

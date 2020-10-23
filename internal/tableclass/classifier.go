@@ -13,12 +13,19 @@ import (
 	"golang.org/x/net/html"
 )
 
+// Classifier is object that classifies the table
+type Classifier struct {
+	logger *logutil.Logger
+}
+
+func NewClassifier(logger *logutil.Logger) *Classifier {
+	return &Classifier{logger: logger}
+}
+
 // Classify classifies a <table> element as layout or data type, based on the set of heuristics at
 // http://asurkov.blogspot.com/2011/10/data-vs-layout-table.html, with some modifications to suit
 // our distillation needs.
-//
-// TODO: in original dom-distiller they log the result, but for now I don't do it.
-func Classify(t *html.Node) (Type, Reason) {
+func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 	// Different from url above, table created by CSS display style is layout table, because
 	// we only handle actual <table> elements.
 
@@ -29,7 +36,7 @@ func Classify(t *html.Node) (Type, Reason) {
 		parentTagName := dom.TagName(parent)
 		parentEditable := dom.GetAttribute(parent, "contenteditable")
 		if parentTagName == "input" || strings.ToLower(parentEditable) == "true" {
-			return logAndReturn(Layout, InsideEditableArea)
+			return c.logAndReturn(Layout, InsideEditableArea)
 		}
 		parent = parent.Parent
 	}
@@ -37,14 +44,14 @@ func Classify(t *html.Node) (Type, Reason) {
 	// 2) Table having role="presentation" is layout table.
 	tableRole := strings.ToLower(dom.GetAttribute(t, "role"))
 	if tableRole == "presentation" {
-		return logAndReturn(Layout, RoleTable)
+		return c.logAndReturn(Layout, RoleTable)
 	}
 
 	// 3) Table having ARIA table-related roles is data table.
 	_, ariaRoleExist := ariaRoles[tableRole]
 	_, ariaTableRoleExist := ariaTableRoles[tableRole]
 	if ariaRoleExist || ariaTableRoleExist {
-		return logAndReturn(Data, RoleTable)
+		return c.logAndReturn(Data, RoleTable)
 	}
 
 	// 4) Table having ARIA table-related roles in its descendants is data table.
@@ -56,13 +63,13 @@ func Classify(t *html.Node) (Type, Reason) {
 		_, ariaRoleExist := ariaRoles[role]
 		_, ariaDescendantExist := ariaTableDescendantRoles[role]
 		if ariaRoleExist || ariaDescendantExist {
-			return logAndReturn(Data, RoleDescendant)
+			return c.logAndReturn(Data, RoleDescendant)
 		}
 	}
 
 	// 5) Table having datatable="0" attribute is layout table.
 	if dom.GetAttribute(t, "datatable") == "0" {
-		return logAndReturn(Layout, Datatable0)
+		return c.logAndReturn(Layout, Datatable0)
 	}
 
 	// 6) Table having nested table(s) is layout table.
@@ -72,17 +79,17 @@ func Classify(t *html.Node) (Type, Reason) {
 	// many (old) pages have layout tables that are nested or with <TH>/<CAPTION>s but only 1
 	// row or col.
 	if hasNestedTables(t) {
-		return logAndReturn(Layout, NestedTable)
+		return c.logAndReturn(Layout, NestedTable)
 	}
 
 	// 7) Table having only one row or column is layout table.
 	// See comments for #6 about deviation from said url.
 	rowCount, columnCount := getRowAndColumnCount(t)
 	if rowCount <= 1 {
-		return logAndReturn(Layout, LessEq1Row)
+		return c.logAndReturn(Layout, LessEq1Row)
 	}
 	if columnCount <= 1 {
-		return logAndReturn(Layout, LessEq1Col)
+		return c.logAndReturn(Layout, LessEq1Col)
 	}
 
 	// 8) Table having legitimate data table structures is data table :
@@ -92,7 +99,7 @@ func Classify(t *html.Node) (Type, Reason) {
 	tFoot := dom.QuerySelector(t, "tfoot")
 	if (caption != nil && hasValidText(caption)) || tHead != nil || tFoot != nil ||
 		hasOneOfElements(directDescendants, headerTags) {
-		return logAndReturn(Data, CaptionTheadTfootColgroupColTh)
+		return c.logAndReturn(Data, CaptionTheadTfootColgroupColTh)
 	}
 
 	// Extract all <td> elements from direct descendants, for easier/faster multiple access.
@@ -106,13 +113,13 @@ func Classify(t *html.Node) (Type, Reason) {
 	for _, td := range directTDs {
 		// b) table cell has abbr, headers, or scope attributes
 		if dom.HasAttribute(td, "abbr") || dom.HasAttribute(td, "headers") || dom.HasAttribute(td, "scope") {
-			return logAndReturn(Data, AbbrHeadersScope)
+			return c.logAndReturn(Data, AbbrHeadersScope)
 		}
 
 		// c) table cell has <abbr> element as a single child element.
 		tdChildren := dom.GetElementsByTagName(td, "*")
 		if len(tdChildren) == 1 && dom.TagName(tdChildren[0]) == "abbr" {
-			return logAndReturn(Data, OnlyHasAbbr)
+			return c.logAndReturn(Data, OnlyHasAbbr)
 		}
 	}
 
@@ -131,12 +138,12 @@ func Classify(t *html.Node) (Type, Reason) {
 	// layout: their "summary" attributes say they're for layout. They also occupy > 95% of
 	// document width, so #9 coming before #10 will correctly classify them as layout.
 	if dom.HasAttribute(t, "summary") {
-		return logAndReturn(Data, Summary)
+		return c.logAndReturn(Data, Summary)
 	}
 
 	// 11) Table having >=5 columns is data table.
 	if columnCount >= 5 {
-		return logAndReturn(Data, MoreEq5Cols)
+		return c.logAndReturn(Data, MoreEq5Cols)
 	}
 
 	// 12) Table having borders around cells is data table.
@@ -147,18 +154,18 @@ func Classify(t *html.Node) (Type, Reason) {
 
 	// 14) Table having >=20 rows is data table.
 	if rowCount >= 20 {
-		return logAndReturn(Data, MoreEq20Rows)
+		return c.logAndReturn(Data, MoreEq20Rows)
 	}
 
 	// 15) Table having <=10 cells is layout table.
 	if len(directTDs) <= 10 {
-		return logAndReturn(Layout, LessEq10Cells)
+		return c.logAndReturn(Layout, LessEq10Cells)
 	}
 
 	// 16) Table containing <embed>, <object>, <applet> or <iframe> elements (typical
 	//     advertisement elements) is layout table.
 	if hasOneOfElements(directDescendants, objectTags) {
-		return logAndReturn(Layout, EmbedObjectAppletIframe)
+		return c.logAndReturn(Layout, EmbedObjectAppletIframe)
 	}
 
 	// 17) Table occupying > 90% of document height is layout table.
@@ -169,7 +176,7 @@ func Classify(t *html.Node) (Type, Reason) {
 	// And, unfortunately it's impossible to implement here. NEED-COMPUTE-CSS.
 
 	// 18) Otherwise, it's data table.
-	return logAndReturn(Data, Default)
+	return c.logAndReturn(Data, Default)
 }
 
 func hasNestedTables(t *html.Node) bool {
@@ -256,7 +263,9 @@ func getRowAndColumnCount(t *html.Node) (int, int) {
 	return rows, columns
 }
 
-func logAndReturn(tableType Type, reason Reason) (Type, Reason) {
-	logutil.PrintVisibilityInfo(reason, "=>", tableType)
+func (c *Classifier) logAndReturn(tableType Type, reason Reason) (Type, Reason) {
+	if c.logger != nil {
+		c.logger.PrintVisibilityInfo(reason, "=>", tableType)
+	}
 	return tableType, reason
 }

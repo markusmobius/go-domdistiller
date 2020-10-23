@@ -18,10 +18,14 @@ import (
 // YouTubeExtractor is used for extracting YouTube videos and relevant information.
 type YouTubeExtractor struct {
 	PageURL *nurl.URL
+	logger  *logutil.Logger
 }
 
-func NewYouTubeExtractor(pageURL *nurl.URL) *YouTubeExtractor {
-	return &YouTubeExtractor{PageURL: pageURL}
+func NewYouTubeExtractor(pageURL *nurl.URL, logger *logutil.Logger) *YouTubeExtractor {
+	return &YouTubeExtractor{
+		PageURL: pageURL,
+		logger:  logger,
+	}
 }
 
 func (ye *YouTubeExtractor) RelevantTagNames() []string {
@@ -75,7 +79,7 @@ func (ye *YouTubeExtractor) Extract(node *html.Node) webdoc.Element {
 	}
 
 	logMsg := fmt.Sprintf("YouTube embed extracted (ID: %s)", youtubeID)
-	logutil.PrintVisibilityInfo(logMsg)
+	ye.printLog(logMsg)
 
 	return &webdoc.Embed{
 		Element: node,
@@ -120,4 +124,10 @@ func (ye *YouTubeExtractor) getDataFromSrcURL(srcURL string) (string, map[string
 	}
 
 	return videoID, params
+}
+
+func (ye *YouTubeExtractor) printLog(args ...interface{}) {
+	if ye.logger != nil {
+		ye.logger.PrintVisibilityInfo(args...)
+	}
 }

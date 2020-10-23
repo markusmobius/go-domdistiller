@@ -13,6 +13,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/parser"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -20,16 +21,20 @@ import (
 // outlinks with digital anchor text.
 type PageNumberFinder struct {
 	wordCounter              stringutil.WordCounter
-	timingInfo               *data.TimingInfo
 	adjacentNumberGroups     *info.MonotonicPageInfoGroups
 	numForwardLinksProcessed int
+
+	timingInfo *data.TimingInfo
+	logger     *logutil.Logger
 }
 
-func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo) *PageNumberFinder {
+func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo, logger *logutil.Logger) *PageNumberFinder {
 	return &PageNumberFinder{
 		wordCounter:          wc,
-		timingInfo:           timingInfo,
 		adjacentNumberGroups: &info.MonotonicPageInfoGroups{},
+
+		timingInfo: timingInfo,
+		logger:     logger,
 	}
 }
 
@@ -120,7 +125,7 @@ func (pnf *PageNumberFinder) FindOutlink(root *html.Node, pageURL *nurl.URL) *in
 	}
 
 	pnf.adjacentNumberGroups.CleanUp()
-	paramInfo := parser.DetectParamInfo(pnf.adjacentNumberGroups, pageURL.String())
+	paramInfo := parser.DetectParamInfo(pnf.adjacentNumberGroups, pageURL.String(), pnf.logger)
 	return paramInfo
 }
 

@@ -25,10 +25,14 @@ const imageMinimumAcceptedScore = 13
 // because it would require us to compute the stylesheet (NEED-COMPUTE-CSS):
 // - The ratio of width/height.
 // - The area of the image (width * height) relative to its container.
-type LeadImageFinder struct{}
+type LeadImageFinder struct {
+	logger *logutil.Logger
+}
 
-func NewLeadImageFinder() *LeadImageFinder {
-	return &LeadImageFinder{}
+func NewLeadImageFinder(logger *logutil.Logger) *LeadImageFinder {
+	return &LeadImageFinder{
+		logger: logger,
+	}
 }
 
 func (f *LeadImageFinder) Process(doc *webdoc.Document) bool {
@@ -140,11 +144,15 @@ func (f *LeadImageFinder) getLeadHeuristics(firstContent *html.Node) []scorer.Im
 }
 
 func (f *LeadImageFinder) logFinalScore(node *html.Node, score int) {
+	if f.logger == nil {
+		return
+	}
+
 	logMsg := "null image can't be scored"
 	if node != nil {
 		src := dom.GetAttribute(node, "src")
 		logMsg = fmt.Sprintf("Final image score: %d : %s", score, src)
 	}
 
-	logutil.PrintVisibilityInfo(logMsg)
+	f.logger.PrintVisibilityInfo(logMsg)
 }

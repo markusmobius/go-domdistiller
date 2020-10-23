@@ -19,9 +19,10 @@ import (
 // both rendered and unrendered tweets.
 type TwitterExtractor struct {
 	PageURL *nurl.URL
+	logger  *logutil.Logger
 }
 
-func NewTwitterExtractor(pageURL *nurl.URL) *TwitterExtractor {
+func NewTwitterExtractor(pageURL *nurl.URL, logger *logutil.Logger) *TwitterExtractor {
 	return &TwitterExtractor{PageURL: pageURL}
 }
 
@@ -53,7 +54,7 @@ func (te *TwitterExtractor) Extract(node *html.Node) webdoc.Element {
 
 	if result != nil {
 		logMsg := fmt.Sprintf("Twitter embed extracted (ID: %s)", result.ID)
-		logutil.PrintVisibilityInfo(logMsg)
+		te.printLog(logMsg)
 		return result
 	}
 
@@ -140,4 +141,10 @@ func (te *TwitterExtractor) getTweetIdFromURL(tweetURL string) string {
 	}
 
 	return ""
+}
+
+func (te *TwitterExtractor) printLog(args ...interface{}) {
+	if te.logger != nil {
+		te.logger.PrintVisibilityInfo(args...)
+	}
 }

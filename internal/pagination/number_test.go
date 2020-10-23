@@ -313,7 +313,7 @@ func processDocumentWithPageNum(originalURL string, content string) *info.PagePa
 	body := dom.QuerySelector(root, "body")
 	dom.SetInnerHTML(body, content)
 
-	numberFinder := pagination.NewPageNumberFinder(stringutil.FastWordCounter{}, nil)
+	numberFinder := pagination.NewPageNumberFinder(stringutil.FastWordCounter{}, nil, nil)
 	return numberFinder.FindOutlink(root, pageURL)
 }
 

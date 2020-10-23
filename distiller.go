@@ -142,10 +142,10 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	}
 
 	// Prepare logger
-	logutil.SetFlags(opts.LogFlags)
+	logger := logutil.NewLogger(opts.LogFlags)
 
 	// Start extractor
-	ce := extractor.NewContentExtractor(doc, opts.OriginalURL)
+	ce := extractor.NewContentExtractor(doc, opts.OriginalURL, logger)
 	content, wordCount := ce.ExtractContent(opts.ExtractTextOnly)
 
 	result := Result{}
@@ -158,15 +158,15 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	// Find pagination
 	if !opts.SkipPagination && opts.OriginalURL != nil {
 		if opts.PaginationAlgo == "pagenum" {
-			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil)
+			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil, logger)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
-			logutil.PrintPaginationInfo("Paging by PageNum, prev: " + result.PaginationInfo.PrevPage)
-			logutil.PrintPaginationInfo("Paging by PageNum, next: " + result.PaginationInfo.NextPage)
+			logger.PrintPaginationInfo("Paging by PageNum, prev: " + result.PaginationInfo.PrevPage)
+			logger.PrintPaginationInfo("Paging by PageNum, next: " + result.PaginationInfo.NextPage)
 		} else {
-			finder := pagination.NewPrevNextFinder()
+			finder := pagination.NewPrevNextFinder(logger)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
-			logutil.PrintPaginationInfo("Paging by PrevNext, prev: " + result.PaginationInfo.PrevPage)
-			logutil.PrintPaginationInfo("Paging by PrevNext, next: " + result.PaginationInfo.NextPage)
+			logger.PrintPaginationInfo("Paging by PrevNext, prev: " + result.PaginationInfo.PrevPage)
+			logger.PrintPaginationInfo("Paging by PrevNext, next: " + result.PaginationInfo.NextPage)
 		}
 	}
 

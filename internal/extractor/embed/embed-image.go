@@ -18,10 +18,14 @@ import (
 // lead image candidacy.
 type ImageExtractor struct {
 	PageURL *nurl.URL
+	logger  *logutil.Logger
 }
 
-func NewImageExtractor(pageURL *nurl.URL) *ImageExtractor {
-	return &ImageExtractor{PageURL: pageURL}
+func NewImageExtractor(pageURL *nurl.URL, logger *logutil.Logger) *ImageExtractor {
+	return &ImageExtractor{
+		PageURL: pageURL,
+		logger:  logger,
+	}
 }
 
 func (ie *ImageExtractor) RelevantTagNames() []string {
@@ -142,7 +146,7 @@ func (ie *ImageExtractor) extractImageAttrs(img *html.Node) (string, int, int) {
 	width, _ := strconv.Atoi(dom.GetAttribute(img, "width"))
 	height, _ := strconv.Atoi(dom.GetAttribute(img, "height"))
 
-	logutil.PrintVisibilityInfo("Extracted Image:", imgSrc)
+	ie.printLog("Extracted Image:", imgSrc)
 	return imgSrc, width, height
 }
 
@@ -151,4 +155,10 @@ func (ie *ImageExtractor) createFigCaption(base *html.Node) *html.Node {
 	figCaption := dom.CreateElement("figcaption")
 	dom.SetTextContent(figCaption, strings.TrimSpace(baseText))
 	return figCaption
+}
+
+func (ie *ImageExtractor) printLog(args ...interface{}) {
+	if ie.logger != nil {
+		ie.logger.PrintVisibilityInfo(args...)
+	}
 }

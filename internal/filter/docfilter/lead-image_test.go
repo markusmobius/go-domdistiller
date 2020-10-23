@@ -13,7 +13,7 @@ import (
 
 func Test_Filter_DocFilter_LIF_EmptyDocument(t *testing.T) {
 	document := webdoc.NewDocument()
-	assert.False(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.False(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.Len(t, document.Elements, 0)
 }
 
@@ -23,7 +23,7 @@ func Test_Filter_DocFilter_LIF_RelevantLeadImage(t *testing.T) {
 	builder.AddText("text 1").SetIsContent(true)
 
 	document := builder.Build()
-	assert.True(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.True(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.True(t, wi.IsContent())
 }
 
@@ -33,7 +33,7 @@ func Test_Filter_DocFilter_LIF_NoContent(t *testing.T) {
 	builder.AddText("text 1").SetIsContent(false)
 
 	document := builder.Build()
-	assert.False(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.False(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.False(t, wi.IsContent())
 }
 
@@ -44,7 +44,7 @@ func Test_Filter_DocFilter_LIF_MultipleLeadImageCandidates(t *testing.T) {
 	builder.AddText("text 1").SetIsContent(true)
 
 	document := builder.Build()
-	assert.True(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.True(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.True(t, priority.IsContent())
 	assert.False(t, ignored.IsContent())
 }
@@ -56,7 +56,7 @@ func Test_Filter_DocFilter_LIF_IrrelevantLeadImage(t *testing.T) {
 	priority := builder.AddLeadImage()
 
 	document := builder.Build()
-	assert.False(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.False(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.False(t, priority.IsContent())
 }
 
@@ -68,7 +68,7 @@ func Test_Filter_DocFilter_LIF_MultipleLeadImageCandidatesWithinTexts(t *testing
 	ignored := builder.AddLeadImage()
 
 	document := builder.Build()
-	assert.True(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.True(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.True(t, priority.IsContent())
 	assert.False(t, ignored.IsContent())
 }
@@ -81,7 +81,7 @@ func Test_Filter_DocFilter_LIF_IrrelevantLeadImageWithContentImage(t *testing.T)
 	builder.AddNestedText("text 1").SetIsContent(true)
 
 	document := builder.Build()
-	assert.False(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.False(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.True(t, smallImage.IsContent())
 	assert.False(t, largeImage.IsContent())
 }
@@ -92,6 +92,6 @@ func Test_Filter_DocFilter_LIF_IrrelevantLeadImageAfterSingleText(t *testing.T) 
 	builder.AddNestedText("text 1").SetIsContent(true)
 
 	document := builder.Build()
-	assert.False(t, docfilter.NewLeadImageFinder().Process(document))
+	assert.False(t, docfilter.NewLeadImageFinder(nil).Process(document))
 	assert.False(t, wi.IsContent())
 }

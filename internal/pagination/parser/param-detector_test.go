@@ -549,12 +549,12 @@ func Test_Pagination_Parser_Detector_TooManyPagingDocuments(t *testing.T) {
 		pages.AddNumber(i, fmt.Sprintf("http://www.google.com/thread/page/%d", i))
 	}
 
-	paramInfo := parser.DetectParamInfo(pages, docURL)
+	paramInfo := parser.DetectParamInfo(pages, docURL, nil)
 	assert.Len(t, paramInfo.AllPageInfo, parser.MaxPagingDocs)
 
 	pages.AddNumber(parser.MaxPagingDocs+1,
 		fmt.Sprintf("http://www.google.com/thread/page/%d", parser.MaxPagingDocs+1))
-	paramInfo = parser.DetectParamInfo(pages, docURL)
+	paramInfo = parser.DetectParamInfo(pages, docURL, nil)
 	expectEmptyPageParamInfo(t, paramInfo)
 }
 
@@ -1043,7 +1043,7 @@ func detectPageParameterWithSize(docURL string, allContentInfo []*tu.PageParamCo
 		}
 	}
 
-	return parser.DetectParamInfo(adjacentNumberGroups, docURL)
+	return parser.DetectParamInfo(adjacentNumberGroups, docURL, nil)
 }
 
 func detectPageParameter(docURL string, allContentInfo []*tu.PageParamContentInfo) *info.PageParamInfo {

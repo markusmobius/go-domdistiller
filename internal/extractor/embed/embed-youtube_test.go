@@ -17,7 +17,7 @@ func Test_Embed_YouTube_Extract(t *testing.T) {
 	dom.SetAttribute(youtube, "src", "//www.youtube.com/embed/M7lc1UVf-VE?autoplay=1&hl=zh_TW")
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewYouTubeExtractor(pageURL)
+	extractor := embed.NewYouTubeExtractor(pageURL, nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -39,7 +39,7 @@ func Test_Embed_YouTube_ExtractID(t *testing.T) {
 	youtube := dom.CreateElement("iframe")
 	dom.SetAttribute(youtube, "src", "http://www.youtube.com/embed/M7lc1UVf-VE///?autoplay=1")
 
-	extractor := embed.NewYouTubeExtractor(nil)
+	extractor := embed.NewYouTubeExtractor(nil, nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -69,7 +69,7 @@ func Test_Embed_YouTube_Object(t *testing.T) {
 
 	youtube := dom.FirstElementChild(div)
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewYouTubeExtractor(pageURL)
+	extractor := embed.NewYouTubeExtractor(pageURL, nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes
@@ -90,7 +90,7 @@ func Test_Embed_YouTube_Object2(t *testing.T) {
 	dom.SetInnerHTML(div, html)
 
 	youtube := dom.FirstElementChild(div)
-	extractor := embed.NewYouTubeExtractor(nil)
+	extractor := embed.NewYouTubeExtractor(nil, nil)
 	result, _ := (extractor.Extract(youtube)).(*webdoc.Embed)
 
 	// Check YouTube specific attributes

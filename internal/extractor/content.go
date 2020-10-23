@@ -13,6 +13,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/markup"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
+	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -25,9 +26,10 @@ type ContentExtractor struct {
 	pageURL         *nurl.URL
 	documentElement *html.Node
 	candidateTitles []string
+	logger          *logutil.Logger
 }
 
-func NewContentExtractor(root *html.Node, pageURL *nurl.URL) *ContentExtractor {
+func NewContentExtractor(root *html.Node, pageURL *nurl.URL, logger *logutil.Logger) *ContentExtractor {
 	timingInfo := &data.TimingInfo{}
 
 	document := dom.QuerySelector(root, "html")
@@ -48,6 +50,7 @@ func NewContentExtractor(root *html.Node, pageURL *nurl.URL) *ContentExtractor {
 
 		documentElement: document,
 		pageURL:         pageURL,
+		logger:          logger,
 	}
 }
 
@@ -67,7 +70,7 @@ func (ce *ContentExtractor) ExtractContent(textOnly bool) (string, int) {
 	start = time.Now()
 	wordCount := ce.processDocument(webDocument)
 	docfilter.NewRelevantElements().Process(webDocument)
-	docfilter.NewLeadImageFinder().Process(webDocument)
+	docfilter.NewLeadImageFinder(ce.logger).Process(webDocument)
 	docfilter.NewNestedElementRetainer().Process(webDocument)
 	ce.TimingInfo.ArticleProcessingTime = time.Now().Sub(start)
 
@@ -102,7 +105,7 @@ func (ce *ContentExtractor) ensureTitleInitialized() {
 // webdoc.Document for analysis.
 func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
 	docBuilder := webdoc.NewWebDocumentBuilder(ce.WordCounter, ce.pageURL)
-	converter.NewDomConverter(docBuilder, ce.pageURL).Convert(ce.documentElement)
+	converter.NewDomConverter(docBuilder, ce.pageURL, ce.logger).Convert(ce.documentElement)
 
 	webDocument := docBuilder.Build()
 	ce.ensureTitleInitialized()
@@ -114,7 +117,8 @@ func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
 // inside document.
 func (ce *ContentExtractor) processDocument(doc *webdoc.Document) int {
 	textDocument := doc.CreateTextDocument()
-	extractArticle(textDocument, ce.WordCounter, ce.candidateTitles)
+
+	NewArticleExtractor(ce.logger).Extract(textDocument, ce.WordCounter, ce.candidateTitles)
 	wordCount := textDocument.CountWordsInContent()
 
 	textDocument.ApplyToModel()

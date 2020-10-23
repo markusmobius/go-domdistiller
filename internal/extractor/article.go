@@ -12,8 +12,16 @@ import (
 	"github.com/markusmobius/go-domdistiller/logutil"
 )
 
-// extractArticle extracts TextDocument. It is tuned towards news articles.
-func extractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candidateTitles []string) bool {
+type ArticleExtractor struct {
+	logger *logutil.Logger
+}
+
+func NewArticleExtractor(logger *logutil.Logger) *ArticleExtractor {
+	return &ArticleExtractor{logger: logger}
+}
+
+// Extract extracts TextDocument. It is tuned towards news articles.
+func (ae *ArticleExtractor) Extract(doc *webdoc.TextDocument, wc stringutil.WordCounter, candidateTitles []string) bool {
 	// Prepare filters
 	terminatingBlocksFinder := english.NewTerminatingBlocksFinder()
 	documentTitleMatch := heuristic.NewDocumentTitleMatch(wc, candidateTitles...)
@@ -39,7 +47,7 @@ func extractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candida
 	largeBlockSameTagLevel := heuristic.NewLargeBlockSameTagLevelToContent()
 	listAtEnd := heuristic.NewListAtEnd()
 
-	printArticleLog(doc, true, "Start")
+	ae.printArticleLog(doc, true, "Start")
 
 	// Run filters
 	// Intentionally don't print changes from these two
@@ -47,45 +55,49 @@ func extractArticle(doc *webdoc.TextDocument, wc stringutil.WordCounter, candida
 	documentTitleMatch.Process(doc)
 
 	changed := numWordsRulesClassifier.Process(doc)
-	printArticleLog(doc, changed, "Classification complete")
+	ae.printArticleLog(doc, changed, "Classification complete")
 
 	changed = labelNotContentToBoilerplate.Process(doc)
-	printArticleLog(doc, changed, "Ignore strictly not content blocks")
+	ae.printArticleLog(doc, changed, "Ignore strictly not content blocks")
 
 	changed = similarSiblingContentExpansion1.Process(doc)
-	printArticleLog(doc, changed, "Cross headings SimilarSiblingContentExpansion")
+	ae.printArticleLog(doc, changed, "Cross headings SimilarSiblingContentExpansion")
 
 	changed = similarSiblingContentExpansion2.Process(doc)
-	printArticleLog(doc, changed, "Mixed tags SimilarSiblingContentExpansion")
+	ae.printArticleLog(doc, changed, "Mixed tags SimilarSiblingContentExpansion")
 
 	changed = headingFusion.Process(doc)
-	printArticleLog(doc, changed, "HeadingFusion")
+	ae.printArticleLog(doc, changed, "HeadingFusion")
 
 	changed = blockProximityFusionPre.Process(doc)
-	printArticleLog(doc, changed, "BlockProximityFusion for distance=1")
+	ae.printArticleLog(doc, changed, "BlockProximityFusion for distance=1")
 
 	changed = boilerplateBlockKeepTitle.Process(doc)
-	printArticleLog(doc, changed, "BlockFilter keep title")
+	ae.printArticleLog(doc, changed, "BlockFilter keep title")
 
 	changed = blockProximityFusionPost.Process(doc)
-	printArticleLog(doc, changed, "BlockProximityFusion for same level content-only")
+	ae.printArticleLog(doc, changed, "BlockProximityFusion for same level content-only")
 
 	changed = keepLargestBlockExpandToSibling.Process(doc)
-	printArticleLog(doc, changed, "Keep largest block")
+	ae.printArticleLog(doc, changed, "Keep largest block")
 
 	changed = expandTitleToContent.Process(doc)
-	printArticleLog(doc, changed, "Expand title to content")
+	ae.printArticleLog(doc, changed, "Expand title to content")
 
 	changed = largeBlockSameTagLevel.Process(doc)
-	printArticleLog(doc, changed, "Largest block with same tag level to content")
+	ae.printArticleLog(doc, changed, "Largest block with same tag level to content")
 
 	changed = listAtEnd.Process(doc)
-	printArticleLog(doc, changed, "List at end filter")
+	ae.printArticleLog(doc, changed, "List at end filter")
 
 	return true
 }
 
-func printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
+func (ae *ArticleExtractor) printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
+	if ae.logger == nil {
+		return
+	}
+
 	logMsg := ""
 	if !changed {
 		logMsg = header + ": NO CHANGES"
@@ -93,5 +105,5 @@ func printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
 		logMsg = header + ":\n" + doc.DebugString()
 	}
 
-	logutil.PrintDistillPhaseInfo(logMsg)
+	ae.logger.PrintDistillPhaseInfo(logMsg)
 }

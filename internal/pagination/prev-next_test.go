@@ -348,7 +348,7 @@ func assertDocumentOutlink(t *testing.T, pageURL string, doc *html.Node, prevAnc
 	assert.NoError(t, err)
 	assert.NotNil(t, url)
 
-	prevHref := pagination.NewPrevNextFinder().FindOutlink(doc, url, false)
+	prevHref := pagination.NewPrevNextFinder(nil).FindOutlink(doc, url, false)
 	if prevAnchor == nil {
 		assert.Equal(t, "", prevHref)
 	} else {
@@ -357,7 +357,7 @@ func assertDocumentOutlink(t *testing.T, pageURL string, doc *html.Node, prevAnc
 		assert.Equal(t, linkHref, prevHref)
 	}
 
-	nextHref := pagination.NewPrevNextFinder().FindOutlink(doc, url, true)
+	nextHref := pagination.NewPrevNextFinder(nil).FindOutlink(doc, url, true)
 	if nextAnchor == nil {
 		assert.Equal(t, "", nextHref)
 	} else {
@@ -376,7 +376,7 @@ func assertDocumentNextLink(t *testing.T, pageURL string, doc *html.Node, anchor
 	assert.NoError(t, err)
 	assert.NotNil(t, url)
 
-	nextHref := pagination.NewPrevNextFinder().FindOutlink(doc, url, true)
+	nextHref := pagination.NewPrevNextFinder(nil).FindOutlink(doc, url, true)
 	if anchor == nil {
 		assert.Equal(t, "", nextHref)
 	} else {

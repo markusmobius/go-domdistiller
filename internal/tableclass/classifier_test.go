@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-domdistiller/internal/tableclass"
+	tc "github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/testutil"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
@@ -30,9 +30,9 @@ func Test_TableClass_InputElement(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.AppendChild(input, table)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.InsideEditableArea, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.InsideEditableArea, reason)
 }
 
 func Test_TableClass_ContentEditableAttribute(t *testing.T) {
@@ -42,27 +42,27 @@ func Test_TableClass_ContentEditableAttribute(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.AppendChild(div, table)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.InsideEditableArea, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.InsideEditableArea, reason)
 }
 
 func Test_TableClass_RolePresentation(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.SetAttribute(table, "role", "presentation")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.RoleTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.RoleTable, reason)
 }
 
 func Test_TableClass_RoleGrid(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "grid")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleTable, reason)
 }
 
 func Test_TableClass_RoleGridNested(t *testing.T) {
@@ -70,31 +70,31 @@ func Test_TableClass_RoleGridNested(t *testing.T) {
 	nestedTable := createDefaultNestedTableWithNoTH(table)
 	dom.SetAttribute(nestedTable, "role", "grid")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.NestedTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.NestedTable, reason)
 
-	tableType, reason = tableclass.Classify(nestedTable)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleTable, reason)
+	tableType, reason = tc.NewClassifier(nil).Classify(nestedTable)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleTable, reason)
 }
 
 func Test_TableClass_RoleTreeGrid(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "treegrid")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleTable, reason)
 }
 
 func Test_TableClass_RoleGridCell(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "td", "gridcell")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleGridCellNested(t *testing.T) {
@@ -102,49 +102,49 @@ func Test_TableClass_RoleGridCellNested(t *testing.T) {
 	nestedTable := createDefaultNestedTableWithNoTH(table)
 	setRoleForFirstElement(nestedTable, "td", "gridcell")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.NestedTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.NestedTable, reason)
 
-	tableType, reason = tableclass.Classify(nestedTable)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason = tc.NewClassifier(nil).Classify(nestedTable)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleColumnHeader(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "td", "columnheader")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleRow(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tr", "row")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleRowGroup(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tbody", "rowgroup")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleRowHeader(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setRoleForFirstElement(table, "tr", "rowheader")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_RoleLandmark(t *testing.T) {
@@ -152,29 +152,29 @@ func Test_TableClass_RoleLandmark(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "role", "application")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleTable, reason)
 
 	// Test landmark role in table's descendant.
 	dom.RemoveAttribute(table, "role")
-	tableType, reason = tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason = tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 
 	setRoleForFirstElement(table, "tr", "navigation")
-	tableType, reason = tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.RoleDescendant, reason)
+	tableType, reason = tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.RoleDescendant, reason)
 }
 
 func Test_TableClass_DatatableAttribute(t *testing.T) {
 	table := createDefaultTableWithTH()
 	dom.SetAttribute(table, "datatable", "0")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.Datatable0, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.Datatable0, reason)
 }
 
 func Test_TableClass_CaptionTag(t *testing.T) {
@@ -183,9 +183,9 @@ func Test_TableClass_CaptionTag(t *testing.T) {
 	dom.SetInnerHTML(caption, "Testing Caption")
 	dom.PrependChild(table, caption)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_EmptyCaptionTag(t *testing.T) {
@@ -193,9 +193,9 @@ func Test_TableClass_EmptyCaptionTag(t *testing.T) {
 	caption := dom.CreateElement("caption")
 	dom.PrependChild(table, caption)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 }
 
 func Test_TableClass_AllWhitespacedCaptionTag(t *testing.T) {
@@ -204,9 +204,9 @@ func Test_TableClass_AllWhitespacedCaptionTag(t *testing.T) {
 	dom.SetInnerHTML(caption, "&nbsp;  &nbsp;")
 	dom.PrependChild(table, caption)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 }
 
 func Test_TableClass_THeadTag(t *testing.T) {
@@ -225,9 +225,9 @@ func Test_TableClass_THeadTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.PrependChild(table, thead)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_TFootTag(t *testing.T) {
@@ -246,9 +246,9 @@ func Test_TableClass_TFootTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.PrependChild(table, tfoot)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_ColGroupTag(t *testing.T) {
@@ -264,9 +264,9 @@ func Test_TableClass_ColGroupTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.PrependChild(table, colgroup)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_ColTag(t *testing.T) {
@@ -276,29 +276,29 @@ func Test_TableClass_ColTag(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.PrependChild(table, col)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_THTag(t *testing.T) {
 	table := createDefaultTableWithTH()
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_THTagNested(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	nestedTable := createDefaultNestedTableWithTH(table)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.NestedTable, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.NestedTable, reason)
 
-	tableType, reason = tableclass.Classify(nestedTable)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.CaptionTheadTfootColgroupColTh, reason)
+	tableType, reason = tc.NewClassifier(nil).Classify(nestedTable)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.CaptionTheadTfootColgroupColTh, reason)
 }
 
 func Test_TableClass_EmptyTHTag(t *testing.T) {
@@ -318,9 +318,9 @@ func Test_TableClass_EmptyTHTag(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 }
 
 func Test_TableClass_AllWhitespacedTHTag(t *testing.T) {
@@ -340,36 +340,36 @@ func Test_TableClass_AllWhitespacedTHTag(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 }
 
 func Test_TableClass_AbbrAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "abbr", "HTML")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.AbbrHeadersScope, reason)
 }
 
 func Test_TableClass_HeadersAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "headers", "heading1")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.AbbrHeadersScope, reason)
 }
 
 func Test_TableClass_ScopeAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	setAttributeForFirstElement(table, "td", "scope", "colgroup")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.AbbrHeadersScope, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.AbbrHeadersScope, reason)
 }
 
 func Test_TableClass_SingleAbbrTag(t *testing.T) {
@@ -383,18 +383,18 @@ func Test_TableClass_SingleAbbrTag(t *testing.T) {
 	tr := getFirstElement(table, "tr")
 	dom.AppendChild(tr, td)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.OnlyHasAbbr, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.OnlyHasAbbr, reason)
 }
 
 func Test_TableClass_SummaryAttribute(t *testing.T) {
 	table := createDefaultTableWithNoTH()
 	dom.SetAttribute(table, "summary", "Testing summary attribute")
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.Summary, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.Summary, reason)
 }
 
 func Test_TableClass_EmptyTable(t *testing.T) {
@@ -403,9 +403,9 @@ func Test_TableClass_EmptyTable(t *testing.T) {
 		<p>empty table</p>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq1Row, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq1Row, reason)
 }
 
 func Test_TableClass_1Row(t *testing.T) {
@@ -417,9 +417,9 @@ func Test_TableClass_1Row(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq1Row, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq1Row, reason)
 }
 
 func Test_TableClass_1ColInSameCols(t *testing.T) {
@@ -433,9 +433,9 @@ func Test_TableClass_1ColInSameCols(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq1Col, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq1Col, reason)
 }
 
 func Test_TableClass_1ColInDifferentCols(t *testing.T) {
@@ -450,9 +450,9 @@ func Test_TableClass_1ColInDifferentCols(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.LessEq10Cells, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.LessEq10Cells, reason)
 }
 
 func Test_TableClass_5Cols(t *testing.T) {
@@ -474,9 +474,9 @@ func Test_TableClass_5Cols(t *testing.T) {
 		</tr>
 	</tbody>`)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.MoreEq5Cols, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.MoreEq5Cols, reason)
 }
 
 func Test_TableClass_20Rows(t *testing.T) {
@@ -493,9 +493,9 @@ func Test_TableClass_20Rows(t *testing.T) {
 		dom.AppendChild(tbody, tr)
 	}
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Data, tableType)
-	assert.Equal(t, tableclass.MoreEq20Rows, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Data, tableType)
+	assert.Equal(t, tc.MoreEq20Rows, reason)
 }
 
 func Test_TableClass_EmbedElement(t *testing.T) {
@@ -503,9 +503,9 @@ func Test_TableClass_EmbedElement(t *testing.T) {
 	embed := dom.CreateElement("embed")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.EmbedObjectAppletIframe, reason)
 }
 
 func Test_TableClass_ObjectElement(t *testing.T) {
@@ -513,9 +513,9 @@ func Test_TableClass_ObjectElement(t *testing.T) {
 	embed := dom.CreateElement("object")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.EmbedObjectAppletIframe, reason)
 }
 
 func Test_TableClass_AppletElement(t *testing.T) {
@@ -523,9 +523,9 @@ func Test_TableClass_AppletElement(t *testing.T) {
 	embed := dom.CreateElement("applet")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.EmbedObjectAppletIframe, reason)
 }
 
 func Test_TableClass_IframeElement(t *testing.T) {
@@ -533,9 +533,9 @@ func Test_TableClass_IframeElement(t *testing.T) {
 	embed := dom.CreateElement("iframe")
 	dom.AppendChild(getFirstElement(table, "td"), embed)
 
-	tableType, reason := tableclass.Classify(table)
-	assert.Equal(t, tableclass.Layout, tableType)
-	assert.Equal(t, tableclass.EmbedObjectAppletIframe, reason)
+	tableType, reason := tc.NewClassifier(nil).Classify(table)
+	assert.Equal(t, tc.Layout, tableType)
+	assert.Equal(t, tc.EmbedObjectAppletIframe, reason)
 }
 
 func createTable(rawHTML string) *html.Node {

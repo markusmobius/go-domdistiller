@@ -12,7 +12,7 @@ import (
 // DetectParamInfo creates a PageParamInfo based on outlinks and numeric text around them.
 // Always return PageParamInfo (never nil). If no page parameter is detected or
 // determined to be best, its ParamType is Unset.
-func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL string) *info.PageParamInfo {
+func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL string, logger *logutil.Logger) *info.PageParamInfo {
 	// Make sure URL absolute and clean it
 	parsedDocURL, err := nurl.ParseRequestURI(docURL)
 	if err != nil || parsedDocURL.Scheme == "" || parsedDocURL.Hostname() == "" {
@@ -45,8 +45,8 @@ func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL 
 
 	// For now, if there're multiple page patterns, we take the first one.
 	// If this doesn't work for most sites, we might have to return nothing.
-	if detectionState.hasMultiPagePatterns {
-		logutil.PrintPaginationInfo("Detected multiple page pattern")
+	if detectionState.hasMultiPagePatterns && logger != nil {
+		logger.PrintPaginationInfo("Detected multiple page pattern")
 	}
 
 	bestPageParamInfo := detectionState.bestPageParamInfo

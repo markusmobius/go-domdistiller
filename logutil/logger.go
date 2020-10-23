@@ -9,6 +9,13 @@ type Logger struct {
 	flags Flag
 }
 
+func NewLogger(flags Flag) *Logger {
+	return &Logger{
+		Logger: logrus.New(),
+		flags:  flags,
+	}
+}
+
 func (l *Logger) SetFlags(flags Flag) {
 	l.flags = flags
 }

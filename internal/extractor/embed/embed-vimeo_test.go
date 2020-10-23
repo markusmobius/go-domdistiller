@@ -17,7 +17,7 @@ func Test_Embed_Vimeo_Extract(t *testing.T) {
 	dom.SetAttribute(vimeo, "src", "//player.vimeo.com/video/12345?portrait=0")
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewVimeoExtractor(pageURL)
+	extractor := embed.NewVimeoExtractor(pageURL, nil)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes
@@ -38,7 +38,7 @@ func Test_Embed_Vimeo_ExtractID(t *testing.T) {
 	vimeo := dom.CreateElement("iframe")
 	dom.SetAttribute(vimeo, "src", "http://player.vimeo.com/video/12345?portrait=0")
 
-	extractor := embed.NewVimeoExtractor(nil)
+	extractor := embed.NewVimeoExtractor(nil, nil)
 	result, _ := (extractor.Extract(vimeo)).(*webdoc.Embed)
 
 	// Check Vimeo specific attributes

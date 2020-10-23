@@ -36,12 +36,14 @@ type pagingLinkScore struct {
 type PrevNextFinder struct {
 	linkDebugInfo     map[*html.Node]string
 	linkDebugMessages map[*html.Node]map[string]struct{}
+	logger            *logutil.Logger
 }
 
-func NewPrevNextFinder() *PrevNextFinder {
+func NewPrevNextFinder(logger *logutil.Logger) *PrevNextFinder {
 	return &PrevNextFinder{
 		linkDebugInfo:     make(map[*html.Node]string),
 		linkDebugMessages: make(map[*html.Node]map[string]struct{}),
+		logger:            logger,
 	}
 }
 
@@ -388,7 +390,7 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 }
 
 func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string) {
-	if !logutil.HasFlag(logutil.PaginationInfo) {
+	if pnf.logger == nil || !pnf.logger.HasFlag(logutil.PaginationInfo) {
 		return
 	}
 
@@ -421,6 +423,10 @@ func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string
 }
 
 func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allLinks []*html.Node) {
+	if pnf.logger == nil || !pnf.logger.HasFlag(logutil.PaginationInfo) {
+		return
+	}
+
 	// This logs the following to the console:
 	// - number of links processed
 	// - the next or previous page link found
@@ -430,7 +436,7 @@ func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allL
 		direction = "prev"
 	}
 
-	logutil.PrintPaginationInfo(fmt.Sprintf(
+	pnf.logger.PrintPaginationInfo(fmt.Sprintf(
 		"nLinks=%d, found %s: %s",
 		len(allLinks), direction, pagingHref))
 
@@ -440,7 +446,7 @@ func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allL
 		href := dom.GetAttribute(link, "href")
 		debugMsg := pnf.linkDebugInfo[link]
 
-		logutil.PrintPaginationInfo(fmt.Sprintf(
+		pnf.logger.PrintPaginationInfo(fmt.Sprintf(
 			"%d) %s, txt=[%s], dbg=[%s]",
 			i, href, text, debugMsg))
 	}

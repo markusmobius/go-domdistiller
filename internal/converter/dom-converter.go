@@ -21,14 +21,16 @@ type DomConverter struct {
 	embedExtractors []embed.EmbedExtractor
 	embedTagNames   map[string]struct{}
 	pageURL         *nurl.URL
+	logger          *logutil.Logger
+	tableClassifier *tableclass.Classifier
 }
 
-func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL) *DomConverter {
+func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger *logutil.Logger) *DomConverter {
 	extractors := []embed.EmbedExtractor{
-		embed.NewImageExtractor(pageURL),
-		embed.NewTwitterExtractor(pageURL),
-		embed.NewVimeoExtractor(pageURL),
-		embed.NewYouTubeExtractor(pageURL),
+		embed.NewImageExtractor(pageURL, logger),
+		embed.NewTwitterExtractor(pageURL, logger),
+		embed.NewVimeoExtractor(pageURL, logger),
+		embed.NewYouTubeExtractor(pageURL, logger),
 	}
 
 	embedTagNames := make(map[string]struct{})
@@ -43,6 +45,8 @@ func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL) *DomConv
 		embedExtractors: extractors,
 		embedTagNames:   embedTagNames,
 		pageURL:         pageURL,
+		logger:          logger,
+		tableClassifier: tableclass.NewClassifier(logger),
 	}
 }
 
@@ -129,8 +133,8 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 		return false
 
 	case "table":
-		tableType, _ := tableclass.Classify(node)
-		logTableInfo(node, tableType)
+		tableType, _ := dc.tableClassifier.Classify(node)
+		dc.logTableInfo(node, tableType)
 		if tableType == tableclass.Data {
 			dc.builder.AddDataTable(node)
 			return false
@@ -154,8 +158,12 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 	return true
 }
 
-func logTableInfo(table *html.Node, tableType tableclass.Type) {
-	if !logutil.HasFlag(logutil.VisibilityInfo) {
+func (dc *DomConverter) logTableInfo(table *html.Node, tableType tableclass.Type) {
+	if dc.logger == nil {
+		return
+	}
+
+	if !dc.logger.HasFlag(logutil.VisibilityInfo) {
 		return
 	}
 
@@ -186,5 +194,5 @@ func logTableInfo(table *html.Node, tableType tableclass.Type) {
 		logMsg += "]"
 	}
 
-	logutil.PrintVisibilityInfo(logMsg)
+	dc.logger.PrintVisibilityInfo(logMsg)
 }

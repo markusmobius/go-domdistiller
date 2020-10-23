@@ -98,7 +98,7 @@ func Test_Converter_ElementOrder(t *testing.T) {
 	dom.SetInnerHTML(div, `Text content <img src="http://example.com/1.jpg"> more content`)
 
 	builder := webdoc.NewWebDocumentBuilder(stringutil.FastWordCounter{}, nil)
-	converter.NewDomConverter(builder, nil).Convert(div)
+	converter.NewDomConverter(builder, nil, nil).Convert(div)
 
 	doc := builder.Build()
 	elements := doc.Elements
@@ -119,7 +119,7 @@ func Test_Converter_List(t *testing.T) {
 	dom.SetInnerHTML(div, "<ol><li>some text1</li><li>some text2</li></ol>")
 
 	builder := webdoc.NewWebDocumentBuilder(stringutil.FastWordCounter{}, nil)
-	converter.NewDomConverter(builder, nil).Convert(div)
+	converter.NewDomConverter(builder, nil, nil).Convert(div)
 
 	doc := builder.Build()
 	elements := doc.Elements
@@ -177,7 +177,7 @@ func runTest(t *testing.T, innerHTML, expectedHTML string) {
 	dom.SetInnerHTML(div, innerHTML)
 
 	builder := testutil.NewFakeWebDocumentBuilder()
-	converter.NewDomConverter(builder, nil).Convert(div)
+	converter.NewDomConverter(builder, nil, nil).Convert(div)
 
 	expected := "<div>" + expectedHTML + "</div>"
 	assert.Equal(t, expected, builder.Build())

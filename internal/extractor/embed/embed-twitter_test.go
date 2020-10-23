@@ -23,7 +23,7 @@ func Test_Embed_Twitter_ExtractNotRenderedBasic(t *testing.T) {
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("//twitter.com/foo/bar/12345", "January 1, 1900"))
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewTwitterExtractor(pageURL)
+	extractor := embed.NewTwitterExtractor(pageURL, nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -55,7 +55,7 @@ func Test_Embed_Twitter_ExtractNotRenderedTrailingSlash(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://twitter.com/foo/bar/12345///", "January 1, 1900"))
 
-	extractor := embed.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil, nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -72,7 +72,7 @@ func Test_Embed_Twitter_ExtractNotRenderedBadTweet(t *testing.T) {
 	dom.AppendChild(tweetBlock, p)
 	dom.AppendChild(tweetBlock, testutil.CreateAnchor("http://nottwitter.com/12345", "timestamp"))
 
-	extractor := embed.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil, nil)
 	result, _ := (extractor.Extract(tweetBlock)).(*webdoc.Embed)
 
 	assert.Nil(t, result)
@@ -85,7 +85,7 @@ func Test_Embed_Twitter_ExtractRenderedBasic(t *testing.T) {
 	dom.SetAttribute(tweet, "src", "https://platform.twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-tweet-id", "12345")
 
-	extractor := embed.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil, nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.NotNil(t, result)
@@ -100,7 +100,7 @@ func Test_Embed_Twitter_ExtractRenderedBadTweet(t *testing.T) {
 	dom.SetAttribute(tweet, "src", "https://platform.not-twitter.com/embed/index.html")
 	dom.SetAttribute(tweet, "data-bad-id", "12345")
 
-	extractor := embed.NewTwitterExtractor(nil)
+	extractor := embed.NewTwitterExtractor(nil, nil)
 	result, _ := (extractor.Extract(tweet)).(*webdoc.Embed)
 
 	assert.Nil(t, result)

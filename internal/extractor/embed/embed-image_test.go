@@ -34,7 +34,7 @@ func Test_Embed_Image_HasWidthHeightAttributes(t *testing.T) {
 	dom.SetAttribute(img, "width", "32")
 	dom.SetAttribute(img, "height", "32")
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -45,7 +45,7 @@ func Test_Embed_Image_HasWidthHeightAttributes(t *testing.T) {
 func Test_Embed_Image_HasNoAttributes(t *testing.T) {
 	img := dom.CreateElement("img")
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -58,7 +58,7 @@ func Test_Embed_Image_HasWidthAttribute(t *testing.T) {
 	dom.SetAttribute(img, "src", imageBase64)
 	dom.SetAttribute(img, "width", "32")
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
@@ -91,7 +91,7 @@ func Test_Embed_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, noscript)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	// In original dom-distiller the text is not included because by default
@@ -111,7 +111,7 @@ func Test_Embed_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 func Test_Embed_Image_FigureWithoutImageAndCaption(t *testing.T) {
 	figure := dom.CreateElement("figure")
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	assert.Nil(t, result)
@@ -128,7 +128,7 @@ func Test_Embed_Image_FigureWithPictureWithoutImg(t *testing.T) {
 	figure := dom.CreateElement("figure")
 	dom.AppendChild(figure, picture)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	expected := `<figure><picture>` +
@@ -145,7 +145,7 @@ func Test_Embed_Image_FigureWithPictureWithoutSourceAndImg(t *testing.T) {
 	figure := dom.CreateElement("figure")
 	dom.AppendChild(figure, picture)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 	expected := `<figure><picture></picture></figure>`
 
@@ -166,7 +166,7 @@ func Test_Embed_Image_FigureCaptionTextOnly(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, figcaption)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result := extractor.Extract(figure)
 
 	assert.NotNil(t, result)
@@ -194,7 +194,7 @@ func Test_Embed_Image_FigureCaptionWithAnchor(t *testing.T) {
 	dom.AppendChild(figure, figcaption)
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL, nil)
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
@@ -222,7 +222,7 @@ func Test_Embed_Image_FigureCaptionWithoutAnchor(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, figcaption)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	expected := `<figure>` +
@@ -250,7 +250,7 @@ func Test_Embed_Image_FigureDivCaption(t *testing.T) {
 	dom.AppendChild(figure, img)
 	dom.AppendChild(figure, div)
 
-	extractor := embed.NewImageExtractor(nil)
+	extractor := embed.NewImageExtractor(nil, nil)
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
@@ -268,7 +268,7 @@ func extractLazyLoadedImage(t *testing.T, attr string) {
 	dom.SetAttribute(img, attr, "image.png")
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL, nil)
 
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 	assert.NotNil(t, result)
@@ -284,7 +284,7 @@ func extractLazyLoadedFigure(t *testing.T, attr string) {
 	dom.AppendChild(figure, img)
 
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
-	extractor := embed.NewImageExtractor(pageURL)
+	extractor := embed.NewImageExtractor(pageURL, nil)
 
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 	assert.NotNil(t, result)
