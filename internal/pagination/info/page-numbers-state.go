@@ -60,6 +60,16 @@ func (pns *PageNumbersState) isPageNumberSequence(ascendingNumbers []*PageInfo) 
 	}
 	mapSequenceEnd[currentStart] = len(ascendingNumbers)
 
+	// If there are too many group of consecutive numbers,
+	// most likely the ascendingNumbers is not page number sequence
+	// For example, this is page numbers :
+	//   1, 2, 3, 4, 5, 32, 33
+	// While this is not :
+	//   1, 2, 3, 4, 5, 32, 33, 45, 46
+	if len(mapSequenceEnd) > 2 {
+		return false
+	}
+
 	// Find the longest group
 	maxSequenceLength := 0
 	sequenceStart := 0
@@ -75,12 +85,12 @@ func (pns *PageNumbersState) isPageNumberSequence(ascendingNumbers []*PageInfo) 
 	}
 
 	// If the longest sequence is too small, stop
-	if maxSequenceLength == 1 {
+	if maxSequenceLength <= 1 {
 		return false
 	}
 
-	// Make sure the longest group contains one page info without URL (which indicates
-	// the page info is for our current page)
+	// Make sure the longest group contains at most one page info without URL
+	// (which might indicates the page info is for our current page)
 	nEmptyURL := 0
 	for _, page := range ascendingNumbers[sequenceStart:sequenceEnd] {
 		if page.URL == "" {
@@ -88,5 +98,5 @@ func (pns *PageNumbersState) isPageNumberSequence(ascendingNumbers []*PageInfo) 
 		}
 	}
 
-	return nEmptyURL == 1
+	return nEmptyURL <= 1
 }

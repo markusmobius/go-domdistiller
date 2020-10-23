@@ -34,7 +34,11 @@ func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo)
 }
 
 func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) (pagination data.PaginationInfo) {
-	paramInfo := pnf.FindOutlink(root, pageURL)
+	url := *pageURL
+	url.Path = strings.TrimSuffix(url.Path, "/")
+	url.RawPath = url.Path
+
+	paramInfo := pnf.FindOutlink(root, &url)
 	if paramInfo.Type != info.PageNumber {
 		return
 	}
@@ -61,8 +65,13 @@ func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) 
 			}
 		}
 
-		if nextPageIdx > 0 {
-			pagination.PrevPage = paramInfo.AllPageInfo[nextPageIdx-1].URL
+		strPageURL := stringutil.UnescapedString(&url)
+		for i := nextPageIdx - 1; i >= 0; i-- {
+			currentURL := paramInfo.AllPageInfo[i].URL
+			if currentURL == "" || currentURL != strPageURL {
+				pagination.PrevPage = currentURL
+				break
+			}
 		}
 	}
 
