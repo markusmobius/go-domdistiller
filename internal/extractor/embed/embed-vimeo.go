@@ -9,19 +9,19 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
 // VimeoExtractor is used for extracting Vimeo videos and relevant information.
 type VimeoExtractor struct {
 	PageURL *nurl.URL
-	logger  *logutil.Logger
+	logger  logutil.Logger
 }
 
-func NewVimeoExtractor(pageURL *nurl.URL, logger *logutil.Logger) *VimeoExtractor {
+func NewVimeoExtractor(pageURL *nurl.URL, logger logutil.Logger) *VimeoExtractor {
 	return &VimeoExtractor{
 		PageURL: pageURL,
 		logger:  logger,

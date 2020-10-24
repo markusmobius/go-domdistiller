@@ -9,19 +9,19 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
 // YouTubeExtractor is used for extracting YouTube videos and relevant information.
 type YouTubeExtractor struct {
 	PageURL *nurl.URL
-	logger  *logutil.Logger
+	logger  logutil.Logger
 }
 
-func NewYouTubeExtractor(pageURL *nurl.URL, logger *logutil.Logger) *YouTubeExtractor {
+func NewYouTubeExtractor(pageURL *nurl.URL, logger logutil.Logger) *YouTubeExtractor {
 	return &YouTubeExtractor{
 		PageURL: pageURL,
 		logger:  logger,

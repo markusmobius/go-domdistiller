@@ -8,17 +8,17 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
 // Classifier is object that classifies the table
 type Classifier struct {
-	logger *logutil.Logger
+	logger logutil.Logger
 }
 
-func NewClassifier(logger *logutil.Logger) *Classifier {
+func NewClassifier(logger logutil.Logger) *Classifier {
 	return &Classifier{logger: logger}
 }
 

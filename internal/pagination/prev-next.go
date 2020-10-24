@@ -12,8 +12,8 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -36,10 +36,10 @@ type pagingLinkScore struct {
 type PrevNextFinder struct {
 	linkDebugInfo     map[*html.Node]string
 	linkDebugMessages map[*html.Node]map[string]struct{}
-	logger            *logutil.Logger
+	logger            logutil.Logger
 }
 
-func NewPrevNextFinder(logger *logutil.Logger) *PrevNextFinder {
+func NewPrevNextFinder(logger logutil.Logger) *PrevNextFinder {
 	return &PrevNextFinder{
 		linkDebugInfo:     make(map[*html.Node]string),
 		linkDebugMessages: make(map[*html.Node]map[string]struct{}),
@@ -390,7 +390,7 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 }
 
 func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string) {
-	if pnf.logger == nil || !pnf.logger.HasFlag(logutil.PaginationInfo) {
+	if pnf.logger == nil || !pnf.logger.IsLogPagination() {
 		return
 	}
 
@@ -423,7 +423,7 @@ func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string
 }
 
 func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allLinks []*html.Node) {
-	if pnf.logger == nil || !pnf.logger.HasFlag(logutil.PaginationInfo) {
+	if pnf.logger == nil || !pnf.logger.IsLogPagination() {
 		return
 	}
 

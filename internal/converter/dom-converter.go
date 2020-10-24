@@ -9,9 +9,9 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -21,11 +21,11 @@ type DomConverter struct {
 	embedExtractors []embed.EmbedExtractor
 	embedTagNames   map[string]struct{}
 	pageURL         *nurl.URL
-	logger          *logutil.Logger
+	logger          logutil.Logger
 	tableClassifier *tableclass.Classifier
 }
 
-func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger *logutil.Logger) *DomConverter {
+func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger logutil.Logger) *DomConverter {
 	extractors := []embed.EmbedExtractor{
 		embed.NewImageExtractor(pageURL, logger),
 		embed.NewTwitterExtractor(pageURL, logger),
@@ -163,7 +163,7 @@ func (dc *DomConverter) logTableInfo(table *html.Node, tableType tableclass.Type
 		return
 	}
 
-	if !dc.logger.HasFlag(logutil.VisibilityInfo) {
+	if !dc.logger.IsLogVisibility() {
 		return
 	}
 

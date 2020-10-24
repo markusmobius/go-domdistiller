@@ -5,14 +5,14 @@ package parser
 import (
 	nurl "net/url"
 
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
-	"github.com/markusmobius/go-domdistiller/logutil"
 )
 
 // DetectParamInfo creates a PageParamInfo based on outlinks and numeric text around them.
 // Always return PageParamInfo (never nil). If no page parameter is detected or
 // determined to be best, its ParamType is Unset.
-func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL string, logger *logutil.Logger) *info.PageParamInfo {
+func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL string, logger logutil.Logger) *info.PageParamInfo {
 	// Make sure URL absolute and clean it
 	parsedDocURL, err := nurl.ParseRequestURI(docURL)
 	if err != nil || parsedDocURL.Scheme == "" || parsedDocURL.Hostname() == "" {

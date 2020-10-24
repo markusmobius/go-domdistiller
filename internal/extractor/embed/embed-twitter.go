@@ -9,9 +9,9 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -19,10 +19,10 @@ import (
 // both rendered and unrendered tweets.
 type TwitterExtractor struct {
 	PageURL *nurl.URL
-	logger  *logutil.Logger
+	logger  logutil.Logger
 }
 
-func NewTwitterExtractor(pageURL *nurl.URL, logger *logutil.Logger) *TwitterExtractor {
+func NewTwitterExtractor(pageURL *nurl.URL, logger logutil.Logger) *TwitterExtractor {
 	return &TwitterExtractor{PageURL: pageURL}
 }
 

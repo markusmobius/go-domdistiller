@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/filter/docfilter/scorer"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -26,10 +26,10 @@ const imageMinimumAcceptedScore = 13
 // - The ratio of width/height.
 // - The area of the image (width * height) relative to its container.
 type LeadImageFinder struct {
-	logger *logutil.Logger
+	logger logutil.Logger
 }
 
-func NewLeadImageFinder(logger *logutil.Logger) *LeadImageFinder {
+func NewLeadImageFinder(logger logutil.Logger) *LeadImageFinder {
 	return &LeadImageFinder{
 		logger: logger,
 	}

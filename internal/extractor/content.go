@@ -10,10 +10,10 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/converter"
 	"github.com/markusmobius/go-domdistiller/internal/filter/docfilter"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/markup"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -26,10 +26,10 @@ type ContentExtractor struct {
 	pageURL         *nurl.URL
 	documentElement *html.Node
 	candidateTitles []string
-	logger          *logutil.Logger
+	logger          logutil.Logger
 }
 
-func NewContentExtractor(root *html.Node, pageURL *nurl.URL, logger *logutil.Logger) *ContentExtractor {
+func NewContentExtractor(root *html.Node, pageURL *nurl.URL, logger logutil.Logger) *ContentExtractor {
 	timingInfo := &data.TimingInfo{}
 
 	document := dom.QuerySelector(root, "html")

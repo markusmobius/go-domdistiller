@@ -11,10 +11,10 @@ import (
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/info"
 	"github.com/markusmobius/go-domdistiller/internal/pagination/parser"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -26,10 +26,10 @@ type PageNumberFinder struct {
 	numForwardLinksProcessed int
 
 	timingInfo *data.TimingInfo
-	logger     *logutil.Logger
+	logger     logutil.Logger
 }
 
-func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo, logger *logutil.Logger) *PageNumberFinder {
+func NewPageNumberFinder(wc stringutil.WordCounter, timingInfo *data.TimingInfo, logger logutil.Logger) *PageNumberFinder {
 	return &PageNumberFinder{
 		wordCounter:          wc,
 		adjacentNumberGroups: &info.MonotonicPageInfoGroups{},

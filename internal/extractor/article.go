@@ -7,16 +7,16 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/filter/heuristic"
 	"github.com/markusmobius/go-domdistiller/internal/filter/simple"
 	"github.com/markusmobius/go-domdistiller/internal/label"
+	"github.com/markusmobius/go-domdistiller/internal/logutil"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
-	"github.com/markusmobius/go-domdistiller/logutil"
 )
 
 type ArticleExtractor struct {
-	logger *logutil.Logger
+	logger logutil.Logger
 }
 
-func NewArticleExtractor(logger *logutil.Logger) *ArticleExtractor {
+func NewArticleExtractor(logger logutil.Logger) *ArticleExtractor {
 	return &ArticleExtractor{logger: logger}
 }
 

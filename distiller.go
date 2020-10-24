@@ -14,7 +14,6 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/extractor"
 	"github.com/markusmobius/go-domdistiller/internal/pagination"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -55,7 +54,7 @@ type Options struct {
 	ExtractTextOnly bool
 
 	// Flags to specify which info to dump to log.
-	LogFlags logutil.Flag
+	LogFlags LogFlag
 
 	// Original URL of the page, which is used in the heuristics in
 	// detecting next/prev page links.
@@ -145,7 +144,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	}
 
 	// Prepare logger
-	logger := logutil.NewLogger(opts.LogFlags)
+	logger := newDistillerLogger(opts.LogFlags)
 
 	// Start extractor
 	ce := extractor.NewContentExtractor(doc, opts.OriginalURL, logger)
@@ -181,7 +180,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	timingInfo.TotalTime = time.Now().Sub(distillerStart)
 	result.TimingInfo = *timingInfo
 
-	if logger.HasFlag(logutil.TimingInfo) {
+	if logger.hasFlag(LogTiming) {
 		for _, entry := range ce.TimingInfo.OtherTimes {
 			logger.PrintTimingInfo("Timing: %s = %s", entry.Name, entry.Time)
 		}
