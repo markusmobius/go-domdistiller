@@ -65,14 +65,14 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	tmp.Path = strings.TrimSuffix(tmp.Path, "/")
 	tmp.RawPath = tmp.Path
 	currentURL := stringutil.UnescapedString(tmp)
-	pnf.logger.PrintPaginationInfo("Current URL:", currentURL)
+	pnf.printLog("Current URL:", currentURL)
 
 	// Create folder URL
 	tmp.Path = strings.TrimSuffix(path.Dir(tmp.Path), "/")
 	tmp.RawPath = tmp.Path
 	tmp.RawQuery = ""
 	folderURL := stringutil.UnescapedString(tmp)
-	pnf.logger.PrintPaginationInfo("Folder URL:", folderURL)
+	pnf.printLog("Folder URL:", folderURL)
 
 	// Create allowed prefix
 	// The trailing "/" is essential to ensure the whole hostname is matched, and not just the
@@ -81,7 +81,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	tmp.RawPath = tmp.Path
 	allowedPrefix := stringutil.UnescapedString(tmp)
 	lenPrefix := len(allowedPrefix)
-	pnf.logger.PrintPaginationInfo("Allowed prefix:", allowedPrefix)
+	pnf.printLog("Allowed prefix:", allowedPrefix)
 
 	// Loop through all links, looking for hints that they may be next- or previous- page links.
 	// Things like having "page" in their textContent, className or id, or being a child of a
@@ -424,6 +424,12 @@ func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string
 	strDebug += message
 	pnf.linkDebugInfo[link] = strDebug
 	pnf.linkDebugMessages[link][message] = struct{}{}
+}
+
+func (pnf *PrevNextFinder) printLog(args ...interface{}) {
+	if pnf.logger != nil {
+		pnf.logger.PrintPaginationInfo(args...)
+	}
 }
 
 func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allLinks []*html.Node) {

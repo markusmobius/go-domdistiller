@@ -31,9 +31,6 @@ type Result struct {
 	// TimingInfo is the record of the time it takes to do each step in the process of content extraction.
 	TimingInfo data.TimingInfo
 
-	// DebugInfo contains log of all process.
-	DebugInfo data.DebugInfo
-
 	// PaginationInfo contains link to previous and next partial page. This is useful for long article or
 	// that may be partitioned into several partial pages by its webmaster.
 	PaginationInfo data.PaginationInfo
@@ -182,14 +179,14 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 
 	if logger.hasFlag(LogTiming) {
 		for _, entry := range ce.TimingInfo.OtherTimes {
-			logger.PrintTimingInfo("Timing: %s = %s", entry.Name, entry.Time)
+			logger.PrintTimingInfo("Timing:", entry.Name, "=", entry.Time)
 		}
 
-		logger.PrintTimingInfo("TimingMarkupParsingTime = %s", ce.TimingInfo.MarkupParsingTime)
-		logger.PrintTimingInfo("TimingDocumentConstructionTime = %s", ce.TimingInfo.DocumentConstructionTime)
-		logger.PrintTimingInfo("TimingArticleProcessingTime = %s", ce.TimingInfo.ArticleProcessingTime)
-		logger.PrintTimingInfo("TimingFormattingTime = %s", ce.TimingInfo.FormattingTime)
-		logger.PrintTimingInfo("TimingTotalTime = %s", ce.TimingInfo.TotalTime)
+		logger.PrintTimingInfo("TimingMarkupParsingTime =", ce.TimingInfo.MarkupParsingTime)
+		logger.PrintTimingInfo("TimingDocumentConstructionTime =", ce.TimingInfo.DocumentConstructionTime)
+		logger.PrintTimingInfo("TimingArticleProcessingTime =", ce.TimingInfo.ArticleProcessingTime)
+		logger.PrintTimingInfo("TimingFormattingTime =", ce.TimingInfo.FormattingTime)
+		logger.PrintTimingInfo("TimingTotalTime =", ce.TimingInfo.TotalTime)
 	}
 
 	return &result, nil

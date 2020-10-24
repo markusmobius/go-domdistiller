@@ -12,5 +12,5 @@ type Logger interface {
 	PrintExtractionInfo(args ...interface{})
 	PrintVisibilityInfo(args ...interface{})
 	PrintPaginationInfo(args ...interface{})
-	PrintTimingInfo(format string, args ...interface{})
+	PrintTimingInfo(args ...interface{})
 }

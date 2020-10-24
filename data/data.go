@@ -38,7 +38,3 @@ type MarkupInfo struct {
 	Article     MarkupArticle
 	Images      []MarkupImage
 }
-
-type DebugInfo struct {
-	Log string
-}
