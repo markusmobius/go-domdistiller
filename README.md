@@ -13,6 +13,7 @@ The port process has been finished. The package is still in development, however
 ### 24 October 2020
 
 - Port `LogUtil` froml `LogUtil.java`
+- Fix pagination finder `PrevNextFinder` ignores page number in URL queries.
 
 ### 22 October 2020
 

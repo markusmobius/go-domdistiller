@@ -57,7 +57,6 @@ func (pnf *PrevNextFinder) FindPagination(root *html.Node, pageURL *nurl.URL) da
 func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findNext bool) string {
 	// Clean up URL
 	tmp, _ := nurl.Parse(pageURL.String())
-	tmp.RawQuery = ""
 	tmp.Fragment = ""
 	tmp.RawFragment = ""
 
@@ -66,11 +65,14 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	tmp.Path = strings.TrimSuffix(tmp.Path, "/")
 	tmp.RawPath = tmp.Path
 	currentURL := stringutil.UnescapedString(tmp)
+	pnf.logger.PrintPaginationInfo("Current URL:", currentURL)
 
 	// Create folder URL
 	tmp.Path = strings.TrimSuffix(path.Dir(tmp.Path), "/")
 	tmp.RawPath = tmp.Path
+	tmp.RawQuery = ""
 	folderURL := stringutil.UnescapedString(tmp)
+	pnf.logger.PrintPaginationInfo("Folder URL:", folderURL)
 
 	// Create allowed prefix
 	// The trailing "/" is essential to ensure the whole hostname is matched, and not just the
@@ -79,6 +81,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 	tmp.RawPath = tmp.Path
 	allowedPrefix := stringutil.UnescapedString(tmp)
 	lenPrefix := len(allowedPrefix)
+	pnf.logger.PrintPaginationInfo("Allowed prefix:", allowedPrefix)
 
 	// Loop through all links, looking for hints that they may be next- or previous- page links.
 	// Things like having "page" in their textContent, className or id, or being a child of a
@@ -116,7 +119,6 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 
 		// Remove url anchor and then trailing '/' from link's href.
 		tmp, _ := nurl.Parse(linkHref)
-		tmp.RawQuery = ""
 		tmp.Fragment = ""
 		tmp.RawFragment = ""
 		tmp.Path = strings.TrimSuffix(tmp.Path, "/")
@@ -303,7 +305,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		if linkTextAsNumber > 0 {
 			// Punish 1 since we're either already there, or it's probably before what we
 			// want anyway.
-			if linkTextAsNumber == 1 {
+			if findNext && linkTextAsNumber == 1 {
 				linkObj.score -= 10
 			} else {
 				additionalScore := 10 - linkTextAsNumber
@@ -318,6 +320,8 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				linkObj.score, linkTextAsNumber))
 		}
 
+		// Check difference between between page number in link href and current URL.
+		// If the difference is exactly 1 (or -1 for previous) increase the score.
 		diff, valid := pnf.getPageDiff(currentURL, linkHref, len(allowedPrefix))
 		if valid {
 			if (findNext && diff == 1) || (!findNext && diff == -1) {
