@@ -10,7 +10,6 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/data"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -51,16 +50,19 @@ func NewParser(root *html.Node, timingInfo *data.TimingInfo) (*Parser, error) {
 	ps.propertyTable = make(map[string]string)
 
 	start := time.Now()
+	timingInfo.AddEntry(start, "OpenGraphProtocolParser.parse")
+
+	start = time.Now()
 	ps.findPrefixes(root)
-	logutil.AddTimingInfo(timingInfo, start, "OpenGraphProtocolParser.findPrefixes")
+	timingInfo.AddEntry(start, "OpenGraphProtocolParser.findPrefixes")
 
 	start = time.Now()
 	ps.parseMetaTags(root)
-	logutil.AddTimingInfo(timingInfo, start, "OpenGraphProtocolParser.parseMetaTags")
+	timingInfo.AddEntry(start, "OpenGraphProtocolParser.parseMetaTags")
 
 	start = time.Now()
 	ps.imageParser.Verify()
-	logutil.AddTimingInfo(timingInfo, start, "OpenGraphProtocolParser.imageParser.verify")
+	timingInfo.AddEntry(start, "OpenGraphProtocolParser.imageParser.verify")
 
 	prefix := ps.prefixes[OG] + ":"
 	switch {

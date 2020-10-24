@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/data"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -41,7 +40,7 @@ func NewParser(root *html.Node, timingInfo *data.TimingInfo) *Parser {
 
 	start := time.Now()
 	ps.parse(root)
-	logutil.AddTimingInfo(timingInfo, start, "SchemaOrg.parse")
+	timingInfo.AddEntry(start, "SchemaOrg.parse")
 
 	return ps
 }

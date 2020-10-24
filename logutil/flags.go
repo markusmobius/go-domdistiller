@@ -6,12 +6,15 @@ package logutil
 type Flag uint
 
 const (
-	// If DistillPhases is set logger will print changes of each process when extracting article.
-	DistillPhases Flag = 1 << iota
+	// If ExtractionInfo is set logger will print info of each process when extracting article.
+	ExtractionInfo Flag = 1 << iota
 
 	// If VisibilityInfo is set logger will print info on why an element is visible.
 	VisibilityInfo
 
 	// If PaginationInfo is set logger will print info of pagination process.
 	PaginationInfo
+
+	// If TimingInfo is set logger will print info of duration of each process when extracting article.
+	TimingInfo
 )

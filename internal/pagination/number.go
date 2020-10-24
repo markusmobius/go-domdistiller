@@ -6,6 +6,7 @@ import (
 	nurl "net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/data"
@@ -93,6 +94,8 @@ func (pnf *PageNumberFinder) FindPagination(root *html.Node, pageURL *nurl.URL) 
 // around them. Returns PageParamInfo, always (never null). If no page parameter is detected or
 // determined to be best, its Type is info.Unset.
 func (pnf *PageNumberFinder) FindOutlink(root *html.Node, pageURL *nurl.URL) *info.PageParamInfo {
+	start := time.Now()
+
 	idx := 0
 	allLinks := dom.GetElementsByTagName(root, "a")
 	for idx < len(allLinks) {
@@ -125,7 +128,12 @@ func (pnf *PageNumberFinder) FindOutlink(root *html.Node, pageURL *nurl.URL) *in
 	}
 
 	pnf.adjacentNumberGroups.CleanUp()
+	pnf.timingInfo.AddEntry(start, "PageParameterParser")
+
+	start = time.Now()
 	paramInfo := parser.DetectParamInfo(pnf.adjacentNumberGroups, pageURL.String(), pnf.logger)
+	pnf.timingInfo.AddEntry(start, "PageParameterDetector")
+
 	return paramInfo
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/markup/iereader"
 	"github.com/markusmobius/go-domdistiller/internal/markup/opengraph"
 	"github.com/markusmobius/go-domdistiller/internal/markup/schemaorg"
-	"github.com/markusmobius/go-domdistiller/logutil"
 	"golang.org/x/net/html"
 )
 
@@ -47,16 +46,16 @@ func NewParser(root *html.Node, timingInfo *data.TimingInfo) *Parser {
 	if err == nil && ogParser != nil {
 		ps.accessors = append(ps.accessors, ogParser)
 	}
-	logutil.AddTimingInfo(timingInfo, start, "OpenGraphProtocolParser")
+	timingInfo.AddEntry(start, "OpenGraphProtocolParser")
 
 	start = time.Now()
 	ps.accessors = append(ps.accessors, schemaorg.NewParser(root, timingInfo))
-	logutil.AddTimingInfo(timingInfo, start, "SchemaOrgParserAccessor")
+	timingInfo.AddEntry(start, "SchemaOrgParserAccessor")
 
 	start = time.Now()
 	// TODO: Use eager evaluation in IEReadingViewParser, but only for profiling.
 	ps.accessors = append(ps.accessors, iereader.NewParser(root))
-	logutil.AddTimingInfo(timingInfo, start, "SchemaOrgParserAccessor")
+	timingInfo.AddEntry(start, "SchemaOrgParserAccessor")
 
 	return ps
 }

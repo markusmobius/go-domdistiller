@@ -2,8 +2,6 @@
 
 package data
 
-import "time"
-
 type PaginationInfo struct {
 	NextPage string
 	PrevPage string
@@ -39,23 +37,6 @@ type MarkupInfo struct {
 	Author      string
 	Article     MarkupArticle
 	Images      []MarkupImage
-}
-
-type TimingEntry struct {
-	Name string
-	Time time.Duration
-}
-
-type TimingInfo struct {
-	MarkupParsingTime        time.Duration
-	DocumentConstructionTime time.Duration
-	ArticleProcessingTime    time.Duration
-	FormattingTime           time.Duration
-	TotalTime                time.Duration
-
-	// A place to hold arbitrary breakdowns of time. The perf scoring/server
-	// should display these entries with appropriate names.
-	OtherTimes []TimingEntry
 }
 
 type DebugInfo struct {

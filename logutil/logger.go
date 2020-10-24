@@ -24,8 +24,8 @@ func (l *Logger) HasFlag(flag Flag) bool {
 	return l.flags&flag != 0
 }
 
-func (l *Logger) PrintDistillPhaseInfo(args ...interface{}) {
-	if l.HasFlag(DistillPhases) {
+func (l *Logger) PrintExtractionInfo(args ...interface{}) {
+	if l.HasFlag(ExtractionInfo) {
 		l.Println(args...)
 	}
 }
@@ -39,5 +39,11 @@ func (l *Logger) PrintVisibilityInfo(args ...interface{}) {
 func (l *Logger) PrintPaginationInfo(args ...interface{}) {
 	if l.HasFlag(PaginationInfo) {
 		l.Println(args...)
+	}
+}
+
+func (l *Logger) PrintTimingInfo(format string, args ...interface{}) {
+	if l.HasFlag(TimingInfo) {
+		l.Printf(format, args...)
 	}
 }

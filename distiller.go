@@ -128,6 +128,9 @@ func ApplyForReader(r io.Reader, opts *Options) (*Result, error) {
 
 // Apply runs distiller for the specified parsed doc
 func Apply(doc *html.Node, opts *Options) (*Result, error) {
+	// Mark the start time
+	distillerStart := time.Now()
+
 	// Check whether doc is valid
 	if doc.Type != html.ElementNode {
 		doc = dom.QuerySelector(doc, "*")
@@ -156,7 +159,10 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	result.MarkupInfo = ce.Parser.MarkupInfo()
 
 	// Find pagination
+	timingInfo := ce.TimingInfo
 	if !opts.SkipPagination && opts.OriginalURL != nil {
+		paginationStart := time.Now()
+
 		if opts.PaginationAlgo == "pagenum" {
 			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil, logger)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
@@ -168,6 +174,23 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 			logger.PrintPaginationInfo("Paging by PrevNext, prev: " + result.PaginationInfo.PrevPage)
 			logger.PrintPaginationInfo("Paging by PrevNext, next: " + result.PaginationInfo.NextPage)
 		}
+
+		timingInfo.AddEntry(paginationStart, "Pagination")
+	}
+
+	timingInfo.TotalTime = time.Now().Sub(distillerStart)
+	result.TimingInfo = *timingInfo
+
+	if logger.HasFlag(logutil.TimingInfo) {
+		for _, entry := range ce.TimingInfo.OtherTimes {
+			logger.PrintTimingInfo("Timing: %s = %s", entry.Name, entry.Time)
+		}
+
+		logger.PrintTimingInfo("TimingMarkupParsingTime = %s", ce.TimingInfo.MarkupParsingTime)
+		logger.PrintTimingInfo("TimingDocumentConstructionTime = %s", ce.TimingInfo.DocumentConstructionTime)
+		logger.PrintTimingInfo("TimingArticleProcessingTime = %s", ce.TimingInfo.ArticleProcessingTime)
+		logger.PrintTimingInfo("TimingFormattingTime = %s", ce.TimingInfo.FormattingTime)
+		logger.PrintTimingInfo("TimingTotalTime = %s", ce.TimingInfo.TotalTime)
 	}
 
 	return &result, nil

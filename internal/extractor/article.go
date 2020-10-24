@@ -105,5 +105,5 @@ func (ae *ArticleExtractor) printArticleLog(doc *webdoc.TextDocument, changed bo
 		logMsg = header + ":\n" + doc.DebugString()
 	}
 
-	ae.logger.PrintDistillPhaseInfo(logMsg)
+	ae.logger.PrintExtractionInfo(logMsg)
 }
