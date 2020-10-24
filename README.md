@@ -6,9 +6,13 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 ## Status
 
-This package is still in development and the port process is still not finished. There are 11 files with 926 lines of code that haven’t been ported, so there is only a bit more to go.
+The port process has been finished. The package is still in development, however so far it looks stable enough to use.
 
 ## Changelog
+
+### 24 October 2020
+
+- Port `LogUtil` froml `LogUtil.java`
 
 ### 22 October 2020
 
