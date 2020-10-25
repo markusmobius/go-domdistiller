@@ -1,0 +1,40 @@
+{
+    "URL": "",
+    "Title": "/code/2013/get-your-frontend-javascript-code-covered/",
+    "MarkupInfo": {
+        "Title": "/code/2013/get-your-frontend-javascript-code-covered/",
+        "Type": "Article",
+        "URL": "/code/2013/get-your-frontend-javascript-code-covered/",
+        "Description": "",
+        "Publisher": "",
+        "Copyright": "",
+        "Author": "Nicolas Perriault",
+        "Article": {
+            "PublishedTime": "2013-09-29",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "",
+            "Authors": [
+                "Nicolas Perriault"
+            ]
+        },
+        "Images": null
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 488,
+    "HTML": "",
+    "ContentImages": [
+        "/static/code/2013/blanket-coverage.png"
+    ]
+}

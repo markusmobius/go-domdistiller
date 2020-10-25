@@ -1,0 +1,36 @@
+{
+    "URL": "",
+    "Title": "",
+    "MarkupInfo": {
+        "Title": "",
+        "Type": "",
+        "URL": "",
+        "Description": "",
+        "Publisher": "",
+        "Copyright": "",
+        "Author": "",
+        "Article": {
+            "PublishedTime": "",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "",
+            "Authors": []
+        },
+        "Images": null
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 252,
+    "HTML": "",
+    "ContentImages": []
+}

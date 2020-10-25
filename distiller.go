@@ -19,6 +19,9 @@ import (
 
 // Result is the final output of the distiller
 type Result struct {
+	// URL is the URL of the processed page.
+	URL string
+
 	// Title is the title of the processed page.
 	Title string
 
@@ -153,6 +156,10 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	result.Title = ce.ExtractTitle()
 	result.ContentImages = ce.ImageURLs
 	result.MarkupInfo = ce.Parser.MarkupInfo()
+
+	if opts.OriginalURL != nil {
+		result.URL = opts.OriginalURL.String()
+	}
 
 	// Find pagination
 	timingInfo := ce.TimingInfo

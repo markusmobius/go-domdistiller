@@ -1,0 +1,50 @@
+{
+    "URL": "",
+    "Title": "United States to Lift Sudan Sanctions",
+    "MarkupInfo": {
+        "Title": "United States to Lift Sudan Sanctions",
+        "Type": "Article",
+        "URL": "http://www.nytimes.com/2017/01/13/world/africa/sudan-sanctions.html",
+        "Description": "For the first time since the 1990s, the country will be able to trade extensively with the United States.",
+        "Publisher": "The New York Times Company",
+        "Copyright": "Copyright 2017 The New York Times Company",
+        "Author": "JEFFREY GETTLEMAN",
+        "Article": {
+            "PublishedTime": "",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "http://www.nytimes.com/pages/world/index.html",
+            "Authors": [
+                "http://www.nytimes.com/by/jeffrey-gettleman"
+            ]
+        },
+        "Images": [
+            {
+                "Root": "",
+                "URL": "https://static01.nyt.com/images/2017/01/14/world/13SUDAN-1/13SUDAN-1-facebookJumbo.jpg",
+                "SecureURL": "",
+                "Type": "",
+                "Caption": "",
+                "Width": 0,
+                "Height": 0
+            }
+        ]
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 744,
+    "HTML": "",
+    "ContentImages": [
+        "https://static01.nyt.com/images/2017/01/14/world/13SUDAN-1/13SUDAN-1-master768.jpg"
+    ]
+}

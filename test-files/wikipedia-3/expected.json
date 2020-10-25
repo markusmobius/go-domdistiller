@@ -1,0 +1,38 @@
+{
+    "URL": "",
+    "Title": "Hermitian matrix - Wikipedia",
+    "MarkupInfo": {
+        "Title": "",
+        "Type": "",
+        "URL": "",
+        "Description": "",
+        "Publisher": "",
+        "Copyright": "",
+        "Author": "",
+        "Article": {
+            "PublishedTime": "",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "",
+            "Authors": []
+        },
+        "Images": null
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 104,
+    "HTML": "",
+    "ContentImages": [
+        "https://wikimedia.org/api/rest_v1/media/math/render/svg/28a0aaa74b2267a48312e19321211cd9e3a39228"
+    ]
+}

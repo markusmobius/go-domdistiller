@@ -1,0 +1,54 @@
+{
+    "URL": "",
+    "Title": "Welcome to Firefox Developer Edition",
+    "MarkupInfo": {
+        "Title": "Welcome to Firefox Developer Edition",
+        "Type": "",
+        "URL": "https://www.mozilla.org/en-US/firefox/developer/",
+        "Description": "Built for those who build the Web. Introducing the only browser made for developers.",
+        "Publisher": "Mozilla",
+        "Copyright": "",
+        "Author": "",
+        "Article": {
+            "PublishedTime": "",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "",
+            "Authors": []
+        },
+        "Images": [
+            {
+                "Root": "",
+                "URL": "https://mozorg.cdn.mozilla.net/media/img/firefox/developer/page-image.03bbe7da3199.png",
+                "SecureURL": "",
+                "Type": "",
+                "Caption": "",
+                "Width": 0,
+                "Height": 0
+            }
+        ]
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 162,
+    "HTML": "",
+    "ContentImages": [
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-webide.16763db341cb.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-inspector.c791bf1f1a59.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-console.42666aaf6d03.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-debugger.02ed86fb0c9f.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-network.740d6082b3f6.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-webaudio.a10ebc48d017.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-style-editor.87c5d2017506.jpg"
+    ]
+}

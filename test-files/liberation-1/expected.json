@@ -1,0 +1,50 @@
+{
+    "URL": "",
+    "Title": "Un troisième Français mort dans le séisme au Népal",
+    "MarkupInfo": {
+        "Title": "Un troisième Français mort dans le séisme au Népal",
+        "Type": "Article",
+        "URL": "http://www.liberation.fr/monde/2015/04/30/un-troisieme-francais-mort-dans-le-seisme-au-nepal_1278483",
+        "Description": "Laurent Fabius a accueilli jeudi matin à Roissy un premier avion spécial ramenant des rescapés.",
+        "Publisher": "Libération.fr",
+        "Copyright": "Copyright Libération",
+        "Author": "AFP",
+        "Article": {
+            "PublishedTime": "2015-04-30T07:19:58",
+            "ModifiedTime": "2015-04-30T07:38:17",
+            "ExpirationTime": "",
+            "Section": "Monde",
+            "Authors": [
+                "http://www.liberation.fr/auteur/2005-afp"
+            ]
+        },
+        "Images": [
+            {
+                "Root": "",
+                "URL": "http://md1.libe.com/photo/755923-000_hkg10175905.jpg?modified_at=1430371146\u0026amp;width=750",
+                "SecureURL": "",
+                "Type": "",
+                "Caption": "",
+                "Width": 0,
+                "Height": 0
+            }
+        ]
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 273,
+    "HTML": "",
+    "ContentImages": [
+        "http://md1.libe.com/photo/755923-000_hkg10175905.jpg?modified_at=1430371146\u0026width=750"
+    ]
+}

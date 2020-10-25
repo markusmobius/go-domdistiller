@@ -1,0 +1,61 @@
+{
+    "URL": "",
+    "Title": "As Debt Rises, the Government Will Soon Spend More on Interest Than on the Military",
+    "MarkupInfo": {
+        "Title": "As Debt Rises, the Government Will Soon Spend More on Interest Than on the Military",
+        "Type": "Article",
+        "URL": "https://www.nytimes.com/2018/09/25/business/economy/us-government-debt-interest.html",
+        "Description": "Tax cuts, spending increases and higher interest rates could make it harder to respond to future recessions and deal with other needs.",
+        "Publisher": "",
+        "Copyright": "Copyright 2019",
+        "Author": "Nelson D. Schwartz",
+        "Article": {
+            "PublishedTime": "",
+            "ModifiedTime": "",
+            "ExpirationTime": "",
+            "Section": "Business",
+            "Authors": []
+        },
+        "Images": [
+            {
+                "Root": "",
+                "URL": "https://static01.nyt.com/images/2018/09/15/business/15DEBTS01/15DEBTS01-facebookJumbo.jpg",
+                "SecureURL": "",
+                "Type": "",
+                "Caption": "",
+                "Width": 0,
+                "Height": 0
+            }
+        ]
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 1922,
+    "HTML": "",
+    "ContentImages": [
+        "https://static01.nyt.com/images/2018/09/15/business/15DEBTS01/merlin_138209730_5f3b5746-4962-4207-a24f-aea644a8636f-articleLarge.jpg?quality=75\u0026auto=webp\u0026disable=upscale",
+        "https://static01.nyt.com/images/2018/09/15/business/15DEBTS01/merlin_138209730_5f3b5746-4962-4207-a24f-aea644a8636f-articleLarge.jpg?quality=90\u0026auto=webp",
+        "https://static01.nyt.com/images/2018/09/15/business/15DEBTS01/merlin_138209730_5f3b5746-4962-4207-a24f-aea644a8636f-jumbo.jpg?quality=90\u0026auto=webp",
+        "https://static01.nyt.com/images/2018/09/15/business/15DEBTS01/merlin_138209730_5f3b5746-4962-4207-a24f-aea644a8636f-superJumbo.jpg?quality=90\u0026auto=webp",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/interest-on-national-debt/313e919f83bb85b62966d7f70121c5f3f3ea740b/0916-biz-web-DEBT-CHART-1-Artboard_2.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/interest-on-national-debt/313e919f83bb85b62966d7f70121c5f3f3ea740b/0916-biz-web-DEBT-CHART-1-Artboard_3.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/debt-as-a-share-of-gdp/dad2c5186b9c0b968d766fa279d9ed6b76ce776b/0916-biz-web-DEBT-CHART-2-Artboard_2.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/debt-as-a-share-of-gdp/dad2c5186b9c0b968d766fa279d9ed6b76ce776b/0916-biz-web-DEBT-CHART-2-Artboard_3.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/expenditures-as-a-share-of-national-budget/3311a2358867f7423b4d30b424829c1ff1228a7a/0916-biz-web-DEBT-CHART-3-Artboard_2.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/expenditures-as-a-share-of-national-budget/3311a2358867f7423b4d30b424829c1ff1228a7a/0916-biz-web-DEBT-CHART-3-Artboard_3.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/10-year-treasury-note/e6a342acf0db9b8a88e9ae36f0db5438e5e5124f/0916-biz-web-DEBT-CHART-5-Artboard_2.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/10-year-treasury-note/e6a342acf0db9b8a88e9ae36f0db5438e5e5124f/0916-biz-web-DEBT-CHART-5-Artboard_3.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/dollar-index/3753490c8fd0afa3e42df37d132f5c87da5e1c36/0916-biz-web-DEBT-CHART-4-Artboard_2.png",
+        "https://static01.nyt.com/newsgraphics/2018/09/14/dollar-index/3753490c8fd0afa3e42df37d132f5c87da5e1c36/0916-biz-web-DEBT-CHART-4-Artboard_3.png"
+    ]
+}

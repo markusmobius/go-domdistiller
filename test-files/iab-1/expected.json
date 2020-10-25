@@ -1,0 +1,49 @@
+{
+    "URL": "",
+    "Title": "Getting LEAN with Digital Ad UX | IAB",
+    "MarkupInfo": {
+        "Title": "Getting LEAN with Digital Ad UX | IAB",
+        "Type": "Article",
+        "URL": "http://www.iab.com/news/lean",
+        "Description": "We messed up. As technologists, tasked with delivering content and services to users, we lost track of the user experience. Twenty years ago we saw an explosion of websites, built by developers around the world, providing all forms of content. This was the beginning of an age of enlightenment, the intersection of content and technology. … Continued",
+        "Publisher": "IAB",
+        "Copyright": "",
+        "Author": "",
+        "Article": {
+            "PublishedTime": "2015-10-15T08:00:26+00:00",
+            "ModifiedTime": "2015-10-16T12:56:08+00:00",
+            "ExpirationTime": "",
+            "Section": "Ad Blocking",
+            "Authors": []
+        },
+        "Images": [
+            {
+                "Root": "",
+                "URL": "http://www.iab.com/wp-content/uploads/2015/10/getting-lean-with-digital-ad-ux-300x250.jpg",
+                "SecureURL": "",
+                "Type": "",
+                "Caption": "",
+                "Width": 0,
+                "Height": 0
+            }
+        ]
+    },
+    "TimingInfo": {
+        "MarkupParsingTime": 0,
+        "DocumentConstructionTime": 0,
+        "ArticleProcessingTime": 0,
+        "FormattingTime": 0,
+        "TotalTime": 0,
+        "OtherTimes": null
+    },
+    "PaginationInfo": {
+        "NextPage": "",
+        "PrevPage": ""
+    },
+    "WordCount": 888,
+    "HTML": "",
+    "ContentImages": [
+        "http://www.iab.com/wp-content/uploads/2015/10/getting-lean-with-digital-ad-ux-2-1000x305.jpg",
+        "http://www.iab.com/wp-content/uploads/2015/10/getting-lean-with-digital-ad-ux-300x250.jpg"
+    ]
+}

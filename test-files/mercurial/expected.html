@@ -1,0 +1,25 @@
+<h2>
+                        <a href="#id10">Sharing with multiple developers: code review</a><a href="#sharing-with-multiple-developers-code-review" title="Permalink to this headline">¶</a>
+                    </h2><p>
+                        Now that you know how to share your own mutable history across multiple computers, you might be wondering if it makes sense to share mutable history with others. It does, but you have to be careful, stay alert, and <em>communicate</em> with your peers.
+                    </p><p>
+                        Code review is a good use case for sharing mutable history across multiple developers: Alice commits a draft changeset, submits it for review, and amends her changeset until her reviewer is satisfied. Meanwhile, Bob is also committing draft changesets for review, amending until his reviewer is satisfied. Once a particular changeset passes review, the respective author (Alice or Bob) pushes it to the public (publishing) repository.
+                    </p><p>
+                        Incidentally, the reviewers here can be anyone: maybe Bob and Alice review each other’s work; maybe the same third party reviews both; or maybe they pick different experts to review their work on different parts of a large codebase. Similarly, it doesn’t matter if reviews are conducted in person, by email, or by carrier pigeon. Code review is outside of the scope of Mercurial, so all we’re looking at here is the mechanics of committing, amending, pushing, and pulling.
+                    </p><h2>
+                        <a href="#id15">Getting into trouble with shared mutable history</a><a href="#getting-into-trouble-with-shared-mutable-history" title="Permalink to this headline">¶</a>
+                    </h2><p>
+                        Mercurial with <tt><span>evolve</span></tt> is a powerful tool, and using powerful tools can have consequences. (You can cut yourself badly with a sharp knife, but every competent chef keeps several around. Ever try to chop onions with a spoon?)
+                    </p><p>
+                        In the user guide, we saw examples of <em>unstbale</em> changesets, which are the most common type of troubled changeset. (Recall that a non-obsolete changeset with obsolete ancestors is an orphan.)
+                    </p><p>
+                        Two other types of troubles can happen: <em>divergent</em> and <em>bumped</em> changesets. Both are more likely with shared mutable history, especially mutable history shared by multiple developers.
+                    </p><h2>
+                        <a href="#id19">Conclusion</a><a href="#conclusion" title="Permalink to this headline">¶</a>
+                    </h2><p>
+                        Mutable history is a powerful tool. Like a sharp knife, an experienced user can do wonderful things with it, much more wonderful than with a dull knife (never mind a rusty spoon). At the same time, an inattentive or careless user can do harm to himself or others. Mercurial with <tt><span>evolve</span></tt> goes to great lengths to limit the harm you can do by trying to handle all possible types of “troubled” changesets. Nevertheless, having a first-aid kit nearby does not mean you should stop being careful with sharp knives.
+                    </p><p>
+                        Mutable history shared across multiple repositories by a single developer is a natural extension of this model. Once you are used to using a single sharp knife on its own, it’s pretty straightforward to chop onions and mushrooms using the same knife, or to alternate between two chopping boards with different knives.
+                    </p><p>
+                        Mutable history shared by multiple developers is a scary place to go. Imagine a professional kitchen full of expert chefs tossing their favourite knives back and forth, with the occasional axe or chainsaw thrown in to spice things up. If you’re confident that you <em>and your colleagues</em> can do it without losing a limb, go for it. But be sure to practice a lot first before you rely on it!
+                    </p>
