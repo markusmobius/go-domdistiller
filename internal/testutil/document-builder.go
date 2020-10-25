@@ -51,11 +51,12 @@ func (db *WebDocumentBuilder) AddTable(innerHTML string) *webdoc.Table {
 
 func (db *WebDocumentBuilder) AddImage() *webdoc.Image {
 	image := dom.CreateElement("img")
+	dom.SetAttribute(image, "src", "http://www.example.com/foo.jpg")
+
 	wi := &webdoc.Image{
-		Element:   image,
-		Width:     100,
-		Height:    100,
-		SourceURL: "http://www.example.com/foo.jpg",
+		Element: image,
+		Width:   100,
+		Height:  100,
 	}
 
 	db.document.AddElements(wi)
@@ -66,11 +67,12 @@ func (db *WebDocumentBuilder) AddLeadImage() *webdoc.Image {
 	image := dom.CreateElement("img")
 	dom.SetAttribute(image, "width", "600")
 	dom.SetAttribute(image, "height", "400")
+	dom.SetAttribute(image, "src", "http://www.example.com/lead.bmp")
+
 	wi := &webdoc.Image{
-		Element:   image,
-		Width:     100,
-		Height:    100,
-		SourceURL: "http://www.example.com/lead.bmp",
+		Element: image,
+		Width:   100,
+		Height:  100,
 	}
 
 	db.document.AddElements(wi)

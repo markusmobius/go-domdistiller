@@ -15,11 +15,10 @@ import (
 type Image struct {
 	BaseElement
 
-	Element   *html.Node // node for the image
-	Width     int        // width of image in pixel
-	Height    int        // height of image in pixel
-	SourceURL string     // source url of the image
-	PageURL   *nurl.URL  // url of page where image is placed
+	Element *html.Node // node for the image
+	Width   int        // width of image in pixel
+	Height  int        // height of image in pixel
+	PageURL *nurl.URL  // url of page where image is placed
 
 	cloned *html.Node
 }
@@ -47,8 +46,9 @@ func (i *Image) GetURLs() []string {
 	}
 
 	urls := []string{}
-	if i.SourceURL != "" {
-		urls = append(urls, i.SourceURL)
+	src := dom.GetAttribute(i.cloned, "src")
+	if src != "" {
+		urls = append(urls, src)
 	}
 
 	urls = append(urls, domutil.GetAllSrcSetURLs(i.cloned)...)
@@ -66,9 +66,9 @@ func (i *Image) cloneAndProcessNode() *html.Node {
 	cloned := dom.Clone(i.Element, true)
 	img := domutil.GetFirstElementByTagNameInc(cloned, "img")
 	if img != nil {
-		if i.SourceURL != "" {
-			i.SourceURL = stringutil.CreateAbsoluteURL(i.SourceURL, i.PageURL)
-			dom.SetAttribute(img, "src", i.SourceURL)
+		if src := dom.GetAttribute(img, "src"); src != "" {
+			src = stringutil.CreateAbsoluteURL(src, i.PageURL)
+			dom.SetAttribute(img, "src", src)
 		}
 
 		if i.Width > 0 && i.Height > 0 {

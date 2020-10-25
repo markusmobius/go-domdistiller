@@ -2,12 +2,32 @@
 
 package embed
 
+import "regexp"
+
 var (
-	lazyImageAttrs = []string{
+	rxB64DataURL      = regexp.MustCompile(`(?i)^data:\s*([^\s;,]+)\s*;\s*base64\s*`)
+	rxSrcsetURL       = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
+	rxImgExtensions   = regexp.MustCompile(`(?i)\.(jpg|jpeg|png|webp)`)
+	rxLazyImageSrcset = regexp.MustCompile(`(?i)\.(jpg|jpeg|png|webp)\s+\d`)
+	rxLazyImageSrc    = regexp.MustCompile(`(?i)^\s*\S+\.(jpg|jpeg|png|webp)\S*\s*$`)
+
+	figureImageSelectors = []string{
+		"noscript picture",
+		"noscript img",
+		"picture",
+		"img",
+	}
+
+	lazyImageSrcAttrs = []string{
 		"data-src",
 		"data-original",
 		"datasrc",
 		"data-url",
+	}
+
+	lazyImageSrcsetAttrs = []string{
+		"data-srcset",
+		"datasrcset",
 	}
 
 	relevantImageTags = map[string]struct{}{

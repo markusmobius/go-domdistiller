@@ -35,9 +35,8 @@ func Test_WebDoc_Image_GetSrcList(t *testing.T) {
 
 	baseURL, _ := nurl.ParseRequestURI("http://example.com/")
 	webImage := webdoc.Image{
-		Element:   img,
-		PageURL:   baseURL,
-		SourceURL: dom.GetAttribute(img, "src"),
+		Element: img,
+		PageURL: baseURL,
 	}
 
 	urls := webImage.GetURLs()

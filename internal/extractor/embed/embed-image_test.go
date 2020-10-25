@@ -16,6 +16,8 @@ const imageBase64 = "data:image/png;base64,iVBORw0KGgo" +
 	"AAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/" +
 	"w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
 
+const shortImageBase64 = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+
 // NEED-COMPUTE-CSS
 // There are some unit tests in original dom-distiller that can't be
 // implemented because they require to compute the stylesheets :
@@ -67,15 +69,87 @@ func Test_Embed_Image_HasWidthAttribute(t *testing.T) {
 }
 
 func Test_Embed_Image_LazyLoadedImage(t *testing.T) {
-	extractLazyLoadedImage(t, "data-src")
-	extractLazyLoadedImage(t, "datasrc")
-	extractLazyLoadedImage(t, "data-original")
-	extractLazyLoadedImage(t, "data-url")
+	// Common lazy attributes
+	extractLazyLoadedImage(t, "data-src", "src")
+	extractLazyLoadedImage(t, "datasrc", "src")
+	extractLazyLoadedImage(t, "data-original", "src")
+	extractLazyLoadedImage(t, "data-url", "src")
+	extractLazyLoadedImage(t, "data-srcset", "srcset")
+	extractLazyLoadedImage(t, "datasrcset", "srcset")
 
-	extractLazyLoadedFigure(t, "data-src")
-	extractLazyLoadedFigure(t, "datasrc")
-	extractLazyLoadedFigure(t, "data-original")
-	extractLazyLoadedFigure(t, "data-url")
+	// Custom lazy attributes
+	extractLazyLoadedImage(t, "lazy-src", "src")
+	extractLazyLoadedImage(t, "lazysrc", "src")
+	extractLazyLoadedImage(t, "lazy-srcset", "srcset")
+	extractLazyLoadedImage(t, "lazysrcset", "srcset")
+
+	// Image with small base64 image source
+	img := dom.CreateElement("img")
+	dom.SetAttribute(img, "src", shortImageBase64)
+	dom.SetAttribute(img, "lazy-srcset", "image.png 1x")
+
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := embed.NewImageExtractor(pageURL, nil)
+
+	result, _ := (extractor.Extract(img)).(*webdoc.Image)
+	assert.NotNil(t, result)
+	assert.Equal(t, `<img srcset="http://example.com/image.png 1x"/>`, result.GenerateOutput(false))
+	assert.Equal(t, []string{"http://example.com/image.png"}, result.GetURLs())
+}
+
+func Test_Embed_Image_LazyLoadedFigure(t *testing.T) {
+	// Common lazy attributes
+	extractLazyLoadedFigure(t, "data-src", "src")
+	extractLazyLoadedFigure(t, "datasrc", "src")
+	extractLazyLoadedFigure(t, "data-original", "src")
+	extractLazyLoadedFigure(t, "data-url", "src")
+	extractLazyLoadedFigure(t, "data-srcset", "srcset")
+	extractLazyLoadedFigure(t, "datasrcset", "srcset")
+
+	// Custom lazy attributes
+	extractLazyLoadedFigure(t, "lazy-src", "src")
+	extractLazyLoadedFigure(t, "lazysrc", "src")
+	extractLazyLoadedFigure(t, "lazy-srcset", "srcset")
+	extractLazyLoadedFigure(t, "lazysrcset", "srcset")
+
+	// Figure with image with small base64 image source
+	img := dom.CreateElement("img")
+	dom.SetAttribute(img, "src", shortImageBase64)
+	dom.SetAttribute(img, "lazy-srcset", "image.png 1x")
+
+	figure := dom.CreateElement("figure")
+	dom.AppendChild(figure, img)
+
+	pageURL, _ := nurl.ParseRequestURI("http://example.com")
+	extractor := embed.NewImageExtractor(pageURL, nil)
+	expected := `<figure><img srcset="http://example.com/image.png 1x"/></figure>`
+
+	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
+	assert.NotNil(t, result)
+	assert.Equal(t, expected, result.GenerateOutput(false))
+	assert.Equal(t, []string{"http://example.com/image.png"}, result.GetURLs())
+
+	// Figure with noscript image
+	lazyImg := dom.CreateElement("img")
+	dom.SetAttribute(lazyImg, "src", "image-lq.png")
+
+	realImg := dom.CreateElement("img")
+	dom.SetAttribute(realImg, "data-src", "image-hq.png")
+
+	noscript := dom.CreateElement("noscript")
+	dom.SetInnerHTML(noscript, dom.OuterHTML(realImg))
+
+	figure = dom.CreateElement("figure")
+	dom.AppendChild(figure, lazyImg)
+	dom.AppendChild(figure, noscript)
+
+	extractor = embed.NewImageExtractor(pageURL, nil)
+	expected = `<figure><img src="http://example.com/image-hq.png"/></figure>`
+
+	result, _ = (extractor.Extract(figure)).(*webdoc.Figure)
+	assert.NotNil(t, result)
+	assert.Equal(t, expected, result.GenerateOutput(false))
+	assert.Equal(t, []string{"http://example.com/image-hq.png"}, result.GetURLs())
 }
 
 func Test_Embed_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
@@ -263,31 +337,66 @@ func Test_Embed_Image_FigureDivCaption(t *testing.T) {
 	assert.Equal(t, "This is a caption", result.GenerateOutput(true))
 }
 
-func extractLazyLoadedImage(t *testing.T, attr string) {
-	img := dom.CreateElement("img")
-	dom.SetAttribute(img, attr, "image.png")
+func extractLazyLoadedImage(t *testing.T, lazyAttr, expectedAttr string) {
+	// Prepare test image
+	testURL := "image.png"
+	if expectedAttr == "srcset" {
+		testURL += " 1x"
+	}
 
+	testImg := dom.CreateElement("img")
+	dom.SetAttribute(testImg, lazyAttr, testURL)
+
+	// Prepare expected image
+	expectedURL := "http://example.com/image.png"
+	if expectedAttr == "srcset" {
+		expectedURL += " 1x"
+	}
+
+	expectedImg := dom.CreateElement("img")
+	dom.SetAttribute(expectedImg, expectedAttr, expectedURL)
+
+	// Test extractor
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
 	extractor := embed.NewImageExtractor(pageURL, nil)
 
-	result, _ := (extractor.Extract(img)).(*webdoc.Image)
+	result, _ := (extractor.Extract(testImg)).(*webdoc.Image)
 	assert.NotNil(t, result)
-	assert.Equal(t, `<img src="http://example.com/image.png"/>`, result.GenerateOutput(false))
+	assert.Equal(t, dom.OuterHTML(expectedImg), result.GenerateOutput(false))
 	assert.Equal(t, []string{"http://example.com/image.png"}, result.GetURLs())
 }
 
-func extractLazyLoadedFigure(t *testing.T, attr string) {
-	img := dom.CreateElement("img")
-	dom.SetAttribute(img, attr, "image.png")
+func extractLazyLoadedFigure(t *testing.T, lazyAttr, expectedAttr string) {
+	// Prepare test figure
+	testURL := "image.png"
+	if expectedAttr == "srcset" {
+		testURL += " 1x"
+	}
 
-	figure := dom.CreateElement("figure")
-	dom.AppendChild(figure, img)
+	testImg := dom.CreateElement("img")
+	dom.SetAttribute(testImg, lazyAttr, testURL)
 
+	testFigure := dom.CreateElement("figure")
+	dom.AppendChild(testFigure, testImg)
+
+	// Prepare expected image
+	expectedURL := "http://example.com/image.png"
+	if expectedAttr == "srcset" {
+		expectedURL += " 1x"
+	}
+
+	expectedImg := dom.CreateElement("img")
+	dom.SetAttribute(expectedImg, expectedAttr, expectedURL)
+
+	expectedFigure := dom.CreateElement("figure")
+	dom.AppendChild(expectedFigure, expectedImg)
+
+	// Test extractor
 	pageURL, _ := nurl.ParseRequestURI("http://example.com")
 	extractor := embed.NewImageExtractor(pageURL, nil)
 
-	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
+	result, _ := (extractor.Extract(testFigure)).(*webdoc.Figure)
 	assert.NotNil(t, result)
-	assert.Equal(t, `<figure><img src="http://example.com/image.png"/></figure>`, result.GenerateOutput(false))
+	assert.Equal(t, dom.OuterHTML(expectedFigure), result.GenerateOutput(false))
 	assert.Equal(t, []string{"http://example.com/image.png"}, result.GetURLs())
 }

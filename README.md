@@ -10,6 +10,11 @@ The port process has been finished. The package is still in development, however
 
 ## Changelog
 
+### 25 October 2020
+
+- Add initial test files.
+- Improve lazy-loaded image replacer in image extractor.
+
 ### 24 October 2020
 
 - Port `LogUtil` froml `LogUtil.java`

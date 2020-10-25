@@ -129,7 +129,7 @@ func Test_Extractor_Content_Image(t *testing.T) {
 		`<source srcset="http://example.com/path/image100 100w, http://example.org/image300 300w"/>` +
 		`<img/>` +
 		`</picture></figure>` +
-		`<img srcset="http://example.com/image2x 2x" src="http://example.com/image" ` +
+		`<img src="http://example.com/image" srcset="http://example.com/image2x 2x" ` +
 		`width="20" height="10"/>` +
 		`<img alt="b" src="http://example.com/path/image2"/>` +
 		`<table role="grid"><tbody><tr><td>` +
