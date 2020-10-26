@@ -532,3 +532,22 @@ func NodeName(node *html.Node) string {
 		return ""
 	}
 }
+
+// HasAncestor check if node has ancestor with specified tag names.
+func HasAncestor(node *html.Node, ancestorTagNames ...string) bool {
+	// Convert array to map
+	mapAncestorTags := make(map[string]struct{})
+	for _, tag := range ancestorTagNames {
+		mapAncestorTags[tag] = struct{}{}
+	}
+
+	// Check ancestors
+	for parent := node.Parent; parent != nil; parent = parent.Parent {
+		parentTagName := dom.TagName(parent)
+		if _, exist := mapAncestorTags[parentTagName]; exist {
+			return true
+		}
+	}
+
+	return false
+}

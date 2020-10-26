@@ -7,19 +7,14 @@ import (
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/label"
 	"golang.org/x/net/html"
 )
 
 const maxClassCount = 2
 
-var (
-	rxComment           = regexp.MustCompile(`(?i)\bcomments?\b`)
-	rxDisplay           = regexp.MustCompile(`(?i)display:\s*`)
-	rxNoneDisplay       = regexp.MustCompile(`(?i)display:\s*none(?:\s|;|$)`)
-	rxInlineDisplay     = regexp.MustCompile(`(?i)display:\s*inline(?:\s|;|$)`)
-	rxInlineFlexDisplay = regexp.MustCompile(`(?i)display:\s*inline-flex(?:\s|;|$)`)
-)
+var rxComment = regexp.MustCompile(`(?i)\bcomments?\b`)
 
 type ElementAction struct {
 	Flush           bool
@@ -30,45 +25,27 @@ type ElementAction struct {
 
 func GetActionForElement(element *html.Node) ElementAction {
 	tagName := dom.TagName(element)
-	styleAttr := dom.GetAttribute(element, "style")
 
 	// NEED-COMPUTE-CSS
 	// In original dom-distiller, the `flush` and `changesTagLevel` values are decided depending
 	// on element display syle. For example, inline element shouldn't change tag level. Unfortunately,
-	// this is not possible since we can't compute stylesheet. As fallback, here we simply check if:
-	// - Tag has display style attribute and it's set to `inline`.
-	// - Tag is inline by default (see https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements).
-	// - Tag is nested inside list item (which make it inline by default).
-	action := ElementAction{
-		Labels:          make([]string, 0),
-		Flush:           true,
-		ChangesTagLevel: true,
+	// this is not possible since we can't compute stylesheet. As fallback, here we simply use the
+	// default display for the tag name
+	action := ElementAction{}
+	display := getDisplayStyle(element)
+	switch display {
+	case "inline": // do nothing
+	case "inline-block", "inline-flex":
+		action.ChangesTagLevel = true
+	default:
+		action.Flush = true
+		action.ChangesTagLevel = true
 	}
 
-	// Check if display specified in style attribute.
-	if rxDisplay.MatchString(styleAttr) {
-		switch {
-		case rxInlineFlexDisplay.MatchString(styleAttr):
-			action.Flush = false
-
-		case rxInlineDisplay.MatchString(styleAttr),
-			rxNoneDisplay.MatchString(styleAttr):
-			action.Flush = false
-			action.ChangesTagLevel = false
-		}
-	} else if _, isInline := inlineTagNames[tagName]; isInline {
-		// Check if tag is inline by default
+	// Check if item is inside <li>
+	if domutil.HasAncestor(element, "li", "summary") {
 		action.Flush = false
 		action.ChangesTagLevel = false
-	} else if element.Type == html.ElementNode {
-		// Check if item is inside list item
-		for parent := element.Parent; parent != nil; parent = parent.Parent {
-			if dom.TagName(parent) == "li" {
-				action.Flush = false
-				action.ChangesTagLevel = false
-				break
-			}
-		}
 	}
 
 	if tagName != "html" && tagName != "body" && tagName != "article" {
