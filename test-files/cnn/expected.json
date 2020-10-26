@@ -40,13 +40,7 @@
         "NextPage": "",
         "PrevPage": ""
     },
-    "WordCount": 169,
+    "WordCount": 251,
     "HTML": "",
-    "ContentImages": [
-        "http://i2.cdn.turner.com/money/dam/assets/170118130731-wilbur-ross-hearing-commerce-336x188.jpg",
-        "http://i.cdn.turner.com/money/video/bvp/images/1.gif",
-        "http://i.cdn.turner.com/money/images/1.gif",
-        "//googleads.g.doubleclick.net/pagead/viewthroughconversion/925133270/?value=1.00\u0026currency_code=USD\u0026label=OuhECLD29GcQ1tORuQM\u0026guid=ON\u0026script=0",
-        "//bea4.v.fwmrm.net/ad/u?mode=echo\u0026cr=http%3A%2F%2Fbeacon.krxd.net%2Fusermatch.gif%3Fpartner%3Dfreewheel%26partner_uid%3D%23%7Buser.id%7D"
-    ]
+    "ContentImages": []
 }

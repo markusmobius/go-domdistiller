@@ -40,10 +40,12 @@
         "NextPage": "",
         "PrevPage": ""
     },
-    "WordCount": 162,
+    "WordCount": 281,
     "HTML": "",
     "ContentImages": [
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/title.949ac051aba3.png",
         "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-webide.16763db341cb.jpg",
+        "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-valence.251f9def4d8d.jpg",
         "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-inspector.c791bf1f1a59.jpg",
         "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-console.42666aaf6d03.jpg",
         "//mozorg.cdn.mozilla.net/media/img/firefox/firstrun/dev/feature-debugger.02ed86fb0c9f.jpg",

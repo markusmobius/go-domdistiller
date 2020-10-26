@@ -127,7 +127,7 @@ func (db *WebDocumentBuilder) Build() *Document {
 }
 
 func (db *WebDocumentBuilder) flushBlock(group int) {
-	if text := db.textBuilder.Build(group); text != nil {
+	if text := db.textBuilder.Build(db.nextTextIndex); text != nil {
 		text.GroupNumber = group
 		db.nextTextIndex++
 		db.addText(*text)

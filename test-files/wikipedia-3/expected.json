@@ -30,9 +30,11 @@
         "NextPage": "",
         "PrevPage": ""
     },
-    "WordCount": 104,
+    "WordCount": 303,
     "HTML": "",
     "ContentImages": [
-        "https://wikimedia.org/api/rest_v1/media/math/render/svg/28a0aaa74b2267a48312e19321211cd9e3a39228"
+        "https://wikimedia.org/api/rest_v1/media/math/render/svg/28a0aaa74b2267a48312e19321211cd9e3a39228",
+        "https://wikimedia.org/api/rest_v1/media/math/render/svg/3c23d6757968a2267ee906cffc07cfe1bbc8aecc",
+        "https://wikimedia.org/api/rest_v1/media/math/render/svg/b7839ef3cdbc89c3ea1acd17a507d03a33ed79df"
     ]
 }

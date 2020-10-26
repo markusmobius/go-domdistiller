@@ -214,93 +214,93 @@ const tdbSourceHTML = `` +
 	`</a></div>`
 
 const tdbExpectedDebug = "" +
+	"[0/0;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"   Overview \n" +
+	"[1/1;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"Package\n" +
+	"[2/2;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"Class\n" +
+	"[3/3;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"Use\n" +
+	"[4/4;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	" Tree \n" +
 	"[5/5;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	"   Overview \n" +
+	" Deprecated \n" +
+	"[6/6;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	" Index \n" +
 	"[7/7;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	"Package\n" +
+	"Help\n" +
+	"[8/8;tl=4;nw=2;ld=0.000;]	boilerplate,\n" +
+	"GWT 2.5.1\n" +
 	"[9/9;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	"Class\n" +
-	"[11/11;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	"Use\n" +
-	"[13/13;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	" Tree \n" +
-	"[15/15;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	" Deprecated \n" +
-	"[17/17;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	" Index \n" +
-	"[19/19;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
-	"Help\n" +
-	"[22/22;tl=4;nw=2;ld=0.000;]	boilerplate,\n" +
-	"GWT 2.5.1\n" +
-	"[25/25;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Prev\n" +
-	"[27/27;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[10/10;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Next\n" +
-	"[30/30;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[11/11;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" Frames \n" +
-	"[32/32;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[12/12;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" No Frames \n" +
-	"[35/35;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[13/13;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" All Classes \n" +
-	"[41/41;tl=4;nw=6;ld=0.000;]	boilerplate,de.l3s.boilerpipe/H1,de.l3s.boilerpipe/HEADING\n" +
+	"[14/14;tl=4;nw=6;ld=0.000;]	boilerplate,de.l3s.boilerpipe/H1,de.l3s.boilerpipe/HEADING\n" +
 	"How This API Document Is Organized\n" +
-	"[43/43;tl=4;nw=19;ld=0.000;]	boilerplate,\n" +
+	"[15/15;tl=4;nw=19;ld=0.000;]	boilerplate,\n" +
 	"This API (Application Programming Interface) document has pages corresponding to the items in the navigation bar, described as follows.\n" +
-	"[46/46;tl=5;nw=37;ld=0.027;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[16/16;tl=5;nw=37;ld=0.027;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"OverviewThe  Overview  page is the front page of this API document and provides a list of all packages with a summary for each.  This page can also contain an overall description of the set of packages.\n" +
-	"[48/48;tl=5;nw=34;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[17/23;tl=5;nw=34;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"PackageEach package has a page that contains a list of its classes and interfaces, with a summary for each. This page can contain six categories:Interfaces (italic)ClassesEnumsExceptionsErrorsAnnotation Types\n" +
-	"[50/50;tl=5;nw=105;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[24/38;tl=5;nw=105;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Class/InterfaceEach class, interface, nested class and nested interface has its own separate page. Each of these pages has three sections consisting of a class/interface description, summary tables, and detailed member descriptions:Class inheritance diagramDirect SubclassesAll Known SubinterfacesAll Known Implementing ClassesClass/interface declarationClass/interface descriptionNested Class SummaryField SummaryConstructor SummaryMethod SummaryField DetailConstructor DetailMethod DetailEach summary entry contains the first sentence from the detailed description for that item. The summary entries are alphabetical, while the detailed descriptions are in the order they appear in the source code. This preserves the logical groupings established by the programmer.\n" +
-	"[52/52;tl=5;nw=28;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[39/44;tl=5;nw=28;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Annotation TypeEach annotation type has its own separate page with the following sections:Annotation Type declarationAnnotation Type descriptionRequired Element SummaryOptional Element SummaryElement Detail\n" +
-	"[54/54;tl=5;nw=22;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[45/49;tl=5;nw=22;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"EnumEach enum has its own separate page with the following sections:Enum declarationEnum descriptionEnum Constant SummaryEnum Constant Detail\n" +
-	"[56/56;tl=5;nw=85;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[50/50;tl=5;nw=85;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"UseEach documented package, class and interface has its own Use page.  This page describes what packages, classes, methods, constructors and fields use any part of the given class or package. Given a class or interface A, its Use page includes subclasses of A, fields declared as A, methods that return A, and methods and constructors with parameters of type A.  You can access this page by first going to the package, class or interface, then clicking on the \"Use\" link in the navigation bar.\n" +
-	"[58/58;tl=5;nw=80;ld=0.025;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[51/53;tl=5;nw=80;ld=0.025;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Tree (Class Hierarchy)There is a  Class Hierarchy  page for all packages, plus a hierarchy for each package. Each hierarchy page contains a list of classes and a list of interfaces. The classes are organized by inheritance structure starting with java.lang.Object. The interfaces do not inherit from java.lang.Object.When viewing the Overview page, clicking on \"Tree\" displays the hierarchy for all packages.When viewing a particular package, class or interface page, clicking \"Tree\" displays the hierarchy for only that package.\n" +
-	"[60/60;tl=5;nw=42;ld=0.048;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[54/54;tl=5;nw=42;ld=0.048;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Deprecated APIThe  Deprecated API  page lists all of the API that have been deprecated. A deprecated API is not recommended for use, generally due to improvements, and a replacement API is usually given. Deprecated APIs may be removed in future implementations.\n" +
-	"[62/62;tl=5;nw=15;ld=0.067;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[55/55;tl=5;nw=15;ld=0.067;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"IndexThe  Index  contains an alphabetic list of all classes, interfaces, constructors, methods, and fields.\n" +
-	"[64/64;tl=5;nw=16;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[56/56;tl=5;nw=16;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Prev/NextThese links take you to the next or previous class, interface, package, or related page.\n" +
-	"[66/66;tl=5;nw=18;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[57/57;tl=5;nw=18;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Frames/No FramesThese links show and hide the HTML frames.  All pages are available with or without frames.\n" +
-	"[68/68;tl=5;nw=15;ld=0.133;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[58/58;tl=5;nw=15;ld=0.133;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"All ClassesThe  All Classes  link shows all classes and interfaces except non-static nested types.\n" +
-	"[70/70;tl=5;nw=63;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[59/59;tl=5;nw=63;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Serialized FormEach serializable or externalizable class has a description of its serialization fields and methods. This information is of interest to re-implementors, not to developers using the API. While there is no link in the navigation bar, you can get to this information by going to any serialized class and clicking \"Serialized Form\" in the \"See also\" section of the class description.\n" +
-	"[72/72;tl=5;nw=16;ld=0.188;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[60/60;tl=5;nw=16;ld=0.188;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Constant Field ValuesThe  Constant Field Values  page lists the static final fields and their values.\n" +
-	"[74/74;tl=3;nw=12;ld=0.000;]	boilerplate,\n" +
+	"[61/61;tl=3;nw=12;ld=0.000;]	boilerplate,\n" +
 	"This help file applies to API documentation generated using the standard doclet.\n" +
-	"[79/79;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[62/62;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"   Overview \n" +
-	"[81/81;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[63/63;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Package\n" +
-	"[83/83;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[64/64;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Class\n" +
-	"[85/85;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[65/65;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Use\n" +
-	"[87/87;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[66/66;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" Tree \n" +
-	"[89/89;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[67/67;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" Deprecated \n" +
-	"[91/91;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[68/68;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" Index \n" +
-	"[93/93;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[69/69;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Help\n" +
-	"[96/96;tl=4;nw=2;ld=0.000;]	boilerplate,\n" +
+	"[70/70;tl=4;nw=2;ld=0.000;]	boilerplate,\n" +
 	"GWT 2.5.1\n" +
-	"[99/99;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[71/71;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Prev\n" +
-	"[101/101;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[72/72;tl=5;nw=1;ld=0.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	"Next\n" +
-	"[104/104;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[73/73;tl=6;nw=1;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" Frames \n" +
-	"[106/106;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[74/74;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" No Frames \n" +
-	"[109/109;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
+	"[75/75;tl=6;nw=2;ld=1.000;]	boilerplate,de.l3s.boilerpipe/LI\n" +
 	" All Classes \n"
