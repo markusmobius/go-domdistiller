@@ -57,7 +57,7 @@ func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 	// 4) Table having ARIA table-related roles in its descendants is data table.
 	// This may have deviated from said url if it only checks for <table> element but not its
 	// descendants.
-	directDescendants := getDirectDescendants(t)
+	directDescendants := c.getDirectDescendants(t)
 	for _, element := range directDescendants {
 		role := strings.ToLower(dom.GetAttribute(element, "role"))
 		_, ariaRoleExist := ariaRoles[role]
@@ -78,13 +78,13 @@ func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 	// data table), but our eval sets indicate the need to bump these way up to here, because
 	// many (old) pages have layout tables that are nested or with <TH>/<CAPTION>s but only 1
 	// row or col.
-	if hasNestedTables(t) {
+	if c.hasNestedTables(t) {
 		return c.logAndReturn(Layout, NestedTable)
 	}
 
 	// 7) Table having only one row or column is layout table.
 	// See comments for #6 about deviation from said url.
-	rowCount, columnCount := getRowAndColumnCount(t)
+	rowCount, columnCount := c.getRowAndColumnCount(t)
 	if rowCount <= 1 {
 		return c.logAndReturn(Layout, LessEq1Row)
 	}
@@ -97,8 +97,8 @@ func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 	caption := dom.QuerySelector(t, "caption")
 	tHead := dom.QuerySelector(t, "thead")
 	tFoot := dom.QuerySelector(t, "tfoot")
-	if (caption != nil && hasValidText(caption)) || tHead != nil || tFoot != nil ||
-		hasOneOfElements(directDescendants, headerTags) {
+	if (caption != nil && c.hasValidText(caption)) || tHead != nil || tFoot != nil ||
+		c.hasOneOfElements(directDescendants, headerTags) {
 		return c.logAndReturn(Data, CaptionTheadTfootColgroupColTh)
 	}
 
@@ -164,7 +164,7 @@ func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 
 	// 16) Table containing <embed>, <object>, <applet> or <iframe> elements (typical
 	//     advertisement elements) is layout table.
-	if hasOneOfElements(directDescendants, objectTags) {
+	if c.hasOneOfElements(directDescendants, objectTags) {
 		return c.logAndReturn(Layout, EmbedObjectAppletIframe)
 	}
 
@@ -179,16 +179,16 @@ func (c *Classifier) Classify(t *html.Node) (Type, Reason) {
 	return c.logAndReturn(Data, Default)
 }
 
-func hasNestedTables(t *html.Node) bool {
+func (c *Classifier) hasNestedTables(t *html.Node) bool {
 	return len(dom.GetElementsByTagName(t, "table")) > 0
 }
 
-func getDirectDescendants(t *html.Node) []*html.Node {
+func (c *Classifier) getDirectDescendants(t *html.Node) []*html.Node {
 	// Get all elements inside table
 	allDescendants := dom.GetElementsByTagName(t, "*")
 
 	// If there are no nested tables, all descendants is direct descendants
-	if !hasNestedTables(t) {
+	if !c.hasNestedTables(t) {
 		return allDescendants
 	}
 
@@ -212,16 +212,16 @@ func getDirectDescendants(t *html.Node) []*html.Node {
 	return directDescendants
 }
 
-func hasValidText(e *html.Node) bool {
+func (c *Classifier) hasValidText(e *html.Node) bool {
 	text := domutil.InnerText(e)
 	return text != "" && !stringutil.IsStringAllWhitespace(text)
 }
 
-func hasOneOfElements(elements []*html.Node, tags map[string]bool) bool {
+func (c *Classifier) hasOneOfElements(elements []*html.Node, tags map[string]bool) bool {
 	for _, element := range elements {
 		tagName := dom.TagName(element)
 		if value, exist := tags[tagName]; exist {
-			return !value || hasValidText(element)
+			return !value || c.hasValidText(element)
 		}
 	}
 	return false
@@ -231,7 +231,7 @@ func hasOneOfElements(elements []*html.Node, tags map[string]bool) bool {
 // This method doesn't exist in original dom-distiller because GWT already provides
 // method for calculating count of rows and columns. As workaround, we use method
 // from go-readability.
-func getRowAndColumnCount(t *html.Node) (int, int) {
+func (c *Classifier) getRowAndColumnCount(t *html.Node) (int, int) {
 	rows := 0
 	columns := 0
 	trs := dom.GetElementsByTagName(t, "tr")
