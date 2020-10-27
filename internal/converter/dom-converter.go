@@ -147,7 +147,8 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 		return false
 
 	// These element types are all skipped (but may affect document construction).
-	case "option", "object", "embed", "applet":
+	case "option", "object", "embed", "applet",
+		"input", "button", "form", "textarea", "select":
 		dc.builder.SkipNode(node)
 		return false
 
