@@ -62,7 +62,7 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 	// style is display:block.
 	var srcRoot *html.Node
 	for {
-		display := getDisplayStyle(clonedRoot)
+		display := domutil.GetDisplayStyle(clonedRoot)
 		if display != "inline" {
 			break
 		}

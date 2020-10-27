@@ -32,7 +32,7 @@ func GetActionForElement(element *html.Node) ElementAction {
 	// this is not possible since we can't compute stylesheet. As fallback, here we simply use the
 	// default display for the tag name
 	action := ElementAction{}
-	display := getDisplayStyle(element)
+	display := domutil.GetDisplayStyle(element)
 	switch display {
 	case "none", "inline": // do nothing
 	case "inline-block", "inline-flex":
