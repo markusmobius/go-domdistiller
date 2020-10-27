@@ -34,7 +34,7 @@ func GetActionForElement(element *html.Node) ElementAction {
 	action := ElementAction{}
 	display := getDisplayStyle(element)
 	switch display {
-	case "inline": // do nothing
+	case "none", "inline": // do nothing
 	case "inline-block", "inline-flex":
 		action.ChangesTagLevel = true
 	default:

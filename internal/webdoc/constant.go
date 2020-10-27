@@ -53,11 +53,11 @@ func getDisplayStyle(node *html.Node) string {
 		"h3", "h4", "h5", "h6", "header", "hr", "html", "legend", "main", "nav", "ol",
 		"p", "pre", "section", "ul":
 		return "block"
-	case "a", "abbr", "audio", "b", "bdi", "bdo", "br", "canvas", "circle", "cite",
-		"code", "data", "defs", "del", "dfn", "ellipse", "em", "embed", "i", "iframe",
-		"img", "ins", "kbd", "label", "lineargradient", "mark", "object", "output",
-		"picture", "polygon", "q", "rect", "s", "source", "span", "stop", "strong",
-		"sub", "sup", "svg", "tt", "text", "time", "track", "u", "var", "video", "wbr":
+	case "a", "abbr", "acronym", "audio", "b", "bdi", "bdo", "br", "canvas", "circle", "cite",
+		"code", "data", "defs", "del", "dfn", "ellipse", "em", "embed", "i", "iframe", "img",
+		"ins", "kbd", "label", "lineargradient", "mark", "object", "output", "picture", "polygon",
+		"q", "rect", "s", "source", "span", "stop", "strong", "sub", "sup", "svg", "tt", "text",
+		"time", "track", "u", "var", "video", "wbr":
 		return "inline"
 	case "button", "input":
 		return "inline-block"
