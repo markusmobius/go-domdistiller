@@ -161,6 +161,19 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 			return false
 		}
 
+		// If anchor has Javascript and only contains simple text content, we treat it as text node.
+		if strings.HasPrefix(href, "javascript:") {
+			linkChildNodes := dom.ChildNodes(node)
+			if len(linkChildNodes) == 1 && linkChildNodes[0].Type == html.TextNode {
+				textNode := linkChildNodes[0]
+				textNode.Parent = node.Parent
+				textNode.PrevSibling = node.PrevSibling
+				textNode.NextSibling = node.NextSibling
+				dc.builder.AddTextNode(textNode)
+				return false
+			}
+		}
+
 	case "span":
 		if className == "mw-editsection" {
 			// Skip "[edit]" on mediawiki desktop version.

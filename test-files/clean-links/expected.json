@@ -30,9 +30,10 @@
         "NextPage": "",
         "PrevPage": ""
     },
-    "WordCount": 14270,
+    "WordCount": 14339,
     "HTML": "",
     "ContentImages": [
-        "hmhome.gif "
+        "hmhome.gif ",
+        "../bar.gif"
     ]
 }
