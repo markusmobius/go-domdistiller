@@ -266,7 +266,12 @@ func (ie *ImageExtractor) imageSrcIsValid(src string) bool {
 }
 
 func (ie *ImageExtractor) createFigCaption(base *html.Node) *html.Node {
-	baseText := domutil.InnerText(base)
+	// In some sites noscript is put inside figure caption (eg Medium).
+	// So, before fetching the inner text we need to parse it first.
+	tmp := dom.CreateElement("div")
+	dom.SetInnerHTML(tmp, domutil.InnerText(base))
+	baseText := domutil.InnerText(tmp)
+
 	figCaption := dom.CreateElement("figcaption")
 	dom.SetTextContent(figCaption, strings.TrimSpace(baseText))
 	return figCaption
