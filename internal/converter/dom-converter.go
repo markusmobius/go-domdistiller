@@ -181,6 +181,13 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 			return false
 		}
 
+	case "font":
+		// Replace font element with span
+		node.Attr = nil
+		node.Data = "span"
+		dc.builder.StartNode(node)
+		return true
+
 	case "br":
 		dc.builder.AddLineBreak(node)
 		return false

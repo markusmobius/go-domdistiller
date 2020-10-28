@@ -1,6 +1,7 @@
 <h2>
                     Friday Facts #282 - 0.17 in sight
-                </h2><div>Posted by kovarex, TOGos, Ernestas, Albert on 2019-02-15, <a href="/blog/">all posts</a></div><h2>The release plan </h2><font size="2">(kovarex)</font><p>This week was the time to close and finish all the things that will go to 0.17.0.</p><p>Not all of the things that we originally planned to be done were done (surprise), but we just left any non-essential stuff for later so we won&#39;t postpone the release any further. The plan is, that next week will be dedicated to the office playtesting and bugfixing. Many would argue, that we could just release instantly and let the players find the bugs for us, but we want to fix the most obvious problems in-house to avoid too many duplicate bug reports and chaos after the release. Also, some potential bugs, like save corruptions, are much more easily worked on in-house.</p><p>
+                </h2><div>Posted by kovarex, TOGos, Ernestas, Albert on 2019-02-15, <a href="/blog/">all posts</a></div><h2>The release plan <span>(kovarex)</span>
+                </h2><p>This week was the time to close and finish all the things that will go to 0.17.0.</p><p>Not all of the things that we originally planned to be done were done (surprise), but we just left any non-essential stuff for later so we won&#39;t postpone the release any further. The plan is, that next week will be dedicated to the office playtesting and bugfixing. Many would argue, that we could just release instantly and let the players find the bugs for us, but we want to fix the most obvious problems in-house to avoid too many duplicate bug reports and chaos after the release. Also, some potential bugs, like save corruptions, are much more easily worked on in-house.</p><p>
                     If the playtesting goes well, we will let you know next Friday, and if it is the case, we will aim to release the week starting 25th February.
                 </p><h3>After release plan</h3><p>
                     Since there are a lot of things we would like to do before we can call 0.17 good enough, we will simply push new things into the 0.17 releases as time goes on. Even if 0.17 becomes stable in a reasonable time, we would still push things on top of it. We can still make experimental/stable version numbers inside 0.17. Most of the things shouldn&#39;t be big enough to make the game generally unstable. I&#39;ve heard countless times a proposal to make small frequent releases of what have we added, this will probably be reality after 0.17 for some time.
@@ -8,7 +9,8 @@
                     The smaller releases will contain mainly:
                 </p><ul><li>Final looks and behaviour of new GUI screens as they will be finished.</li><li>New graphics.</li><li>New sounds and sound system tweaks.</li><li>Mini tutorial additions and tweaks.</li></ul><p>
                     This is actually quite a large change to our procedures, and there are many ways we will be trying to maximize the effectiveness of smaller and more regular content updates.
-                </p><h2>The GUI progress </h2><font size="2">(kovarex)</font><p>
+                </p><h2>The GUI progress <span>(kovarex)</span>
+                </h2><p>
                     There are several GUI screens that are finished. Others (most of them) are just left there as they are in 0.16. They are a combination of the new GUI styles and old ones. They sometimes look funny and out of place, but they should be functional.
                 </p><table class="finished_gui_table">
                     <tbody>
@@ -295,7 +297,8 @@
                     This was annoying in 0.16 from time to time, but with the new quickbar, it started to happen even more, as now, you have only one inventory, and no reserved slots in the quickbar. To solve that, we just extended the &#34;principal&#34; of the hand. When you pick something from the inventory, the hand icon appears on the slot. As long as you hold the thing in your cursor, the hand stays there, and prevents other things from being inserted there. This way, you should always be able to return the currently selected item into your inventory as long as you didn&#39;t get it from external source like a chest.
                 </p><img src="https://cdn.factorio.com/assets/img/blog/fff-282-the-hand.png" width="900px"/><p><br/>
                     <i>The hand is protecting the slot from the robots.</i>
-                </p><h2>Terrain generation updates </h2><font size="2">(TOGoS)</font><p>Everyone has different opinions about what makes a good Factorio world.
+                </p><h2>Terrain generation updates <span>(TOGoS)</span>
+                </h2><p>Everyone has different opinions about what makes a good Factorio world.
                     I&#39;ve been working on several changes for 0.17, but the overarching theme
                     has been to make the map generator options screen more intuitive
                     and more powerful.</p><p>
@@ -415,7 +418,8 @@
                     you&#39;ll be able to create maps with values outside the range provided by the GUI sliders.
                 </p><p>
                     Mods will be able to add their own &#39;map types&#39; to the map type drop-down, too. If you really liked the shape of landmasses in 0.16 and want to be able to continue creating new maps with it, please let us know on the forum.
-                </p><h2>High-res accumulators </h2><font size="2">(Ernestas, Albert)</font><img src="https://cdn.factorio.com/assets/img/blog/fff-282-accumulator.gif"/><p>
+                </p><h2>High-res accumulators <span>(Ernestas, Albert)</span>
+                </h2><img src="https://cdn.factorio.com/assets/img/blog/fff-282-accumulator.gif"/><p>
                     The design of the accumulator has been always good. The 4 very visible cylinders, looking like giant batteries, Tesla poles and the electric beams perfectly telegraphed its function in terms of style and readability. That’s why for the high-res conversion we were very careful about keeping this entity as it was.
                 </p><p>
                     The only thing that was a bit disturbing (for some) are the poles crossing to each other when more than one accumulator is placed in a row. So we decided to fix it (or break it). The rest of the work was making the entity compatible for the actual look of the game. But in essence accumulators are still the same.
