@@ -111,7 +111,7 @@ func generateTest(testName, sourceURL string) error {
 	}
 
 	// Run distiller for the file
-	opts := &distiller.Options{OriginalURL: url, LogFlags: distiller.LogVisibility}
+	opts := &distiller.Options{OriginalURL: url, LogFlags: 0}
 	result, err := distiller.ApplyForFile(sourcePath, opts)
 	if err != nil {
 		return fmt.Errorf("failed to distill source: %w", err)

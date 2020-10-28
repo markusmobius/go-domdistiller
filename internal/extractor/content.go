@@ -17,6 +17,10 @@ import (
 	"golang.org/x/net/html"
 )
 
+const (
+	documentCharThreshold = 500
+)
+
 type ContentExtractor struct {
 	Parser      *markup.Parser
 	TimingInfo  *data.TimingInfo
@@ -64,11 +68,17 @@ func (ce *ContentExtractor) ExtractTitle() string {
 
 func (ce *ContentExtractor) ExtractContent(textOnly bool) (string, int) {
 	start := time.Now()
-	webDocument := ce.createWebDocumentInfoFromPage()
+	webDocument := ce.createWebDocumentInfoFromPage(converter.SkipUnlikelies)
+	wordCount := ce.processDocument(webDocument)
+
+	if wordCount < documentCharThreshold {
+		webDocument = ce.createWebDocumentInfoFromPage(converter.Default)
+		wordCount = ce.processDocument(webDocument)
+	}
+
 	ce.TimingInfo.DocumentConstructionTime = time.Now().Sub(start)
 
 	start = time.Now()
-	wordCount := ce.processDocument(webDocument)
 	docfilter.NewRelevantElements().Process(webDocument)
 	docfilter.NewLeadImageFinder(ce.logger).Process(webDocument)
 	docfilter.NewNestedElementRetainer().Process(webDocument)
@@ -101,12 +111,10 @@ func (ce *ContentExtractor) ensureTitleInitialized() {
 	ce.candidateTitles = append(ce.candidateTitles, documentTitle)
 }
 
-// createWebDocumentInfoFromPage converts the original HTML page into a
-// webdoc.Document for analysis.
-func (ce *ContentExtractor) createWebDocumentInfoFromPage() *webdoc.Document {
+// createWebDocumentInfoFromPage converts the original HTML page into a webdoc.Document for analysis.
+func (ce *ContentExtractor) createWebDocumentInfoFromPage(flags converter.ConverterFlag) *webdoc.Document {
 	docBuilder := webdoc.NewWebDocumentBuilder(ce.WordCounter, ce.pageURL)
-	converter.NewDomConverter(docBuilder, ce.pageURL, ce.logger).Convert(ce.documentElement)
-
+	converter.NewDomConverter(flags, docBuilder, ce.pageURL, ce.logger).Convert(ce.documentElement)
 	webDocument := docBuilder.Build()
 	ce.ensureTitleInitialized()
 	return webDocument

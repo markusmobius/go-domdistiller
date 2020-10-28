@@ -50,6 +50,6 @@ func (tdb *TextDocumentBuilder) addBlock(str string, labels ...string) *webdoc.T
 
 func NewTextDocumentFromPage(doc *html.Node, wc stringutil.WordCounter, pageURL *url.URL) *webdoc.TextDocument {
 	builder := webdoc.NewWebDocumentBuilder(wc, pageURL)
-	converter.NewDomConverter(builder, pageURL, nil).Convert(doc)
+	converter.NewDomConverter(converter.Default, builder, pageURL, nil).Convert(doc)
 	return builder.Build().CreateTextDocument()
 }

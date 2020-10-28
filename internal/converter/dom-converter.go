@@ -15,6 +15,13 @@ import (
 	"golang.org/x/net/html"
 )
 
+type ConverterFlag uint
+
+const (
+	Default        ConverterFlag = 0
+	SkipUnlikelies ConverterFlag = 1 << iota
+)
+
 // DomConverter converts a node and its children into a Document.
 type DomConverter struct {
 	builder         webdoc.DocumentBuilder
@@ -23,9 +30,10 @@ type DomConverter struct {
 	pageURL         *nurl.URL
 	logger          logutil.Logger
 	tableClassifier *tableclass.Classifier
+	flags           ConverterFlag
 }
 
-func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger logutil.Logger) *DomConverter {
+func NewDomConverter(flags ConverterFlag, builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger logutil.Logger) *DomConverter {
 	extractors := []embed.EmbedExtractor{
 		embed.NewImageExtractor(pageURL, logger),
 		embed.NewTwitterExtractor(pageURL, logger),
@@ -47,11 +55,13 @@ func NewDomConverter(builder webdoc.DocumentBuilder, pageURL *nurl.URL, logger l
 		pageURL:         pageURL,
 		logger:          logger,
 		tableClassifier: tableclass.NewClassifier(logger),
+		flags:           flags,
 	}
 }
 
 func (dc *DomConverter) Convert(root *html.Node) {
-	domutil.WalkNodes(root, dc.visitNodeHandler, dc.exitNodeHandler)
+	clone := dom.Clone(root, true)
+	domutil.WalkNodes(clone, dc.visitNodeHandler, dc.exitNodeHandler)
 }
 
 func (dc *DomConverter) visitNodeHandler(node *html.Node) bool {
@@ -85,9 +95,45 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 		return false
 	}
 
+	// Skip social and sharing elements.
+	// See crbug.com/692553, crbug.com/696556, and crbug.com/674557
+	className := dom.ClassName(node)
+	component := dom.GetAttribute(node, "data-component")
+	if className == "sharing" || className == "socialArea" || component == "share" {
+		return false
+	}
+
+	// Skip byline (author)
+	nodeData := dom.ClassName(node) + " " + dom.ID(node)
+	if isByline(node, nodeData) {
+		return false
+	}
+
+	// Skip unlikely candidates
+	tagName := dom.TagName(node)
+	if dc.hasFlag(SkipUnlikelies) {
+		if rxUnlikelyCandidates.MatchString(nodeData) && !rxOkMaybeItsACandidate.MatchString(nodeData) &&
+			!domutil.HasAncestor(node, "table") && tagName != "body" && tagName != "a" {
+			return false
+		}
+
+		if dom.GetAttribute(node, "role") == "complementary" {
+			return false
+		}
+	}
+
+	// Remove DIV, SECTION, and HEADER nodes without any
+	// content(e.g. text, image, video, or iframe).
+	switch tagName {
+	case "div", "section", "header",
+		"h1", "h2", "h3", "h4", "h5", "h6":
+		if isElementWithoutContent(node) {
+			return false
+		}
+	}
+
 	// Node-type specific extractors check for elements they are interested in here.
 	// Everything else will be filtered through the switch below.
-	tagName := dom.TagName(node)
 	if _, isEmbed := dc.embedTagNames[tagName]; isEmbed {
 		// If the tag is marked as interesting, check the extractors.
 		for _, extractor := range dc.embedExtractors {
@@ -97,14 +143,6 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 				return false
 			}
 		}
-	}
-
-	// Skip social and sharing elements.
-	// See crbug.com/692553, crbug.com/696556, and crbug.com/674557
-	className := dom.GetAttribute(node, "class")
-	component := dom.GetAttribute(node, "data-component")
-	if className == "sharing" || className == "socialArea" || component == "share" {
-		return false
 	}
 
 	// Create a placeholder for the elements we want to preserve.
@@ -198,4 +236,8 @@ func (dc *DomConverter) logTableInfo(table *html.Node, tableType tableclass.Type
 	}
 
 	dc.logger.PrintVisibilityInfo(logMsg)
+}
+
+func (dc *DomConverter) hasFlag(flag ConverterFlag) bool {
+	return dc.flags&flag != 0
 }

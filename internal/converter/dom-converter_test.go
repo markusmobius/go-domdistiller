@@ -32,19 +32,19 @@ import (
 
 func Test_Converter_VisibleText(t *testing.T) {
 	html := "visible text"
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 }
 
 func Test_Converter_VisibleElement(t *testing.T) {
 	html := "<div>visible element</div>"
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 }
 
 func Test_Converter_VisibleInVisible(t *testing.T) {
 	html := "<div>visible parent" +
 		"<div>visible child</div>" +
 		"</div>"
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 }
 
 func Test_Converter_DataTable(t *testing.T) {
@@ -57,7 +57,7 @@ func Test_Converter_DataTable(t *testing.T) {
 		`</tbody>` +
 		`</table>`
 
-	runTest(t, html, "<datatable/>")
+	assertEqual(t, html, "<datatable/>")
 }
 
 func Test_Converter_NonDataTable(t *testing.T) {
@@ -70,21 +70,22 @@ func Test_Converter_NonDataTable(t *testing.T) {
 		`</tbody>` +
 		`</table>`
 
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 }
 
 func Test_Converter_IgnorableElements(t *testing.T) {
-	runTest(t, "<head></head>", "")
-	runTest(t, "<style></style>", "")
-	runTest(t, "<script></script>", "")
-	runTest(t, "<link></link>", "")
-	runTest(t, "<noscript></noscript>", "")
-	runTest(t, "<iframe></iframe>", "")
-	runTest(t, "<svg></svg>", "")
-	runTest(t, "<option></option>", "")
-	runTest(t, "<object></object>", "")
-	runTest(t, "<embed></embed>", "")
-	runTest(t, "<applet></applet>", "")
+	assertEmpty(t, "<head></head>")
+	assertEmpty(t, "<style></style>")
+	assertEmpty(t, "<script></script>")
+	assertEmpty(t, "<link></link>")
+	assertEmpty(t, "<noscript></noscript>")
+
+	assertEqual(t, "<iframe></iframe>", "")
+	assertEqual(t, "<svg></svg>", "")
+	assertEqual(t, "<option></option>", "")
+	assertEqual(t, "<object></object>", "")
+	assertEqual(t, "<embed></embed>", "")
+	assertEqual(t, "<applet></applet>", "")
 }
 
 func Test_Converter_SvgTagNameCase(t *testing.T) {
@@ -98,7 +99,7 @@ func Test_Converter_ElementOrder(t *testing.T) {
 	dom.SetInnerHTML(div, `Text content <img src="http://example.com/1.jpg"> more content`)
 
 	builder := webdoc.NewWebDocumentBuilder(stringutil.FastWordCounter{}, nil)
-	converter.NewDomConverter(builder, nil, nil).Convert(div)
+	converter.NewDomConverter(converter.Default, builder, nil, nil).Convert(div)
 
 	doc := builder.Build()
 	elements := doc.Elements
@@ -111,7 +112,7 @@ func Test_Converter_ElementOrder(t *testing.T) {
 
 func Test_Converter_LineBreak(t *testing.T) {
 	html := "text<br>split<br/>with<br/>lines"
-	runTest(t, html, "text\nsplit\nwith\nlines")
+	assertEqual(t, html, "text\nsplit\nwith\nlines")
 }
 
 func Test_Converter_List(t *testing.T) {
@@ -119,7 +120,7 @@ func Test_Converter_List(t *testing.T) {
 	dom.SetInnerHTML(div, "<ol><li>some text1</li><li>some text2</li></ol>")
 
 	builder := webdoc.NewWebDocumentBuilder(stringutil.FastWordCounter{}, nil)
-	converter.NewDomConverter(builder, nil, nil).Convert(div)
+	converter.NewDomConverter(converter.Default, builder, nil, nil).Convert(div)
 
 	doc := builder.Build()
 	elements := doc.Elements
@@ -149,36 +150,46 @@ func Test_Converter_List(t *testing.T) {
 }
 
 func Test_Converter_SocialElements(t *testing.T) {
-	runTest(t, `<div></div>`, `<div></div>`)
-	runTest(t, `<div data-component="share"></div>`, ``)
-	runTest(t, `<div class="socialArea"></div>`, ``)
-	runTest(t, `<li></li>`, `<li></li>`)
-	runTest(t, `<li class="sharing"></li>`, ``)
+	assertEqual(t, `<div></div>`, ``)
+	assertEqual(t, `<div data-component="share"></div>`, ``)
+	assertEqual(t, `<div class="socialArea"></div>`, ``)
+	assertEqual(t, `<li></li>`, `<li></li>`)
+	assertEqual(t, `<li class="sharing"></li>`, ``)
 }
 
 func Test_Converter_WikiEditLinks(t *testing.T) {
 	html := `<a href="index.php?action=edit&redlink=1"></a>`
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 
 	html = `<a href="index.php?action=edit&section=3" class="mw-ui-icon"></a>`
-	runTest(t, html, "")
+	assertEqual(t, html, "")
 }
 
 func Test_Converter_WikiEditSection(t *testing.T) {
 	html := `<span class="mw-headline"></span>`
-	runTest(t, html, html)
+	assertEqual(t, html, html)
 
 	html = `<span class="mw-editsection"></span>`
-	runTest(t, html, "")
+	assertEqual(t, html, "")
 }
 
-func runTest(t *testing.T, innerHTML, expectedHTML string) {
+func assertEqual(t *testing.T, innerHTML, expectedHTML string) {
 	div := dom.CreateElement("div")
 	dom.SetInnerHTML(div, innerHTML)
 
 	builder := testutil.NewFakeWebDocumentBuilder()
-	converter.NewDomConverter(builder, nil, nil).Convert(div)
+	converter.NewDomConverter(converter.Default, builder, nil, nil).Convert(div)
 
 	expected := "<div>" + expectedHTML + "</div>"
 	assert.Equal(t, expected, builder.Build())
+}
+
+func assertEmpty(t *testing.T, innerHTML string) {
+	div := dom.CreateElement("div")
+	dom.SetInnerHTML(div, innerHTML)
+
+	builder := testutil.NewFakeWebDocumentBuilder()
+	converter.NewDomConverter(converter.Default, builder, nil, nil).Convert(div)
+
+	assert.Equal(t, "", builder.Build())
 }
