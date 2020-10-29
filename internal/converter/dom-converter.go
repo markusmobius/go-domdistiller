@@ -117,7 +117,8 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 			return false
 		}
 
-		if dom.GetAttribute(node, "role") == "complementary" {
+		role := dom.GetAttribute(node, "role")
+		if _, isUnlikely := unlikelyRoles[role]; isUnlikely {
 			return false
 		}
 	}

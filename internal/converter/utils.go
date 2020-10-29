@@ -13,6 +13,16 @@ var (
 	rxUnlikelyCandidates   = regexp.MustCompile(`(?i)-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote`)
 	rxOkMaybeItsACandidate = regexp.MustCompile(`(?i)and|article|body|column|content|main|shadow`)
 	rxByline               = regexp.MustCompile(`(?i)byline|author|dateline|writtenby|p-author`)
+
+	unlikelyRoles = map[string]struct{}{
+		"menu":          {},
+		"menubar":       {},
+		"complementary": {},
+		"navigation":    {},
+		"alert":         {},
+		"alertdialog":   {},
+		"dialog":        {},
+	}
 )
 
 // isElementWithoutContent determines if node is empty
