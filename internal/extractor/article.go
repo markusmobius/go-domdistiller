@@ -44,7 +44,7 @@ func (ae *ArticleExtractor) Extract(doc *webdoc.TextDocument, wc stringutil.Word
 	blockProximityFusionPost := heuristic.NewBlockProximityFusion(true)
 	keepLargestBlockExpandToSibling := heuristic.NewKeepLargestBlock(true)
 	expandTitleToContent := heuristic.NewExpandTitleToContent()
-	largeBlockSameTagLevel := heuristic.NewLargeBlockSameTagLevelToContent()
+	largeBlockAroundTagLevel := heuristic.NewLargeBlockAroundTagLevelToContent()
 	listAtEnd := heuristic.NewListAtEnd()
 
 	ae.printArticleLog(doc, true, "Start")
@@ -84,7 +84,7 @@ func (ae *ArticleExtractor) Extract(doc *webdoc.TextDocument, wc stringutil.Word
 	changed = expandTitleToContent.Process(doc)
 	ae.printArticleLog(doc, changed, "Expand title to content")
 
-	changed = largeBlockSameTagLevel.Process(doc)
+	changed = largeBlockAroundTagLevel.Process(doc)
 	ae.printArticleLog(doc, changed, "Largest block with same tag level to content")
 
 	changed = listAtEnd.Process(doc)
