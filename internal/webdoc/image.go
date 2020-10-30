@@ -68,16 +68,6 @@ func (i *Image) cloneAndProcessNode() *html.Node {
 		}
 	}
 
-	for _, source := range dom.GetElementsByTagName(cloned, "source") {
-		for lazyAttrName, realAttrName := range lazyImageAttrs {
-			lazyAttrValue := dom.GetAttribute(source, lazyAttrName)
-			if lazyAttrValue != "" {
-				dom.SetAttribute(source, realAttrName, lazyAttrValue)
-				dom.RemoveAttribute(source, lazyAttrName)
-			}
-		}
-	}
-
 	domutil.MakeAllSrcAttributesAbsolute(cloned, i.PageURL)
 	domutil.MakeAllSrcSetAbsolute(cloned, i.PageURL)
 	domutil.StripAttributes(cloned)

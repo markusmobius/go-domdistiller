@@ -4,7 +4,6 @@ package embed
 
 import (
 	nurl "net/url"
-	"strconv"
 	"strings"
 
 	"github.com/go-shiori/dom"
@@ -46,40 +45,11 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 		return nil
 	}
 
-	if nodeTagName == "figure" {
+	switch nodeTagName {
+	case "figure":
 		// Find the real image inside the figure. Some sites put their real image
 		// (instead of the lazy ones) inside <noscript> tags, so that take precedence.
-		var image *html.Node
-		noscript := dom.QuerySelector(node, "noscript")
-
-		for _, imageTagName := range []string{"picture", "img"} {
-			if noscript != nil {
-				// Noscript is a bit weird in Go.
-				// Sometimes its content is treated as *html.Node, so QuerySelector will works.
-				image = dom.QuerySelector(noscript, "img")
-
-				// Other times, it's treated as plain text content so we need to parse it first.
-				if image == nil {
-					tmp := dom.CreateElement("div")
-					dom.SetInnerHTML(tmp, dom.TextContent(noscript))
-					image = dom.QuerySelector(tmp, imageTagName)
-				}
-
-				// If there is image inside noscript, put it outside into the figure
-				if image != nil {
-					dom.PrependChild(node, image)
-				}
-			}
-
-			if image == nil {
-				image = dom.QuerySelector(node, imageTagName)
-			}
-
-			if image != nil {
-				break
-			}
-		}
-
+		image := ie.findRealFigureImage(node)
 		if image == nil {
 			return nil
 		}
@@ -87,15 +57,7 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 		// Sometimes there are sites that use <picture> without any <img> inside it.
 		// For these cases, we use one of the <source> as <img>.
 		if dom.TagName(image) == "picture" {
-			sources := dom.GetElementsByTagName(image, "source")
-			imgElements := dom.GetElementsByTagName(image, "img")
-			if len(imgElements) == 0 && len(sources) > 0 {
-				srcset := dom.GetAttribute(sources[0], "srcset")
-
-				img := dom.CreateElement("img")
-				dom.SetAttribute(img, "srcset", srcset)
-				dom.AppendChild(image, img)
-			}
+			ie.processPicture(image)
 		}
 
 		figCaption := domutil.GetFirstElementByTagName(node, "figcaption")
@@ -119,9 +81,8 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 			},
 			Caption: figCaption,
 		}
-	}
 
-	if nodeTagName == "span" {
+	case "span": // This is for some Wikipedia lazy-loaded images
 		className := dom.GetAttribute(node, "class")
 		if !strings.Contains(className, "lazy-image-placeholder") {
 			return nil
@@ -136,30 +97,84 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 			Element: img,
 			PageURL: ie.PageURL,
 		}
-	}
 
-	// At this point we assume that the node is image element
-	ie.replaceLazyAttr(node)
-	return &webdoc.Image{
-		Element: node,
-		PageURL: ie.PageURL,
+	case "picture":
+		ie.processPicture(node)
+		fallthrough
+
+	default: // At this point we assume that the node is image element
+		ie.replaceLazyAttr(node)
+		return &webdoc.Image{
+			Element: node,
+			PageURL: ie.PageURL,
+		}
 	}
 }
 
-// extractImageAttrs will fetch the image source. In original dom-distiller this function
-// will also parse width and height of the image. Unfortunately it's not possible here,
-// so we only check width and height in attribute.
-// NEED-COMPUTE_CSS.
-func (ie *ImageExtractor) extractImageAttrs(img *html.Node) (int, int) {
-	width, _ := strconv.Atoi(dom.GetAttribute(img, "width"))
-	height, _ := strconv.Atoi(dom.GetAttribute(img, "height"))
-	return width, height
+func (ie *ImageExtractor) findRealFigureImage(figure *html.Node) *html.Node {
+	var image *html.Node
+	noscript := dom.QuerySelector(figure, "noscript")
+
+	// Picture is more prioritized than img
+	for _, imageTagName := range []string{"picture", "img"} {
+		if noscript != nil {
+			// Noscript is a bit weird in Go.
+			// Sometimes its content is treated as *html.Node, so QuerySelector will works.
+			image = dom.QuerySelector(noscript, "img")
+
+			// Other times, it's treated as plain text content so we need to parse it first.
+			if image == nil {
+				tmp := dom.CreateElement("div")
+				dom.SetInnerHTML(tmp, dom.TextContent(noscript))
+				image = dom.QuerySelector(tmp, imageTagName)
+			}
+
+			// If there is image inside noscript, put it outside into the figure
+			if image != nil {
+				dom.PrependChild(figure, image)
+			}
+		}
+
+		// If image is not found inside noscript, we check the one that directly inside figure.
+		if image == nil {
+			image = dom.QuerySelector(figure, imageTagName)
+		}
+
+		if image != nil {
+			return image
+		}
+	}
+
+	return nil
 }
 
-func (ie *ImageExtractor) replaceLazyAttr(img *html.Node) {
-	ie.replaceLazySrcAttr(img)
-	if dom.GetAttribute(img, "src") == "" {
-		ie.replaceLazySrcsetAttr(img)
+func (ie *ImageExtractor) processPicture(picture *html.Node) {
+	// Picture should only contains sources and images
+	for _, node := range dom.GetElementsByTagName(picture, "*") {
+		tagName := dom.TagName(node)
+		if tagName != "img" && tagName != "source" {
+			node.Parent.RemoveChild(node)
+		}
+	}
+
+	// Sometimes there are sites that use <picture> without any <img> inside it.
+	// For these cases, we use one of the <source> as <img>.
+	imgs := dom.GetElementsByTagName(picture, "img")
+	sources := dom.GetElementsByTagName(picture, "source")
+	if len(imgs) == 0 && len(sources) > 0 {
+		sources[0].Data = "img"
+	}
+}
+
+func (ie *ImageExtractor) replaceLazyAttr(base *html.Node) {
+	nodes := dom.QuerySelectorAll(base, "img,source")
+	nodes = append(nodes, base)
+
+	for _, node := range nodes {
+		ie.replaceLazySrcAttr(node)
+		if dom.GetAttribute(node, "src") == "" {
+			ie.replaceLazySrcsetAttr(node)
+		}
 	}
 }
 
