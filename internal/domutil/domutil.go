@@ -18,6 +18,14 @@ var (
 	rxTempNewline = regexp.MustCompile(`\s*\|\\/\|\s*`)
 	rxDisplay     = regexp.MustCompile(`(?i)display:\s*([\w-]+)\s*(?:;|$)`)
 	rxSrcsetURL   = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
+
+	elementWithSizeAttr = map[string]struct{}{
+		"table": {},
+		"th":    {},
+		"td":    {},
+		"hr":    {},
+		"pre":   {},
+	}
 )
 
 // HasRootDomain checks if a provided URL has the specified root domain
@@ -203,101 +211,37 @@ func GetAllSrcSetURLs(root *html.Node) []string {
 	return urls
 }
 
-// StripImageElement removes unnecessary attributes for image elements.
-func StripImageElement(img *html.Node) {
-	importantAttrs := []html.Attribute{}
-	for _, attr := range img.Attr {
-		switch attr.Key {
-		case "src", "alt", "srcset", "dir", "width", "height", "title":
-			importantAttrs = append(importantAttrs, attr)
-		default:
-			continue
+func StripAttributes(node *html.Node) {
+	elements := dom.GetElementsByTagName(node, "*")
+	elements = append(elements, node)
+
+	for _, elem := range elements {
+		tagName := dom.TagName(elem)
+		finalAttrs := []html.Attribute{}
+		_, elementAllowedToHaveSize := elementWithSizeAttr[tagName]
+
+		for _, attr := range elem.Attr {
+			// Exclude identification and presentational attributes.
+			switch attr.Key {
+			case "id", "class", "align", "background", "bgcolor", "border", "cellpadding",
+				"cellspacing", "frame", "hspace", "rules", "style", "valign", "vspace":
+				continue
+
+			case "width", "height":
+				if !elementAllowedToHaveSize {
+					continue
+				}
+			}
+
+			// Exclude unsafe attributes
+			if _, allowed := allowedAttributes[attr.Key]; !allowed {
+				continue
+			}
+
+			finalAttrs = append(finalAttrs, attr)
 		}
-	}
-	img.Attr = importantAttrs
-}
 
-func StripImageElements(root *html.Node) {
-	if dom.TagName(root) == "img" {
-		StripImageElement(root)
-	}
-
-	for _, img := range dom.QuerySelectorAll(root, "img") {
-		StripImageElement(img)
-	}
-}
-
-// StripAttributeFromTagss trips some attribute from certain tags in the tree
-// rooted at `root`, including root itself.
-func StripAttributeFromTags(root *html.Node, attr string, tagNames ...string) {
-	rootTagName := dom.TagName(root)
-	for _, tag := range tagNames {
-		if rootTagName == tag || tag == "*" {
-			dom.RemoveAttribute(root, attr)
-			break
-		}
-	}
-
-	for i, tag := range tagNames {
-		tagNames[i] = tag + "[" + attr + "]"
-	}
-
-	selectors := strings.Join(tagNames, ",")
-	for _, elem := range dom.QuerySelectorAll(root, selectors) {
-		dom.RemoveAttribute(elem, attr)
-	}
-}
-
-// StripIDs strips all "id" attributes from all nodes in the tree rooted at `root`
-func StripIDs(root *html.Node) {
-	StripAttributeFromTags(root, "id", "*")
-}
-
-// StripFontColorAttributes strips all "color" attributes from "font" nodes in the
-// tree rooted at `root`
-func StripFontColorAttributes(root *html.Node) {
-	StripAttributeFromTags(root, "color", "font")
-}
-
-// StripTableBackgroundColorAttributes strips all "bgcolor" attributes from table
-// nodes in the tree rooted at `root`
-func StripTableBackgroundColorAttributes(root *html.Node) {
-	StripAttributeFromTags(root, "bgcolor", "table", "tr", "td", "th")
-}
-
-// StripStyleAttributes strips all "style" attributes from all nodes in the tree
-// rooted at `root`
-func StripStyleAttributes(root *html.Node) {
-	StripAttributeFromTags(root, "style", "*")
-}
-
-// StripTargetAttributes strips all "target" attributes from anchor nodes in the
-// tree rooted at `root`
-func StripTargetAttributes(root *html.Node) {
-	StripAttributeFromTags(root, "target", "a")
-}
-
-// StripUnwantedClassNames strips unwanted classNames from all nodes in the tree
-// rooted at `root`.
-func StripUnwantedClassNames(root *html.Node) {
-	if dom.HasAttribute(root, "class") {
-		stripUnwantedClassNames(root)
-	}
-
-	for _, element := range dom.QuerySelectorAll(root, "[class]") {
-		stripUnwantedClassNames(element)
-	}
-}
-
-// StripAllUnsafeAttributes strips all attributes from nodes other than
-// ones in the list of allowedAttributes.
-func StripAllUnsafeAttributes(root *html.Node) {
-	if root.Type == html.ElementNode {
-		stripAllUnsafeAttributes(root)
-	}
-
-	for _, element := range dom.QuerySelectorAll(root, "*") {
-		stripAllUnsafeAttributes(element)
+		elem.Attr = finalAttrs
 	}
 }
 
@@ -312,14 +256,8 @@ func CloneAndProcessList(outputNodes []*html.Node, pageURL *nurl.URL) *html.Node
 		return nil
 	}
 
-	StripIDs(clonedSubTree)
 	MakeAllLinksAbsolute(clonedSubTree, pageURL)
-	StripTargetAttributes(clonedSubTree)
-	StripFontColorAttributes(clonedSubTree)
-	StripTableBackgroundColorAttributes(clonedSubTree)
-	StripStyleAttributes(clonedSubTree)
-	StripImageElements(clonedSubTree)
-	StripAllUnsafeAttributes(clonedSubTree)
+	StripAttributes(clonedSubTree)
 	return clonedSubTree
 }
 
@@ -382,26 +320,6 @@ func makeSrcSetAbsolute(node *html.Node, pageURL *nurl.URL) {
 	})
 
 	dom.SetAttribute(node, "srcset", newSrcset)
-}
-
-func stripUnwantedClassNames(node *html.Node) {
-	class := dom.GetAttribute(node, "class")
-	if strings.Contains(class, "caption") {
-		dom.SetAttribute(node, "class", "caption")
-	} else {
-		dom.RemoveAttribute(node, "class")
-	}
-}
-
-func stripAllUnsafeAttributes(node *html.Node) {
-	allowedAttrs := []html.Attribute{}
-	for _, attr := range node.Attr {
-		if _, allowed := allowedAttributes[attr.Key]; allowed {
-			allowedAttrs = append(allowedAttrs, attr)
-		}
-	}
-
-	node.Attr = allowedAttrs
 }
 
 // =================================================================================

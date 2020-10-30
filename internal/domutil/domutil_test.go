@@ -154,12 +154,12 @@ func Test_DomUtil_StripImageElements(t *testing.T) {
 
 	// Test if the root element is handled properly.
 	for _, child := range dom.Children(body) {
-		domutil.StripImageElements(child)
+		domutil.StripAttributes(child)
 	}
 	assert.Equal(t, expected, dom.InnerHTML(body))
 
 	dom.SetInnerHTML(body, html)
-	domutil.StripImageElements(body)
+	domutil.StripAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
@@ -192,7 +192,7 @@ func Test_DomUtil_StripTableBackgroundColorAttributes(t *testing.T) {
 	body := dom.QuerySelector(doc, "body")
 	dom.SetInnerHTML(body, html)
 
-	domutil.StripTableBackgroundColorAttributes(body)
+	domutil.StripAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
@@ -229,12 +229,12 @@ func Test_DomUtil_StripStyleAttributes(t *testing.T) {
 
 	// Test if the root element is handled properly.
 	for _, child := range dom.Children(body) {
-		domutil.StripStyleAttributes(child)
+		domutil.StripAttributes(child)
 	}
 	assert.Equal(t, expected, dom.InnerHTML(body))
 
 	dom.SetInnerHTML(body, html)
-	domutil.StripStyleAttributes(body)
+	domutil.StripAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
@@ -247,11 +247,11 @@ func Test_DomUtil_StripUnwantedClassNames(t *testing.T) {
 		`<br class="not_me"/>` +
 		`</div>`
 
-	expected := `<br class="caption"/>` +
-		`<br id="a"/>` +
+	expected := `<br/>` +
+		`<br/>` +
 		`<br/>` +
 		`<div>` +
-		`<br class="caption"/>` +
+		`<br/>` +
 		`<br/>` +
 		`</div>`
 
@@ -261,12 +261,12 @@ func Test_DomUtil_StripUnwantedClassNames(t *testing.T) {
 
 	// Test if the root element is handled properly.
 	for _, child := range dom.Children(body) {
-		domutil.StripUnwantedClassNames(child)
+		domutil.StripAttributes(child)
 	}
 	assert.Equal(t, expected, dom.InnerHTML(body))
 
 	dom.SetInnerHTML(body, html)
-	domutil.StripUnwantedClassNames(body)
+	domutil.StripAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 
@@ -275,7 +275,7 @@ func Test_DomUtil_StripAllUnsafeAttributes(t *testing.T) {
 		`<img alt='bar' invalidattr='alert("Stop");'/>` +
 		`<div tabIndex=0 onScroll='alert("Unsafe");'>Baz</div>`
 
-	expected := `<div><h1 class="foo">Foo</h1>` +
+	expected := `<div><h1>Foo</h1>` +
 		`<img alt="bar"/>` +
 		`<div tabindex="0">Baz</div></div>`
 
@@ -287,7 +287,7 @@ func Test_DomUtil_StripAllUnsafeAttributes(t *testing.T) {
 	body := dom.QuerySelector(doc, "body")
 	dom.AppendChild(body, div)
 
-	domutil.StripAllUnsafeAttributes(body)
+	domutil.StripAttributes(body)
 	assert.Equal(t, expected, dom.InnerHTML(body))
 }
 

@@ -4,6 +4,7 @@ package webdoc
 
 import (
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"golang.org/x/net/html"
 )
 
@@ -41,6 +42,7 @@ func (e *Embed) GenerateOutput(textOnly bool) string {
 	// TODO: Maybe just to be save we should sanitize it.
 	tagName := dom.TagName(e.Element)
 	if tagName == "blockquote" || tagName == "iframe" {
+		domutil.StripAttributes(e.Element)
 		dom.AppendChild(embed, e.Element)
 	}
 

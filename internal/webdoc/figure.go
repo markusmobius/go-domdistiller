@@ -29,5 +29,6 @@ func (f *Figure) GenerateOutput(textOnly bool) string {
 		dom.AppendChild(figure, figCaption)
 	}
 
+	domutil.StripAttributes(figure)
 	return dom.OuterHTML(figure)
 }

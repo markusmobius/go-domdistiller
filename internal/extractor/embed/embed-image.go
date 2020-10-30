@@ -112,13 +112,9 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 		}
 
 		ie.replaceLazyAttr(image)
-		width, height := ie.extractImageAttrs(image)
-
 		return &webdoc.Figure{
 			Image: webdoc.Image{
 				Element: image,
-				Width:   width,
-				Height:  height,
 				PageURL: ie.PageURL,
 			},
 			Caption: figCaption,
@@ -136,24 +132,16 @@ func (ie *ImageExtractor) Extract(node *html.Node) webdoc.Element {
 		dom.SetAttribute(img, "src", dom.GetAttribute(node, "data-src"))
 		dom.SetAttribute(img, "srcset", dom.GetAttribute(node, "data-srcset"))
 
-		width, _ := strconv.Atoi(dom.GetAttribute(node, "data-width"))
-		height, _ := strconv.Atoi(dom.GetAttribute(node, "data-height"))
-
 		return &webdoc.Image{
 			Element: img,
-			Width:   width,
-			Height:  height,
 			PageURL: ie.PageURL,
 		}
 	}
 
 	// At this point we assume that the node is image element
 	ie.replaceLazyAttr(node)
-	width, height := ie.extractImageAttrs(node)
 	return &webdoc.Image{
 		Element: node,
-		Width:   width,
-		Height:  height,
 		PageURL: ie.PageURL,
 	}
 }

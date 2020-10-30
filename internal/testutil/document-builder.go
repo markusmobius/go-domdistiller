@@ -53,12 +53,7 @@ func (db *WebDocumentBuilder) AddImage() *webdoc.Image {
 	image := dom.CreateElement("img")
 	dom.SetAttribute(image, "src", "http://www.example.com/foo.jpg")
 
-	wi := &webdoc.Image{
-		Element: image,
-		Width:   100,
-		Height:  100,
-	}
-
+	wi := &webdoc.Image{Element: image}
 	db.document.AddElements(wi)
 	return wi
 }
@@ -69,12 +64,7 @@ func (db *WebDocumentBuilder) AddLeadImage() *webdoc.Image {
 	dom.SetAttribute(image, "height", "400")
 	dom.SetAttribute(image, "src", "http://www.example.com/lead.bmp")
 
-	wi := &webdoc.Image{
-		Element: image,
-		Width:   100,
-		Height:  100,
-	}
-
+	wi := &webdoc.Image{Element: image}
 	db.document.AddElements(wi)
 	return wi
 }

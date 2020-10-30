@@ -86,12 +86,7 @@ func (t *Text) GenerateOutput(textOnly bool) string {
 
 	// Make sure links are absolute and IDs are gone.
 	domutil.MakeAllLinksAbsolute(clonedRoot, t.PageURL)
-	domutil.StripTargetAttributes(clonedRoot)
-	domutil.StripIDs(clonedRoot)
-	domutil.StripUnwantedClassNames(clonedRoot)
-	domutil.StripFontColorAttributes(clonedRoot)
-	domutil.StripStyleAttributes(clonedRoot)
-	domutil.StripAllUnsafeAttributes(clonedRoot)
+	domutil.StripAttributes(clonedRoot)
 	// TODO: if we allow images in WebText later, add StripImageElements().
 
 	// Since there are tag elements that are being wrapped by a pair of Tags,

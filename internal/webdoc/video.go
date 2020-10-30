@@ -52,9 +52,7 @@ func (v *Video) GenerateOutput(textOnly bool) string {
 		dom.SetAttribute(vNode, "poster", poster)
 	}
 
-	domutil.StripIDs(vNode)
-	domutil.StripAllUnsafeAttributes(vNode)
 	domutil.MakeAllSrcAttributesAbsolute(vNode, v.PageURL)
-
+	domutil.StripAttributes(vNode)
 	return dom.OuterHTML(vNode)
 }

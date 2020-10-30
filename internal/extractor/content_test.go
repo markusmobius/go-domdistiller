@@ -129,8 +129,7 @@ func Test_Extractor_Content_Image(t *testing.T) {
 		`<source srcset="http://example.com/path/image100 100w, http://example.org/image300 300w"/>` +
 		`<img/>` +
 		`</picture></figure>` +
-		`<img src="http://example.com/image" srcset="http://example.com/image2x 2x" ` +
-		`width="20" height="10"/>` +
+		`<img src="http://example.com/image" srcset="http://example.com/image2x 2x"/>` +
 		`<img alt="b" src="http://example.com/path/image2"/>` +
 		`<table role="grid"><tbody><tr><td>` +
 		`<img alt="b" src="http://example.com/image" ` +
@@ -281,8 +280,8 @@ func Test_Extractor_Content_KeepingWidthAndHeightAttributes(t *testing.T) {
 
 	expected := `<h1>` + contentText + `</h1>` +
 		`<p>` + contentText + `</p>` +
-		`<img src="http://example.com/test.png" width="200" height="300"/>` +
-		`<img src="http://example.com/test.png" width="200"/>` +
+		`<img src="http://example.com/test.png"/>` +
+		`<img src="http://example.com/test.png"/>` +
 		`<img src="http://example.com/test.png"/>`
 
 	doc, body := createHTML()
@@ -683,7 +682,7 @@ func Test_Extractor_Content_StripUnwantedClassNames(t *testing.T) {
 
 	expected := "" +
 		`<p>` + contentText + `</p>` +
-		`<p class="caption">` + contentText + `</p>`
+		`<p>` + contentText + `</p>`
 
 	assertContentExtractor(t, expected, rawHTML)
 }

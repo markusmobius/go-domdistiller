@@ -4,7 +4,6 @@ package webdoc
 
 import (
 	nurl "net/url"
-	"strconv"
 
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
@@ -14,10 +13,7 @@ import (
 
 type Image struct {
 	BaseElement
-
 	Element *html.Node // node for the image
-	Width   int        // width of image in pixel
-	Height  int        // height of image in pixel
 	PageURL *nurl.URL  // url of page where image is placed
 
 	cloned *html.Node
@@ -70,13 +66,6 @@ func (i *Image) cloneAndProcessNode() *html.Node {
 			src = stringutil.CreateAbsoluteURL(src, i.PageURL)
 			dom.SetAttribute(img, "src", src)
 		}
-
-		if i.Width > 0 && i.Height > 0 {
-			dom.SetAttribute(img, "width", strconv.Itoa(i.Width))
-			dom.SetAttribute(img, "height", strconv.Itoa(i.Height))
-		}
-
-		domutil.StripImageElement(img)
 	}
 
 	for _, source := range dom.GetElementsByTagName(cloned, "source") {
@@ -91,5 +80,6 @@ func (i *Image) cloneAndProcessNode() *html.Node {
 
 	domutil.MakeAllSrcAttributesAbsolute(cloned, i.PageURL)
 	domutil.MakeAllSrcSetAbsolute(cloned, i.PageURL)
+	domutil.StripAttributes(cloned)
 	return cloned
 }

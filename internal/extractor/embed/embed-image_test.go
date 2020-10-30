@@ -29,20 +29,10 @@ const shortImageBase64 = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAA
 // - Test_Embed_Image_WithAttributeCSS
 // - Test_Embed_Image_WithAttributesCSSHeightCMAndWidthAttrb
 // - Test_Embed_Image_WithAttributesCSSHeightCM
-
-func Test_Embed_Image_HasWidthHeightAttributes(t *testing.T) {
-	img := dom.CreateElement("img")
-	dom.SetAttribute(img, "src", imageBase64)
-	dom.SetAttribute(img, "width", "32")
-	dom.SetAttribute(img, "height", "32")
-
-	extractor := embed.NewImageExtractor(nil, nil)
-	result, _ := (extractor.Extract(img)).(*webdoc.Image)
-
-	assert.NotNil(t, result)
-	assert.Equal(t, 32, result.Width)
-	assert.Equal(t, 32, result.Height)
-}
+//
+// Since we don't care about the size, these tests are skipped as well :
+// - Test_Embed_Image_HasWidthHeightAttributes
+// - Test_Embed_Image_HasWidthAttribute
 
 func Test_Embed_Image_HasNoAttributes(t *testing.T) {
 	img := dom.CreateElement("img")
@@ -51,21 +41,6 @@ func Test_Embed_Image_HasNoAttributes(t *testing.T) {
 	result, _ := (extractor.Extract(img)).(*webdoc.Image)
 
 	assert.NotNil(t, result)
-	assert.Equal(t, 0, result.Width)
-	assert.Equal(t, 0, result.Height)
-}
-
-func Test_Embed_Image_HasWidthAttribute(t *testing.T) {
-	img := dom.CreateElement("img")
-	dom.SetAttribute(img, "src", imageBase64)
-	dom.SetAttribute(img, "width", "32")
-
-	extractor := embed.NewImageExtractor(nil, nil)
-	result, _ := (extractor.Extract(img)).(*webdoc.Image)
-
-	assert.NotNil(t, result)
-	assert.Equal(t, 32, result.Width)
-	assert.Equal(t, 0, result.Height)
 }
 
 func Test_Embed_Image_LazyLoadedImage(t *testing.T) {
@@ -172,13 +147,11 @@ func Test_Embed_Image_FigureWithoutCaptionWithNoscript(t *testing.T) {
 	// noscript is hidden element so inner text wouldn't capture it. However
 	// we works in server side so we will catch it as well.
 	expected := `<figure>` +
-		`<img width="100" height="100" src="http://wwww.example.com/image.jpeg"/>` +
+		`<img src="http://wwww.example.com/image.jpeg"/>` +
 		`<figcaption>text</figcaption>` +
 		`</figure>`
 
 	assert.NotNil(t, result)
-	assert.Equal(t, 100, result.Width)
-	assert.Equal(t, 100, result.Height)
 	assert.Equal(t, expected, result.GenerateOutput(false))
 }
 
@@ -272,7 +245,7 @@ func Test_Embed_Image_FigureCaptionWithAnchor(t *testing.T) {
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
-		`<img width="100" height="100" src="http://wwww.example.com/image.jpeg"/>` +
+		`<img src="http://wwww.example.com/image.jpeg"/>` +
 		`<figcaption>` +
 		`This is a <a href="http://example.com/link_page.html">caption<br/>link</a>` +
 		`</figcaption>` +
@@ -300,13 +273,11 @@ func Test_Embed_Image_FigureCaptionWithoutAnchor(t *testing.T) {
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	expected := `<figure>` +
-		`<img width="100" height="100" src="http://wwww.example.com/image.jpeg"/>` +
+		`<img src="http://wwww.example.com/image.jpeg"/>` +
 		`<figcaption>This is a caption</figcaption>` +
 		`</figure>`
 
 	assert.NotNil(t, result)
-	assert.Equal(t, 100, result.Width)
-	assert.Equal(t, 100, result.Height)
 	assert.Equal(t, expected, result.GenerateOutput(false))
 	assert.Equal(t, "This is a caption", result.GenerateOutput(true))
 }
@@ -328,7 +299,7 @@ func Test_Embed_Image_FigureDivCaption(t *testing.T) {
 	result := extractor.Extract(figure)
 
 	expected := `<figure>` +
-		`<img width="100" height="100" src="http://wwww.example.com/image.jpeg"/>` +
+		`<img src="http://wwww.example.com/image.jpeg"/>` +
 		`<figcaption>This is a caption</figcaption>` +
 		`</figure>`
 
