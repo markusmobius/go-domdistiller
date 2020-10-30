@@ -166,7 +166,7 @@ func Test_Embed_Image_FigureWithoutImageAndCaption(t *testing.T) {
 
 func Test_Embed_Image_FigureWithPictureWithoutImg(t *testing.T) {
 	source := dom.CreateElement("source")
-	dom.SetAttribute(source, "srcset", "http://www.example.com/image-240-200.jpg")
+	dom.SetAttribute(source, "srcset", "http://www.example.com/image-240-200.jpg 2x")
 	dom.SetAttribute(source, "media", "(min-width: 800px)")
 
 	picture := dom.CreateElement("picture")
@@ -179,8 +179,7 @@ func Test_Embed_Image_FigureWithPictureWithoutImg(t *testing.T) {
 	result, _ := (extractor.Extract(figure)).(*webdoc.Figure)
 
 	expected := `<figure><picture>` +
-		`<source srcset="http://www.example.com/image-240-200.jpg" media="(min-width: 800px)"/>` +
-		`<img srcset="http://www.example.com/image-240-200.jpg"/>` +
+		`<img srcset="http://www.example.com/image-240-200.jpg 2x" media="(min-width: 800px)"/>` +
 		`</picture></figure>`
 
 	assert.NotNil(t, result)

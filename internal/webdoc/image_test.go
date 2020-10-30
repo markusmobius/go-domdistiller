@@ -48,7 +48,6 @@ func Test_WebDoc_Image_GetSrcList(t *testing.T) {
 
 func Test_WebDoc_Image_GetSrcListInPicture(t *testing.T) {
 	html := `<picture>` +
-		`<source data-srcset="image200 200w, //example.org/image400 400w"/>` +
 		`<source srcset="image100 100w, //example.org/image300 300w"/>` +
 		`<img/>` +
 		`</picture>`
@@ -61,11 +60,9 @@ func Test_WebDoc_Image_GetSrcListInPicture(t *testing.T) {
 	webImage := webdoc.Image{Element: picture, PageURL: baseURL}
 
 	urls := webImage.GetURLs()
-	assert.Equal(t, 4, len(urls))
-	assert.Equal(t, "http://example.com/image200", urls[0])
-	assert.Equal(t, "http://example.org/image400", urls[1])
-	assert.Equal(t, "http://example.com/image100", urls[2])
-	assert.Equal(t, "http://example.org/image300", urls[3])
+	assert.Equal(t, 2, len(urls))
+	assert.Equal(t, "http://example.com/image100", urls[0])
+	assert.Equal(t, "http://example.org/image300", urls[1])
 }
 
 func Test_WebDoc_Image_PictureWithoutImg(t *testing.T) {
