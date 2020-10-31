@@ -17,6 +17,22 @@ import (
 	"golang.org/x/net/html"
 )
 
+// PaginationAlgo is the algorithm to find the pagination links.
+type PaginationAlgo uint
+
+const (
+	// PrevNext is the algorithm to find pagination links that work by scoring  each anchor
+	// in documents using various heuristics on its href, text, class name and ID. It's quite
+	// accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions,
+	// so it's a bit slow.
+	PrevNext PaginationAlgo = iota
+
+	// PageNumber is algorithm to find pagination links that work by collecting groups of adjacent plain
+	// text numbers and outlinks with digital anchor text. A lot faster than PrevNext, but also less
+	// accurate.
+	PageNumber
+)
+
 // Result is the final output of the distiller
 type Result struct {
 	// URL is the URL of the processed page.
@@ -56,17 +72,15 @@ type Options struct {
 	// Flags to specify which info to dump to log.
 	LogFlags LogFlag
 
-	// Original URL of the page, which is used in the heuristics in
-	// detecting next/prev page links.
+	// Original URL of the page, which is used in the heuristics in detecting
+	// next/prev page links. Will be ignored if Option is used in ApplyForURL.
 	OriginalURL *nurl.URL
 
 	// Set to true to skip process for finding pagination.
 	SkipPagination bool
 
-	// Which algorithm to use for next page detection:
-	// "next"    : detect anchors with "next" text
-	// "pagenum" : detect anchors with numeric page numbers
-	PaginationAlgo string
+	// Algorithm to use for next page detection.
+	PaginationAlgo PaginationAlgo
 }
 
 // ApplyForURL runs distiller for the specified URL.
@@ -166,7 +180,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	if !opts.SkipPagination && opts.OriginalURL != nil {
 		paginationStart := time.Now()
 
-		if opts.PaginationAlgo == "pagenum" {
+		if opts.PaginationAlgo == PageNumber {
 			finder := pagination.NewPageNumberFinder(ce.WordCounter, nil, logger)
 			result.PaginationInfo = finder.FindPagination(doc, opts.OriginalURL)
 			logger.PrintPaginationInfo("Paging by PageNum, prev: " + result.PaginationInfo.PrevPage)

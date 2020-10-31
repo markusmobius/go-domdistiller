@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	url := "https://www.vice.com/en/article/k7qpqe/how-coronavirus-is-impacting-the-arab-world"
+	url := "https://arstechnica.com/gadgets/2020/10/iphone-12-and-12-pro-double-review-playing-apples-greatest-hits/"
 
 	// Start distiller
 	result, err := distiller.ApplyForURL(url, time.Minute, nil)

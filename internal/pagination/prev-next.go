@@ -31,7 +31,7 @@ type pagingLinkScore struct {
 // First, it determines the prefix URL of the document. Then, for each anchor in the document, its
 // href and text are compared to the prefix URL and examined for next- or previous-paging-related
 // information. If it passes, its score is then determined by applying various heuristics on its
-// href, text, class name and ID, Lastly, the page link with the highest score of at least 50 is
+// href, text, class name and ID. Lastly, the page link with the highest score of at least 50 is
 // considered to have enough confidence as the next or previous page link.
 type PrevNextFinder struct {
 	linkDebugInfo     map[*html.Node]string
