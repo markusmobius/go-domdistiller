@@ -1,159 +1,251 @@
 # Go-DomDistiller
 
-Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, script, etc.
+Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
 
-This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium can be implemented easily here. Another advantage, hopefully all web page that can be parsed by the original Dom Distiller can be parsed by this package as well with identical result.
+This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
 
-## Status
+## Motivations
 
-The port process has been finished. The package is still in development, however so far it looks stable enough to use.
+We are doing computational social science research on news consumption, so we collect a lot of web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but unbearably slow.
 
-## Changelog
+After looking around, we found out that [Readability.js][1] has been [ported to Go][2] and it has an impressive performance. With that said, we decided to port DOM Distiller to Go language as well.
 
-### 25 October 2020
+## Limitations
 
-- Add initial test files.
-- Improve lazy-loaded image replacer in image extractor.
+In original DOM Distiller, they consider some render-level information in both the classification and tree transduction steps. For example, any elements that are hidden from display are not considered as content, images that are too small are not considered as lead images, etc. These render-level checks are a small part of DOM Distiller's strategy.
 
-### 24 October 2020
+Unfortunately it's impossible to do that on the server side, and we don't want to use a headless browser anymore. So, while porting the original code, we exclude parts where we need to compute the stylesheets. These omits are marked with [`NEED-COMPUTE-CSS`][3].
 
-- Port `LogUtil` froml `LogUtil.java`
-- Fix pagination finder `PrevNextFinder` ignores page number in URL queries.
+Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
 
-### 22 October 2020
+## Comparison with Go-Readability
 
-- Merge pagination finder. Now pagination link to previous and next partial page is accessible via `Result.PaginationInfo`.
-- Improve page number pagination finder to also find page numbers in web page where its page number are not all consecutive (like in ArsTechnica).
-- Move all models from `internal/model` directory (which can't be imported by package's user) to `data` directory.
+Since Readability and DOM Distiller work using different algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. In practice we use both of them then use some kind of scoring to find out which extraction result is more suitable for our use case.
 
-### 21 October 2020
+The pros of Dom Distiller :
 
-- Port `PagingLinksFinder` from `PagingLinksFinder.java`
-- Restructure models by moving distiller `Result` out of internal directory and remove unused data fields.
+- better at extracting images;
+- better at extracting article's metadata;
+- able to find next page in sites that separated its article to several partial pages;
+- suitable for processing news articles.
 
-### 20 October 2020
+The pros of Readability :
 
-- Port `PageParameterParser` from `PageParameterParser.java`
-- Fix panic when generating image output.
-- Implement test for `testutil.TextDocumentBuilder` following `javatest/TextDocumentConstructionTest`.
-- Implement test for `webdoc.TextDocument` following `javatest/TextDocumentStatisticsTest`.
+- faster extraction speed;
+- better than DOM Distiller at extracting wiki and documentation pages.
 
-### 19 October 2020
+Here is the benchmark result between DOM Distiller and Readability :
 
-- Port `PathComponentPagePattern` from `PathComponentPagePattern.java`
-- Port `PageParameterDetector` from `PageParameterDetector.java`
+```
+BenchmarkReadability-8                     	       1	22270423614 ns/op	5134614848 B/op	21071083 allocs/op
+BenchmarkDistillerWithoutPagination-8      	       1	24248745284 ns/op	7987711256 B/op	30309028 allocs/op
+BenchmarkDistillerPageNumberPagination-8   	       1	33292305569 ns/op	8080458848 B/op	32918938 allocs/op
+BenchmarkDistillerPrevNextPagination-8     	       1	47737605918 ns/op	8378848776 B/op	36243299 allocs/op
+```
 
-### 17 October 2020
+## Installation
 
-- Port `PageLinkInfo` from `PageLinkInfo.java`
-- Port `PageParamInfo` from `PageParamInfo.java`
-- Port `MonotonicPageInfosGroups` from `MonotonicPageInfosGroups.java`
-- Port `PagePattern` interface from `PageParameterDetector.java`
-- Port `QueryParamPagePattern` from `QueryParamPagePattern.java`
+To install the stable version of this package, just run `go get` for stable branch :
 
-### 16 October 2020
+```
+go get -u -v github.com/markusmobius/go-domdistiller@stable
+```
 
-- Port `ContentExtractor` from `ContentExtractor.java`
-- Remove `JsTestEntryGenerator` from `javatest/JsTestEntryGenerator.java` because it's only used in Java to prepare the unit tests.
+## API Documentation
 
-### 14 October 2020
+Dom Distiller has four functions :
 
-- Port all `ImageScorer` in `webdocuments/filters/images/`
-- Port `LeadImageFinder` from `webdocuments/filters/LeadImageFinder.java`
-- Port `NestedElementRetainer` from `webdocuments/filters/NestedElementRetainer.java`
-- Port `RelevantElements` from `webdocuments/filters/RelevantElements.java`
-- Port `TestWebDocumentBuilder` from `javatest/webdocument/TestWebDocumentBuilder.java`
+- `Apply(doc *html.Node, opts *Options) (*Result, error)`
 
-### 13 October 2020
+	This function will apply distiller to the specified HTML node.
 
-- Port `NumWordsRulesClassifier` from `filters/english/NumWordsRulesClassifier.java`
-- Port `TerminatingBlocksFinder` from `filters/english/TerminatingBlocksFinder.java`
-- Port `BlockProximityFusion` from `filters/heuristics/BlockProximityFusion.java`
-- Port `DocumentTitleMatchClassifier` from `filters/heuristics/DocumentTitleMatchClassifier.java`
-- Port `ExpandTitleToContentFilter` from `filters/heuristics/ExpandTitleToContentFilter.java`
-- Port `HeadingFusion` from `filters/heuristics/HeadingFusion.java`
-- Port `KeepLargestBlockFilter` from `filters/heuristics/KeepLargestBlockFilter.java`
-- Port `LargeBlockSameTagLevelToContentFilter` from `filters/heuristics/LargeBlockSameTagLevelToContentFilter.java`
-- Port `ListAtEndFilter` from `filters/heuristics/ListAtEndFilter.java`
-- Port `SimilarSiblingContentExpansion` from `filters/heuristics/SimilarSiblingContentExpansion.java`
-- Port `BoilerplateBlockFilter` from `filters/simple/BoilerplateBlockFilter.java`
-- Port `LabelToBoilerplateFilter` from `filters/simple/LabelToBoilerplateFilter.java`
-- Port `TestTextBlockBuilder` from `javatest/TestTextBlockBuilder.java`
-- Port `TestTextDocumentBuilder` from `javatest/TestTextDocumentBuilder.java`
-- Port `TextDocumentTestUtil` from `javatest/document/TextDocumentTestUtil.java`
-- Port `TestWebTextBuilder` from `javatest/webdocument/TestWebTextBuilder.java`
-- Port `ArticleExtractor` from `extractors/ArticleExtractor.java`
-- Remove `filters/simple/MarkEverythingBoilerplateFilter.java` since it's not used anywhere.
-- Remove `filters/simple/MarkEverythingContentFilter.java` and `filters/simple/MinWordsFilter.java` since it's only used in `KeepEverythingExtractor.java` and `KeepEverythingWithMinKWordsExtractor.java` that we already removed back in 8 October.
+- `ApplyForReader(r io.Reader, opts *Options) (*Result, error)`
 
-### 12 October 2020
+	This function parses input that received from the specified reader into a HTML node then pass it into the `Apply` function.
 
-- Port `DomConverter` from `webdocument/DomConverter.java`
-- Port `FakeWebDocumentBuilder` from `javatest/webdocument/FakeWebDocumentBuilder.java`
-- Replace `alecthomas/assert` with `stretchr/testify/assert`. Nothing wrong with the former but the latter is better since it prints the log as raw text instead of formatted one. Might be useful if in later days we decide to set CI for testing.
+- `ApplyForFile(path string, opts *Options) (*Result, error)`
 
-### 11 October 2020
+	This function open the file at specified path then pass it into the `ApplyForReader` function.
 
-- Port `WebDocument` from `webdocument/WebDocument.java`
-- Port `WebDocumentBuilder` from `webdocument/WebDocumentBuilder.java`
-- Port `EmbedExtractor` from `extractors/embed/EmbedExtractor.java`
-- Port `ImageExtractor` from `extractors/embed/ImageExtractor.java`
-- Port `TwitterExtractor` from `extractors/embed/TwitterExtractor.java`
-- Port `VimeoExtractor` from `extractors/embed/Vimeotractor.java`
-- Port `YouTubeExtractor` from `extractors/embed/YouTubeExtractor.java`
-- Remove `JavaScript.java` because functions inside it already available in Go standard library.
-- Remove `GwtOverlayProtoTest.java` because it's only test model for Protobuf which we don't use.
-- Remove `KeepEverythingExtractor.java` and `KeepEverythingWithMinKWordsExtractor.java` because it's not used anywhere.
+- `ApplyForURL(url string, timeout time.Duration, opts *Options) (*Result, error)`
 
-### 9 October 2020
+	This function download the web page at specified URL then pass it into the `ApplyForReader` function.
 
-- Port `WebVideo` from `webdocument/WebVideo.java`
-- Port `TextBlock` from `document/TextBlock.java`
-- Port `TextDocument` from `document/TextDocument.java` and `document/TextDocumentStatistics.java`
-- Add initial MIT license.
+Each function accept custom `Option` which is a struct that defined like this :
 
-### 8 October 2020
+```go
+type Options struct {
+	// Whether to extract only the text (or to include the containing html).
+	ExtractTextOnly bool
 
-- Port `WebTag` from `webdocument/WebTag.java`
-- Port `WebText` from `webdocument/WebText.java`
-- Port `WebEmbed` from `webdocument/WebEmbed.java`
-- Port `WebImage` from `webdocument/WebImage.java`
-- Port `WebTable` from `webdocument/WebTable.java`
-- Port `WebFigure` from `webdocument/WebFigure.java`
-- Port `WebTextBuilder` from `webdocument/WebTextBuilder.java`
-- Port `ElementAction` from `webdocument/ElementAction.java`
-- Port `DomWalker` from `DomWalker.java`
-- Remove `NodeListExpander` since it has identical result as `TreeCloneBuilder` and we already port the latter (even their unit tests are similar).
-- Remove `NodeTree` since it's only used in `NodeListExpander`. Besides that, it also requires us to compute stylesheet which is impossible to implement right now.
-- Remove `OrderedNodeMatcher` since it's only used in `NodeListExpander` and `TreeCloneBuilder` and our implementation of `TreeCloneBuilder` doesn't require it.
+	// Flags to specify which info to dump to log.
+	LogFlags LogFlag
 
-### 7 October 2020
+	// Original URL of the page, which is used in the heuristics in detecting
+	// next/prev page links. Will be ignored if Option is used in ApplyForURL.
+	OriginalURL *url.URL
 
-- Port `TableClassifier` from `TableClassifier.java`
-- Remove `DomDistillerEntry` since it's useless for our case.
-- Remove `Assert` because we already use [`testify`][1] package that provide assertion utilities.
-- Remove `JsTestCase`, `JsTestEntry`, `JsTestSuitBase` and `DomDistillerJsTestCase` because it's only used in Java to prepare the unit tests.
+	// Set to true to skip process for finding pagination.
+	SkipPagination bool
 
-### 6 October 2020
+	// Algorithm to use for next page detection.
+	PaginationAlgo PaginationAlgo
+}
+```
 
-- Port `CreateDivTree` from `TestUtil.java`
-- Port `BuildTreeClone` from `TreeCloneBuilder.java`
+There are several flags available for `LogFlags` :
 
-### 5 October 2020
+- `LogExtraction` will make distiller print info of each process when extracting article.
+- `LogVisibility` will make distiller print info on why an element is visible.
+- `LogPagination` will make distiller print info of pagination process.
+- `LogTiming` will make distiller print info of duration of each process when extracting article.
 
-- Port `SchemaOrgParser` and `SchemaOrgParserAccessor` from `SchemaOrg.java`
-- Port `MarkupParser` from `MarkupParser.java`
-- Port `getDocumentTitle` from `DocumentTitleGetter.java`
+Since `LogFlag` is bit, you can use several flags using bitwise operator `OR` like this :
 
-### 4 October 2020
+```go
+opts := &distiller.Options{
+	LogFlags: distiller.LogExtraction | distiller.LogVisibility,
+}
+```
 
-- Port `IEReadingViewParser` from `IEReadingViewParser.java`
+Or if you want to log everything, you can use `LogEverything` flag :
 
-### 3 October 2020
+```go
+opts := &distiller.Options{	LogFlags: distiller.LogEverything }
+```
 
-- Porting process started
-- Port `WordCounter` interface from `StringUtil.java`
-- Port `OpenGraphParser` and `OpenGraphParserAccessor` from `OpenGraphParser.java`
+There are two values available for `PaginationAlgo` :
+
+- `PrevNext` is the algorithm to find pagination links that work by scoring  each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow. 
+- `PageNumber` is algorithm to find pagination links that work by collecting groups of adjacent plain text numbers and outlinks with digital anchor text. A lot faster than PrevNext, but also less accurate.
+
+The distillation result is defined as struct like this :
+
+```go
+type Result struct {
+	// URL is the URL of the processed page.
+	URL string
+
+	// Title is the title of the processed page.
+	Title string
+
+	// MarkupInfo is the metadata of the page. The metadata is extracted following three markup
+	// specifications: OpenGraphProtocol, IEReadingView and SchemaOrg. For now, OpenGraph protocol
+	// takes precedence because it uses specific meta tags and hence the fastest. The other
+	// specifications is used as fallback in case some metadata not found.
+	MarkupInfo data.MarkupInfo
+
+	// TimingInfo is the record of the time it takes to do each step in the process of content extraction.
+	TimingInfo data.TimingInfo
+
+	// PaginationInfo contains link to previous and next partial page. This is useful for long article or
+	// that may be partitioned into several partial pages by its webmaster.
+	PaginationInfo data.PaginationInfo
+
+	// WordCount is the count of words within document.
+	WordCount int
+
+	// HTML is the string which contains the distilled content in HTML format.
+	HTML string
+
+	// ContentImages is list of image URLs that used within the distilled content.
+	ContentImages []string
+}
+```
+
+The `MarkupInfo`, `TimingInfo` and `PaginationInfo` field are defined in package `github.com/markusmobius/go-domdistiller/data` like this :
+
+```go
+type PaginationInfo struct {
+	NextPage string
+	PrevPage string
+}
+
+type MarkupArticle struct {
+	PublishedTime  string
+	ModifiedTime   string
+	ExpirationTime string
+	Section        string
+	Authors        []string
+}
+
+type MarkupInfo struct {
+	Title       string
+	Type        string
+	URL         string
+	Description string
+	Publisher   string
+	Copyright   string
+	Author      string
+	Article     MarkupArticle
+	Images      []MarkupImage
+}
+
+type MarkupImage struct {
+	Root      string
+	URL       string
+	SecureURL string
+	Type      string
+	Caption   string
+	Width     int
+	Height    int
+}
+```
+
+## Examples
+
+### Extracting web page from an URL
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	distiller "github.com/markusmobius/go-domdistiller"
+)
+
+func main() {
+	url := "https://arstechnica.com/gadgets/2020/10/iphone-12-and-12-pro-double-review-playing-apples-greatest-hits/"
+
+	// Start distiller
+	result, err := distiller.ApplyForURL(url, time.Minute, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(result.HTML)
+}
+```
+
+### Extracting content from a HTML file
+
+```go
+package main
+
+import (
+	"fmt"
+
+	distiller "github.com/markusmobius/go-domdistiller"
+)
+
+func main() {
+	result, err := distiller.ApplyForFile("example/sample.html", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(result.HTML)
+}
+```
+
+## Licenses
+
+Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/licenses/mit/) which means you can use and modify it however you want. However, if you make an enhancement for it, if possible please send a pull request.
 
 [0]: https://chromium.googlesource.com/chromium/dom-distiller
-[1]: https://github.com/stretchr/testify
+[1]: https://github.com/mozilla/readability
+[2]: https://github.com/go-shiori/go-readability
+[3]: https://github.com/markusmobius/go-domdistiller/search?q=NEED-COMPUTE-CSS
+[4]: https://arxiv.org/abs/1811.03661
