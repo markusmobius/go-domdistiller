@@ -1,5 +1,29 @@
 // ORIGINAL: javatest/TableClassifierTest.java
 
+// Copyright (c) 2020 Markus Mobius
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package tableclass_test
 
 import (
@@ -303,20 +327,20 @@ func Test_TableClass_THTagNested(t *testing.T) {
 
 func Test_TableClass_EmptyTHTag(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<th>&nbsp;&nbsp;</th>
-			<th>  </th>
-		</tr>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<th>&nbsp;&nbsp;</th>
+<th>  </th>
+</tr>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -325,20 +349,20 @@ func Test_TableClass_EmptyTHTag(t *testing.T) {
 
 func Test_TableClass_AllWhitespacedTHTag(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<th>&nbsp;&nbsp;</th>
-			<th>  </th>
-		</tr>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<th>&nbsp;&nbsp;</th>
+<th>  </th>
+</tr>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -399,9 +423,9 @@ func Test_TableClass_SummaryAttribute(t *testing.T) {
 
 func Test_TableClass_EmptyTable(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<p>empty table</p>
-	</tbody>`)
+<tbody>
+<p>empty table</p>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -410,12 +434,12 @@ func Test_TableClass_EmptyTable(t *testing.T) {
 
 func Test_TableClass_1Row(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -424,14 +448,14 @@ func Test_TableClass_1Row(t *testing.T) {
 
 func Test_TableClass_1ColInSameCols(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+</tr>
+<tr>
+<td>row2col1</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -440,15 +464,15 @@ func Test_TableClass_1ColInSameCols(t *testing.T) {
 
 func Test_TableClass_1ColInDifferentCols(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Layout, tableType)
@@ -457,22 +481,22 @@ func Test_TableClass_1ColInDifferentCols(t *testing.T) {
 
 func Test_TableClass_5Cols(t *testing.T) {
 	table := createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-			<td>row1col3</td>
-			<td>row1col4</td>
-			<td>row1col5</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-			<td>row2col3</td>
-			<td>row2col4</td>
-			<td>row2col5</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+<td>row1col3</td>
+<td>row1col4</td>
+<td>row1col5</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+<td>row2col3</td>
+<td>row2col4</td>
+<td>row2col5</td>
+</tr>
+</tbody>`)
 
 	tableType, reason := tc.NewClassifier(nil).Classify(table)
 	assert.Equal(t, tc.Data, tableType)
@@ -546,58 +570,58 @@ func createTable(rawHTML string) *html.Node {
 
 func createDefaultTableWithTH() *html.Node {
 	return createTable(`
-	<tbody>
-		<tr>
-			<th>heading1</th>
-			<th>heading2</th>
-		</tr>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<th>heading1</th>
+<th>heading2</th>
+</tr>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 }
 
 func createDefaultTableWithNoTH() *html.Node {
 	return createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 }
 
 func createBigDefaultTableWithNoTH() *html.Node {
 	return createTable(`
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-			<td>row1col3</td>
-			<td>row1col4</td>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-			<td>row2col3</td>
-			<td>row2col4</td>
-		</tr>
-		<tr>
-			<td>row3col1</td>
-			<td>row3col2</td>
-			<td>row3col3</td>
-			<td>row3col4</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+<td>row1col3</td>
+<td>row1col4</td>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+<td>row2col3</td>
+<td>row2col4</td>
+</tr>
+<tr>
+<td>row3col1</td>
+<td>row3col2</td>
+<td>row3col3</td>
+<td>row3col4</td>
+</tr>
+</tbody>`)
 }
 
 func getFirstElement(table *html.Node, tagName string) *html.Node {
@@ -633,24 +657,24 @@ func createNestedTable(parentTable *html.Node, nestedTableHTML string) *html.Nod
 
 func createDefaultNestedTableWithTH(parentTable *html.Node) *html.Node {
 	return createNestedTable(parentTable, `
-	<tbody>
-		<tr>
-			<th>row1col1</th>
-			<th>row1col2</th>
-		</tr>
-		<tr>
-			<td>row2col1</td>
-			<td>row2col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<th>row1col1</th>
+<th>row1col2</th>
+</tr>
+<tr>
+<td>row2col1</td>
+<td>row2col2</td>
+</tr>
+</tbody>`)
 }
 
 func createDefaultNestedTableWithNoTH(parentTable *html.Node) *html.Node {
 	return createNestedTable(parentTable, `
-	<tbody>
-		<tr>
-			<td>row1col1</td>
-			<td>row1col2</td>
-		</tr>
-	</tbody>`)
+<tbody>
+<tr>
+<td>row1col1</td>
+<td>row1col2</td>
+</tr>
+</tbody>`)
 }
