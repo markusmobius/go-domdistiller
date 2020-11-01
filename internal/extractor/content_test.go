@@ -164,9 +164,11 @@ func Test_Extractor_Content_RemoveFontColorAttributes(t *testing.T) {
 	doc, body := createHTML()
 	dom.AppendChild(body, outerFontTag)
 
-	expected := `<font>` + contentText + `</font>` +
-		`<font>` + contentText + `</font>` +
-		`<font>` + contentText + `</font>`
+	expected := "<div><font>" +
+		"<span><font>" + contentText + "</font></span> " +
+		"<span><font>" + contentText + "</font></span>\n" +
+		"<span><font>" + contentText + "</font></span> " +
+		"</font></div>"
 
 	ce := extractor.NewContentExtractor(doc, nil, nil)
 	assert.Equal(t, expected, extractContent(ce))
