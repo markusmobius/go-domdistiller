@@ -1,6 +1,6 @@
 # Go-DomDistiller Stable
 
-> This is the stable branch for Go-DomDistiller. Check the master branch for development version.
+> This is the stable branch for Go-DomDistiller. Check the main branch for development version.
 
 Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
 
@@ -10,7 +10,7 @@ This package is based on [DOM Distiller][0] which is part of the Chromium projec
 
 We are doing computational social science research on news consumption, so we collect a lot of web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but unbearably slow.
 
-After looking around, we found out that [Readability.js][1] has been [ported to Go][2] and it has an impressive performance. With that said, we decided to port DOM Distiller to Go language as well.
+After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has an impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well.
 
 ## Limitations
 
@@ -20,9 +20,11 @@ Unfortunately it's impossible to do that on the server side, and we don't want t
 
 Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
 
-## Comparison with master branch
+## Comparison with the main branch
 
-This stable branch contains the ported code of DOM Distiller without any additional heuristics, while the master branch adds some stuff from Go-Readability. Both should be stable enough to use, but you may prefer to use this stable branch if you want to use the one that as close as original DOM Distiller.
+This stable branch is the faithful port of original DOM Distiller which only receive bug fixes while the main branch adds some insights from Go-Readability.
+
+Both should be stable enough to use, but you may prefer to use this stable branch if you want to use the one that as close as original DOM Distiller.
 
 ## Comparison with Go-Readability
 
@@ -39,15 +41,6 @@ The pros of Readability :
 
 - faster extraction speed;
 - better than DOM Distiller at extracting wiki and documentation pages.
-
-Here is the benchmark result between DOM Distiller and Readability :
-
-```
-BenchmarkReadability-8                     	       1	22270423614 ns/op	5134614848 B/op	21071083 allocs/op
-BenchmarkDistillerWithoutPagination-8      	       1	24248745284 ns/op	7987711256 B/op	30309028 allocs/op
-BenchmarkDistillerPageNumberPagination-8   	       1	33292305569 ns/op	8080458848 B/op	32918938 allocs/op
-BenchmarkDistillerPrevNextPagination-8     	       1	47737605918 ns/op	8378848776 B/op	36243299 allocs/op
-```
 
 ## Installation
 
@@ -255,3 +248,4 @@ Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/li
 [2]: https://github.com/go-shiori/go-readability
 [3]: https://github.com/markusmobius/go-domdistiller/search?q=NEED-COMPUTE-CSS
 [4]: https://arxiv.org/abs/1811.03661
+[@RadhiFadlillah]: https://github.com/RadhiFadlillah
