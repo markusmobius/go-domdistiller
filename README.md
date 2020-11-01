@@ -1,4 +1,6 @@
-# Go-DomDistiller
+# Go-DomDistiller Stable
+
+> This is the stable branch for Go-DomDistiller. Check the master branch for development version.
 
 Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
 
@@ -17,6 +19,10 @@ In original DOM Distiller, they consider some render-level information in both t
 Unfortunately it's impossible to do that on the server side, and we don't want to use a headless browser anymore. So, while porting the original code, we exclude parts where we need to compute the stylesheets. These omits are marked with [`NEED-COMPUTE-CSS`][3].
 
 Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
+
+## Comparison with master branch
+
+This stable branch contains the ported code of DOM Distiller without any additional heuristics, while the master branch adds some stuff from Go-Readability. Both should be stable enough to use, but you may prefer to use this stable branch if you want to use the one that as close as original DOM Distiller.
 
 ## Comparison with Go-Readability
 
