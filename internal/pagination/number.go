@@ -210,7 +210,7 @@ func (pnf *PageNumberFinder) findAndAddClosestValidLeafNodes(start *html.Node, c
 
 	if node == nil {
 		node = start.Parent
-		if rxInvalidParentWrapper.MatchString(domutil.NodeName(node)) {
+		if node == nil || rxInvalidParentWrapper.MatchString(domutil.NodeName(node)) {
 			return false
 		}
 		return pnf.findAndAddClosestValidLeafNodes(node, false, backward, pageURL)
