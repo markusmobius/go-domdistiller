@@ -28,7 +28,7 @@ Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) 
 
 The stable branch is the faithful port of original DOM Distiller which only receives bug fixes, while the main branch adds some [insights][7] from Go-Readability.
 
-Both should be stable enough to use, but you may prefer to use the stable branch if you want to use the one that as close as original DOM Distiller.
+Both should be stable enough to use, but if you want to replicate the DOM Distiller results as closely as possible you you may prefer to use the stable branch.
 
 ## Comparison with Go-Readability
 
