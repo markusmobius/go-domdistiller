@@ -14,7 +14,7 @@ The port has been [completed][6] and we have used it to process millions of web 
 
 We are doing computational social science research on news production and consumption as part of [Project Ratio][8]. We collect a lot of news web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but is unbearably slow.
 
-After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has an impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well. The port was completely done by Radhi.
+After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well. The port was completely done by Radhi.
 
 ## Limitations
 
