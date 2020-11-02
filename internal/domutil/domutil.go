@@ -519,7 +519,7 @@ func GetDisplayStyle(node *html.Node) string {
 		"p", "pre", "section", "ul":
 		return "block"
 	case "a", "abbr", "acronym", "audio", "b", "bdi", "bdo", "br", "canvas", "circle", "cite",
-		"code", "data", "defs", "del", "dfn", "ellipse", "em", "embed", "i", "iframe", "img",
+		"code", "data", "defs", "del", "dfn", "ellipse", "em", "embed", "font", "i", "iframe", "img",
 		"ins", "kbd", "label", "lineargradient", "mark", "object", "output", "picture", "polygon",
 		"q", "rect", "s", "source", "span", "stop", "strong", "sub", "sup", "svg", "tt", "text",
 		"time", "track", "u", "var", "video", "wbr":
