@@ -1,14 +1,18 @@
 # Go-DomDistiller
 
+> This main branch is the development version for Go-DomDistiller. Check the [stable branch][5] for the stable version.
+
 Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
 
 This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
+
+The port has been [completed][6] and we have used it to process millions of web pages, so it should be stable enough to use.
 
 ## Motivations
 
 We are doing computational social science research on news consumption, so we collect a lot of web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but unbearably slow.
 
-After looking around, we found out that [Readability.js][1] has been [ported to Go][2] and it has an impressive performance. With that said, we decided to port DOM Distiller to Go language as well.
+After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has an impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well.
 
 ## Limitations
 
@@ -17,6 +21,12 @@ In original DOM Distiller, they consider some render-level information in both t
 Unfortunately it's impossible to do that on the server side, and we don't want to use a headless browser anymore. So, while porting the original code, we exclude parts where we need to compute the stylesheets. These omits are marked with [`NEED-COMPUTE-CSS`][3].
 
 Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
+
+## Comparison with the stable branch
+
+The stable branch is the faithful port of original DOM Distiller which only receive bug fixes, while this main branch adds some [insights][7] from Go-Readability.
+
+Both should be stable enough to use, but you may prefer to use the stable branch if you want to use the one that as close as original DOM Distiller.
 
 ## Comparison with Go-Readability
 
@@ -37,18 +47,18 @@ The pros of Readability :
 Here is the benchmark result between DOM Distiller and Readability :
 
 ```
-BenchmarkReadability-8                     	       1	22270423614 ns/op	5134614848 B/op	21071083 allocs/op
-BenchmarkDistillerWithoutPagination-8      	       1	24248745284 ns/op	7987711256 B/op	30309028 allocs/op
-BenchmarkDistillerPageNumberPagination-8   	       1	33292305569 ns/op	8080458848 B/op	32918938 allocs/op
-BenchmarkDistillerPrevNextPagination-8     	       1	47737605918 ns/op	8378848776 B/op	36243299 allocs/op
+BenchmarkReadability-8                  	1	22270423614 ns/op	5134614848 B/op	21071083 allocs/op
+BenchmarkDistillerWithoutPagination-8   	1	24248745284 ns/op	7987711256 B/op	30309028 allocs/op
+BenchmarkDistillerPageNumberPagination-8	1	33292305569 ns/op	8080458848 B/op	32918938 allocs/op
+BenchmarkDistillerPrevNextPagination-8  	1	47737605918 ns/op	8378848776 B/op	36243299 allocs/op
 ```
 
 ## Installation
 
-To install this package, just run `go get` :
+To install the development version of this package, just run `go get` for main branch :
 
 ```
-go get -u -v github.com/markusmobius/go-domdistiller
+go get -u -v github.com/markusmobius/go-domdistiller@main
 ```
 
 ## API Documentation
@@ -249,3 +259,7 @@ Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/li
 [2]: https://github.com/go-shiori/go-readability
 [3]: https://github.com/markusmobius/go-domdistiller/search?q=NEED-COMPUTE-CSS
 [4]: https://arxiv.org/abs/1811.03661
+[5]: https://github.com/markusmobius/go-domdistiller/tree/stable
+[6]: https://github.com/markusmobius/go-domdistiller/blob/main/CHANGELOG.md
+[7]: https://github.com/markusmobius/go-domdistiller/blob/main/IMPROVEMENTS.md
+[@RadhiFadlillah]: https://github.com/RadhiFadlillah

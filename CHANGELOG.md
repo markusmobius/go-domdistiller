@@ -1,5 +1,9 @@
 # Changelog
 
+### 31 October 2020
+
+- Separate stable version to its own branch.
+
 ### 30 October 2020
 
 - From Readability: strip identification and presentational attributes from each nodes.
