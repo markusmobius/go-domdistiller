@@ -1,36 +1,38 @@
 # Go-DomDistiller
 
-> This main branch is the development version for Go-DomDistiller. Check the [stable branch][5] for the stable version.
+> This main branch is the development version for Go-DomDistiller which incorporates insights from the readability package as well as other improvements. Check the [stable branch][5] for the stable version that is a faithful port of the original DOM Distiller (the stable branch only receives bug fixes).
 
 Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
 
-This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
+This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. Unlike DOM distiller there are no dependencies on Chromium or GWT which makes it useful to run as a standalone program on a server.
+
+The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
 
 The port has been [completed][6] and we have used it to process millions of web pages, so it should be stable enough to use.
 
 ## Motivations
 
-We are doing computational social science research on news consumption, so we collect a lot of web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but unbearably slow.
+We are doing computational social science research on news production and consumption as part of [Project Ratio][8]. We collect a lot of news web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but is unbearably slow.
 
-After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has an impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well.
+After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has an impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well. The port was completely done by Radhi.
 
 ## Limitations
 
-In original DOM Distiller, they consider some render-level information in both the classification and tree transduction steps. For example, any elements that are hidden from display are not considered as content, images that are too small are not considered as lead images, etc. These render-level checks are a small part of DOM Distiller's strategy.
+The algorithm in the original DOM Distiller incorporates some render-level information in both the classification and tree transduction steps. For example, any elements that are hidden from display are not considered as content, images that are too small are not considered as lead images, etc. These render-level checks are a small part of DOM Distiller's strategy.
 
-Unfortunately it's impossible to do that on the server side, and we don't want to use a headless browser anymore. So, while porting the original code, we exclude parts where we need to compute the stylesheets. These omits are marked with [`NEED-COMPUTE-CSS`][3].
+Unfortunately it's impossible to do that on the server side without running a full headless browser which we don't want to do (we also only want to rely on the HTML without having to download all the style sheets). Therefore, while porting the original code, we exclude parts where we need to compute the stylesheets. These omissions are marked with [`NEED-COMPUTE-CSS`][3].
 
 Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
 
 ## Comparison with the stable branch
 
-The stable branch is the faithful port of original DOM Distiller which only receive bug fixes, while this main branch adds some [insights][7] from Go-Readability.
+The stable branch is the faithful port of original DOM Distiller which only receives bug fixes, while the main branch adds some [insights][7] from Go-Readability.
 
 Both should be stable enough to use, but you may prefer to use the stable branch if you want to use the one that as close as original DOM Distiller.
 
 ## Comparison with Go-Readability
 
-Since Readability and DOM Distiller work using different algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. In practice we use both of them then use some kind of scoring to find out which extraction result is more suitable for our use case.
+Since Readability and DOM Distiller work using different algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. In practice we use both of them on every HTML file and then use some kind of scoring to find out which extraction result is more suitable for our use case.
 
 The pros of Dom Distiller :
 
@@ -126,8 +128,8 @@ opts := &distiller.Options{	LogFlags: distiller.LogEverything }
 
 There are two values available for `PaginationAlgo` :
 
-- `PrevNext` is the algorithm to find pagination links that work by scoring  each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow. 
-- `PageNumber` is algorithm to find pagination links that work by collecting groups of adjacent plain text numbers and outlinks with digital anchor text. A lot faster than PrevNext, but also less accurate.
+- `PrevNext` is the algorithm to find pagination links that works by scoring  each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow. 
+- `PageNumber` is algorithm to find pagination links that works by collecting groups of adjacent plain text numbers and outlinks with digital anchor text. It's a lot faster than PrevNext, but also less accurate.
 
 The distillation result is defined as struct like this :
 
@@ -254,6 +256,9 @@ func main() {
 
 Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/licenses/mit/) which means you can use and modify it however you want. However, if you make an enhancement for it, if possible please send a pull request.
 
+We are indebted to the Chromium authors for producting the amazing DOM Distiller. We are also indebted to Christian Kohlschütter who wrote the Boilerpipe based on his PhD thesis which still produces amazing results and on which DOM distiller is based. Boilerpipe is licensed under the Apache 2.0 license and DOM Distiller has a BSD-style license. Since our work is derived directly from DOM Distiller and indirectly from Boilerpipe we have included the respective copyright notices at the top of each file as well as the license files of the prior projects.
+
+
 [0]: https://chromium.googlesource.com/chromium/dom-distiller
 [1]: https://github.com/mozilla/readability
 [2]: https://github.com/go-shiori/go-readability
@@ -262,4 +267,5 @@ Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/li
 [5]: https://github.com/markusmobius/go-domdistiller/tree/stable
 [6]: https://github.com/markusmobius/go-domdistiller/blob/main/CHANGELOG.md
 [7]: https://github.com/markusmobius/go-domdistiller/blob/main/IMPROVEMENTS.md
+[8]: https://www.microsoft.com/en-us/research/project/project-ratio/
 [@RadhiFadlillah]: https://github.com/RadhiFadlillah
