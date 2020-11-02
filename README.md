@@ -6,7 +6,7 @@ Go-DomDistiller is a Go package that finds the main readable content and the met
 
 This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. Unlike DOM distiller there are no dependencies on Chromium or GWT which makes it useful to run as a standalone program on a server.
 
-The structure of this package is arranged following the structure of original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
+The structure of this package follows the structure of the original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
 
 The port has been [completed][6] and we have used it to process millions of web pages, so it should be stable enough to use.
 
