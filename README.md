@@ -256,7 +256,7 @@ func main() {
 
 Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/licenses/mit/) which means you can use and modify it however you want. However, if you make an enhancement for it, if possible please send a pull request.
 
-We are indebted to the Chromium authors for the amazing DOM Distiller. We are equally indebted to Christian Kohlschütter who wrote a project called Boilerpipe in 2009 which is a content parser based on his PhD thesis and on which DOM Distiller is based (the original Boilerpipe still produces amazing results for most pages). Boilerpipe is licensed under the Apache 2.0 license and DOM Distiller has a BSD-style license. Since our work is derived directly from DOM Distiller and indirectly from Boilerpipe we have included the respective copyright notices at the top of each file as well as the license files for both prior projects.
+We are indebted to the Chromium authors for the amazing DOM Distiller. We are equally indebted to Christian Kohlschütter who wrote a content parser called Boilerpipe in 2009 which is based on his PhD thesis and which is also the basis for DOM Distiller (the original Boilerpipe still produces amazing results for most pages). Boilerpipe is licensed under the Apache 2.0 license and DOM Distiller has a BSD-style license. Since our work is derived directly from DOM Distiller and indirectly from Boilerpipe we have included the respective copyright notices at the top of each file as well as the license files for both prior projects.
 
 
 [0]: https://chromium.googlesource.com/chromium/dom-distiller
