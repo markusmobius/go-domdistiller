@@ -135,7 +135,12 @@ func newDetectionStateFromMonotonicNumbers(monotonicNumbers []*info.PageInfo, is
 			continue
 		}
 
-		url, _ = nurl.Parse(page.URL)
+		url, err = nurl.Parse(page.URL)
+		if err != nil {
+			parsedURLs[i] = nil
+			continue
+		}
+
 		url.User = nil
 		url.Fragment = ""
 		url.RawFragment = ""

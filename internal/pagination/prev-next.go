@@ -85,7 +85,11 @@ func (pnf *PrevNextFinder) FindPagination(root *html.Node, pageURL *nurl.URL) da
 
 func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findNext bool) string {
 	// Clean up URL
-	tmp, _ := nurl.Parse(pageURL.String())
+	tmp, err := nurl.Parse(pageURL.String())
+	if err != nil {
+		return ""
+	}
+
 	tmp.Fragment = ""
 	tmp.RawFragment = ""
 
@@ -147,7 +151,12 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		// since Go can't compute stylesheet. NEED-COMPUTE-CSS.
 
 		// Remove url anchor and then trailing '/' from link's href.
-		tmp, _ := nurl.Parse(linkHref)
+		tmp, err := nurl.Parse(linkHref)
+		if err != nil {
+			pnf.appendDebugStrForLink(link, "ignored: can't be cleaned")
+			continue
+		}
+
 		tmp.Fragment = ""
 		tmp.RawFragment = ""
 		tmp.Path = strings.TrimSuffix(tmp.Path, "/")

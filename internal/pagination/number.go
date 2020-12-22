@@ -188,7 +188,11 @@ func (pnf *PageNumberFinder) getPageInfoAndText(link *html.Node, pageURL *nurl.U
 			return nil, ""
 		}
 
-		hrefURL, _ = nurl.Parse(linkHref)
+		hrefURL, err = nurl.Parse(linkHref)
+		if err != nil {
+			return nil, ""
+		}
+
 		hrefURL.Path = strings.TrimSuffix(hrefURL.Path, "/")
 		hrefURL.RawPath = hrefURL.Path
 		hrefURL.Fragment = ""

@@ -28,6 +28,7 @@ package pattern
 
 import (
 	"errors"
+	"fmt"
 	nurl "net/url"
 	"strconv"
 
@@ -49,9 +50,10 @@ type QueryParamPagePattern struct {
 
 func NewQueryParamPagePattern(url *nurl.URL, queryName, queryValue string) (*QueryParamPagePattern, error) {
 	// Clone URL to make sure we don't mutate the original
-	// Since we assume original URL is already absolute, here we only parse
-	// without checking error.
-	clonedURL, _ := nurl.Parse(url.String())
+	clonedURL, err := nurl.Parse(url.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to clone url: %w", err)
+	}
 
 	// Validate function parameters
 	if queryName == "" {

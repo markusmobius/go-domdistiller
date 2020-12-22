@@ -28,6 +28,7 @@ package pattern
 
 import (
 	"errors"
+	"fmt"
 	nurl "net/url"
 	"path"
 	"strconv"
@@ -57,9 +58,10 @@ type PathComponentPagePattern struct {
 
 func NewPathComponentPagePattern(url *nurl.URL, digitStart, digitEnd int) (*PathComponentPagePattern, error) {
 	// Clone URL to make sure we don't mutate the original
-	// Since we assume original URL is already absolute, here we only parse
-	// without checking error.
-	clonedURL, _ := nurl.Parse(url.String())
+	clonedURL, err := nurl.Parse(url.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to clone url: %w", err)
+	}
 
 	// Clean all fragment and queries from URL
 	clonedURL.RawQuery = ""
