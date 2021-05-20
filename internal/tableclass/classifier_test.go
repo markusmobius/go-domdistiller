@@ -46,18 +46,12 @@ import (
 // - Test_TableClass_NoBorderAroundCells
 // - Test_TableClass_DifferentlyColoredRows
 // - Test_TableClass_TallTable
-
-func Test_TableClass_InputElement(t *testing.T) {
-	input := dom.CreateElement("input")
-	dom.SetAttribute(input, "type", "text")
-
-	table := createDefaultTableWithTH()
-	dom.AppendChild(input, table)
-
-	tableType, reason := tc.NewClassifier(nil).Classify(table)
-	assert.Equal(t, tc.Layout, tableType)
-	assert.Equal(t, tc.InsideEditableArea, reason)
-}
+//
+// There are also some tests that not implemented here because
+// it's not needed:
+// - Test_TableClass_InputElement is not implemented because
+//   <input> is void element, so normally there won't be any
+//   <table> inside it.
 
 func Test_TableClass_ContentEditableAttribute(t *testing.T) {
 	div := testutil.CreateDiv(0)
