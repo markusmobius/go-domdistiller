@@ -38,10 +38,11 @@ import (
 )
 
 var (
-	rxPunctuation = regexp.MustCompile(`\s+([.?!,;])\s*(\S*)`)
-	rxTempNewline = regexp.MustCompile(`\s*\|\\/\|\s*`)
-	rxDisplay     = regexp.MustCompile(`(?i)display:\s*([\w-]+)\s*(?:;|$)`)
-	rxSrcsetURL   = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
+	rxPunctuation      = regexp.MustCompile(`\s+([.?!,;])\s*(\S*)`)
+	rxTempNewline      = regexp.MustCompile(`\s*\|\\/\|\s*`)
+	rxDisplay          = regexp.MustCompile(`(?i)display:\s*([\w-]+)\s*(?:;|$)`)
+	rxVisibilityHidden = regexp.MustCompile(`(?i)visibility:\s*(:?hidden|collapse)`)
+	rxSrcsetURL        = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
 
 	elementWithSizeAttr = map[string]struct{}{
 		"table": {},
@@ -490,21 +491,17 @@ func HasAncestor(node *html.Node, ancestorTagNames ...string) bool {
 
 // IsProbablyVisible determines if a node is visible.
 func IsProbablyVisible(node *html.Node) bool {
-	tagName := dom.TagName(node)
 	displayStyle := GetDisplayStyle(node)
+	styleAttr := dom.GetAttribute(node, "style")
 	nodeAriaHidden := dom.GetAttribute(node, "aria-hidden")
 	className := dom.GetAttribute(node, "class")
-
-	// If tag name is <script> or <style>, it's obviously not visible
-	if tagName == "script" || tagName == "style" {
-		return false
-	}
 
 	// Have to null-check node.style and node.className.indexOf to deal
 	// with SVG and MathML nodes. Also check for "fallback-image" so that
 	// Wikimedia Math images are displayed
 	return displayStyle != "none" &&
 		!dom.HasAttribute(node, "hidden") &&
+		!rxVisibilityHidden.MatchString(styleAttr) &&
 		(nodeAriaHidden == "" || nodeAriaHidden != "true" || strings.Contains(className, "fallback-image"))
 }
 
@@ -556,7 +553,7 @@ func GetDisplayStyle(node *html.Node) string {
 		return "table-row"
 	case "tbody":
 		return "table-row-group"
-	case "meta", "script", "link":
+	case "meta", "script", "style", "link":
 		return "none"
 	}
 
