@@ -490,9 +490,15 @@ func HasAncestor(node *html.Node, ancestorTagNames ...string) bool {
 
 // IsProbablyVisible determines if a node is visible.
 func IsProbablyVisible(node *html.Node) bool {
+	tagName := dom.TagName(node)
 	displayStyle := GetDisplayStyle(node)
 	nodeAriaHidden := dom.GetAttribute(node, "aria-hidden")
 	className := dom.GetAttribute(node, "class")
+
+	// If tag name is <script> or <style>, it's obviously not visible
+	if tagName == "script" || tagName == "style" {
+		return false
+	}
 
 	// Have to null-check node.style and node.className.indexOf to deal
 	// with SVG and MathML nodes. Also check for "fallback-image" so that
