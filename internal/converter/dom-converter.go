@@ -104,8 +104,10 @@ func (dc *DomConverter) exitNodeHandler(node *html.Node) {
 
 func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 	// In original dom-distiller they skip invisible or uninteresting elements.
-	// Unfortunately it's impossible here (NEED-COMPUTE-CSS), so we simply
-	// assume everything is visible.
+	// Unfortunately it's impossible to do that perfectly here (NEED-COMPUTE-CSS).
+	if !domutil.IsProbablyVisible(node) {
+		return false
+	}
 
 	// Node-type specific extractors check for elements they are interested in here.
 	// Everything else will be filtered through the switch below.

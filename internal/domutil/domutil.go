@@ -40,7 +40,7 @@ import (
 var (
 	rxPunctuation      = regexp.MustCompile(`\s+([.?!,;])\s*(\S*)`)
 	rxTempNewline      = regexp.MustCompile(`\s*\|\\/\|\s*`)
-	rxDisplayNone      = regexp.MustCompile(`(?i)display:\s*none`)
+	rxDisplay          = regexp.MustCompile(`(?i)display:\s*([\w-]+)\s*(?:;|$)`)
 	rxVisibilityHidden = regexp.MustCompile(`(?i)visibility:\s*(:?hidden|collapse)`)
 	rxSrcsetURL        = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
 )
@@ -462,12 +462,7 @@ func InnerText(node *html.Node) string {
 				return
 			}
 
-			if dom.HasAttribute(n, "hidden") {
-				return
-			}
-
-			styleAttr := dom.GetAttribute(n, "style")
-			if rxDisplayNone.MatchString(styleAttr) || rxVisibilityHidden.MatchString(styleAttr) {
+			if !IsProbablyVisible(n) {
 				return
 			}
 		}
@@ -574,4 +569,76 @@ func HasAncestor(node *html.Node, ancestorTagNames ...string) bool {
 	}
 
 	return false
+}
+
+// IsProbablyVisible determines if a node is visible.
+func IsProbablyVisible(node *html.Node) bool {
+	displayStyle := GetDisplayStyle(node)
+	styleAttr := dom.GetAttribute(node, "style")
+	nodeAriaHidden := dom.GetAttribute(node, "aria-hidden")
+	className := dom.GetAttribute(node, "class")
+
+	// Have to null-check node.style and node.className.indexOf to deal
+	// with SVG and MathML nodes. Also check for "fallback-image" so that
+	// Wikimedia Math images are displayed
+	return displayStyle != "none" &&
+		!dom.HasAttribute(node, "hidden") &&
+		!rxVisibilityHidden.MatchString(styleAttr) &&
+		(nodeAriaHidden == "" || nodeAriaHidden != "true" || strings.Contains(className, "fallback-image"))
+}
+
+// GetDisplayStyle returns the default "display" in style property for the specified node.
+func GetDisplayStyle(node *html.Node) string {
+	// Check if display specified in inline style
+	style := dom.GetAttribute(node, "style")
+	parts := rxDisplay.FindStringSubmatch(style)
+	if len(parts) >= 2 {
+		return parts[1]
+	}
+
+	// Use default display
+	switch dom.TagName(node) {
+	case "address", "article", "blockquote", "body", "dd", "details", "dialog", "div",
+		"dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2",
+		"h3", "h4", "h5", "h6", "header", "hr", "html", "legend", "main", "nav", "ol",
+		"p", "pre", "section", "ul":
+		return "block"
+	case "a", "abbr", "acronym", "audio", "b", "bdi", "bdo", "br", "canvas", "circle", "cite",
+		"code", "data", "defs", "del", "dfn", "ellipse", "em", "embed", "font", "i", "iframe", "img",
+		"ins", "kbd", "label", "lineargradient", "mark", "object", "output", "picture", "polygon",
+		"q", "rect", "s", "source", "span", "stop", "strong", "sub", "sup", "svg", "tt", "text",
+		"time", "track", "u", "var", "video", "wbr":
+		return "inline"
+	case "button", "input":
+		return "inline-block"
+	case "li", "summary":
+		return "list-item"
+	case "ruby":
+		return "ruby"
+	case "rt":
+		return "ruby-text"
+	case "table":
+		return "table"
+	case "caption":
+		return "table-caption"
+	case "td", "th":
+		return "table-cell"
+	case "col":
+		return "table-column"
+	case "colgroup":
+		return "table-column-group"
+	case "tfoot":
+		return "table-footer-group"
+	case "thead":
+		return "table-header-group"
+	case "tr":
+		return "table-row"
+	case "tbody":
+		return "table-row-group"
+	case "meta", "script", "style", "link":
+		return "none"
+	}
+
+	// In case I forgot any tags, fallback to block
+	return "block"
 }
