@@ -77,8 +77,11 @@ type Result struct {
 	// WordCount is the count of words within document.
 	WordCount int
 
-	// HTML is the string which contains the distilled content in HTML format.
-	HTML string
+	// Node is the *html.Node which contain the distilled content.
+	Node *html.Node
+
+	// Text is the string which contains the distilled content in text format.
+	Text string
 
 	// ContentImages is list of image URLs that used within the distilled content.
 	ContentImages []string
@@ -86,9 +89,6 @@ type Result struct {
 
 // Options is configuration for the distiller.
 type Options struct {
-	// Whether to extract only the text (or to include the containing html).
-	ExtractTextOnly bool
-
 	// Flags to specify which info to dump to log.
 	LogFlags LogFlag
 
@@ -182,10 +182,22 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 
 	// Start extractor
 	ce := extractor.NewContentExtractor(doc, opts.OriginalURL, logger)
-	content, wordCount := ce.ExtractContent(opts.ExtractTextOnly)
+	extractedDocument, wordCount := ce.ExtractContent()
 
+	// Generate output
+	start := time.Now()
+	extractedText := extractedDocument.GenerateOutput(true)
+	extractedHTML := extractedDocument.GenerateOutput(false)
+	ce.TimingInfo.FormattingTime = time.Now().Sub(start)
+
+	// Convert generated html string into node
+	container := dom.CreateElement("div")
+	dom.SetInnerHTML(container, extractedHTML)
+
+	// Prepare result
 	result := Result{}
-	result.HTML = content
+	result.Node = container
+	result.Text = extractedText
 	result.WordCount = wordCount
 	result.Title = ce.ExtractTitle()
 	result.ContentImages = ce.ImageURLs

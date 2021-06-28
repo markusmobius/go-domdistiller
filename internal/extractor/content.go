@@ -90,7 +90,7 @@ func (ce *ContentExtractor) ExtractTitle() string {
 	return ""
 }
 
-func (ce *ContentExtractor) ExtractContent(textOnly bool) (string, int) {
+func (ce *ContentExtractor) ExtractContent() (*webdoc.Document, int) {
 	start := time.Now()
 	webDocument := ce.createWebDocumentInfoFromPage(converter.SkipUnlikelies)
 	wordCount := ce.processDocument(webDocument)
@@ -108,12 +108,8 @@ func (ce *ContentExtractor) ExtractContent(textOnly bool) (string, int) {
 	docfilter.NewNestedElementRetainer().Process(webDocument)
 	ce.TimingInfo.ArticleProcessingTime = time.Now().Sub(start)
 
-	start = time.Now()
-	strHTML := webDocument.GenerateOutput(textOnly)
-	ce.TimingInfo.FormattingTime = time.Now().Sub(start)
-
 	ce.ImageURLs = webDocument.GetImageURLs()
-	return strHTML, wordCount
+	return webDocument, wordCount
 }
 
 // ensureTitleInitialized populates list of candidate titles in

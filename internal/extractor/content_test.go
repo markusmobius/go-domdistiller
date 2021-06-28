@@ -736,6 +736,6 @@ func assertContentExtractor(t *testing.T, expected, rawHTML string) {
 }
 
 func extractContent(ce *extractor.ContentExtractor) string {
-	extractedContent, _ := ce.ExtractContent(false)
-	return extractedContent
+	extractedDocument, _ := ce.ExtractContent()
+	return extractedDocument.GenerateOutput(false)
 }

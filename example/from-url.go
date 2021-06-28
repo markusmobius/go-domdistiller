@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-shiori/dom"
 	distiller "github.com/markusmobius/go-domdistiller"
 )
 
@@ -18,5 +19,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(result.HTML)
+	rawHTML := dom.OuterHTML(result.Node)
+	fmt.Println(rawHTML)
 }
