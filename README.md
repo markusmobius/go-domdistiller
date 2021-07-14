@@ -1,5 +1,7 @@
 # Go-DomDistiller
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/markusmobius/go-domdistiller.svg)](https://pkg.go.dev/github.com/markusmobius/go-domdistiller)
+
 > This main branch is the development version for Go-DomDistiller which incorporates insights from the readability package as well as other improvements. Check the [stable branch][5] for the stable version that is a faithful port of the original DOM Distiller (the stable branch only receives bug fixes).
 
 Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
@@ -87,9 +89,6 @@ Each function accept custom `Option` which is a struct that defined like this :
 
 ```go
 type Options struct {
-	// Whether to extract only the text (or to include the containing html).
-	ExtractTextOnly bool
-
 	// Flags to specify which info to dump to log.
 	LogFlags LogFlag
 
@@ -157,15 +156,18 @@ type Result struct {
 	// WordCount is the count of words within document.
 	WordCount int
 
-	// HTML is the string which contains the distilled content in HTML format.
-	HTML string
+	// Node is the *html.Node which contain the distilled content.
+	Node *html.Node
+
+	// Text is the string which contains the distilled content in text format.
+	Text string
 
 	// ContentImages is list of image URLs that used within the distilled content.
 	ContentImages []string
 }
 ```
 
-The `MarkupInfo`, `TimingInfo` and `PaginationInfo` field are defined in package `github.com/markusmobius/go-domdistiller/data` like this :
+The `MarkupInfo`, `TimingInfo` and `PaginationInfo` field are defined in `data` package `github.com/markusmobius/go-domdistiller/data` like this :
 
 ```go
 type PaginationInfo struct {
@@ -215,6 +217,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-shiori/dom"
 	distiller "github.com/markusmobius/go-domdistiller"
 )
 
@@ -227,7 +230,8 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(result.HTML)
+	rawHTML := dom.OuterHTML(result.Node)
+	fmt.Println(rawHTML)
 }
 ```
 
@@ -239,6 +243,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-shiori/dom"
 	distiller "github.com/markusmobius/go-domdistiller"
 )
 
@@ -248,7 +253,8 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(result.HTML)
+	rawHTML := dom.OuterHTML(result.Node)
+	fmt.Println(rawHTML)
 }
 ```
 
