@@ -58,6 +58,7 @@ func Test_StringUtil_CreateAbsoluteURL(t *testing.T) {
 	relURL7 := "www.google.com"
 	relURL8 := "http//www.google.com"
 	relURL9 := "../hello/relative"
+	relURL10 := "image.png"
 
 	absURL1 := "#here"
 	absURL2 := "http://example.com/test/123"
@@ -66,10 +67,12 @@ func Test_StringUtil_CreateAbsoluteURL(t *testing.T) {
 	absURL5 := "https://www.google.com"
 	absURL6 := "ftp://ftp.server.com"
 	absURL7 := "http://example.com/page/www.google.com"
-	absURL8 := "http://example.com/page/http/www.google.com"
+	absURL8 := "http://example.com/page/http//www.google.com"
 	absURL9 := "http://example.com/hello/relative"
+	absURL10 := "http://example.com/page/image.png"
 
 	baseURL, _ := nurl.ParseRequestURI("http://example.com/page/")
+	baseURL2, _ := nurl.ParseRequestURI("http://example.com/page/doc.html")
 	assert.Equal(t, absURL1, stringutil.CreateAbsoluteURL(relURL1, baseURL))
 	assert.Equal(t, absURL2, stringutil.CreateAbsoluteURL(relURL2, baseURL))
 	assert.Equal(t, absURL3, stringutil.CreateAbsoluteURL(relURL3, baseURL))
@@ -79,4 +82,5 @@ func Test_StringUtil_CreateAbsoluteURL(t *testing.T) {
 	assert.Equal(t, absURL7, stringutil.CreateAbsoluteURL(relURL7, baseURL))
 	assert.Equal(t, absURL8, stringutil.CreateAbsoluteURL(relURL8, baseURL))
 	assert.Equal(t, absURL9, stringutil.CreateAbsoluteURL(relURL9, baseURL))
+	assert.Equal(t, absURL10, stringutil.CreateAbsoluteURL(relURL10, baseURL2))
 }
