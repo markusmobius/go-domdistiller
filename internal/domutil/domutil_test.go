@@ -28,6 +28,7 @@ package domutil_test
 
 import (
 	nurl "net/url"
+	"strings"
 	"testing"
 
 	"github.com/go-shiori/dom"
@@ -103,6 +104,21 @@ func Test_DomUtil_NearestCommonAncestorIsRoot(t *testing.T) {
 	assert.Equal(t, div1, domutil.GetNearestCommonAncestor(div1, div3))
 	nodeList := dom.QuerySelectorAll(doc, `[id="1"],[id="3"]`)
 	assert.Equal(t, div1, domutil.GetNearestCommonAncestor(nodeList...))
+}
+
+func Test_DomUtil_NearestCommonAncestorForSingleNode(t *testing.T) {
+	doc, _ := dom.FastParse(strings.NewReader(`
+		<ul>
+			<li><a href="javascript:void(0);" id="foo">Foo</a></li>
+			<li><a href="javascript:void(0);" id="bar">Bar</a></li>
+			<li><a href="javascript:void(0);" id="baz">Baz</a></li>
+		</ul>`))
+
+	// Single node nearest ancestor is itself
+	as := dom.QuerySelectorAll(doc, "a")
+	assert.Equal(t, as[0].FirstChild, domutil.GetNearestCommonAncestor(as[0].FirstChild))
+	assert.Equal(t, as[1].FirstChild, domutil.GetNearestCommonAncestor(as[1].FirstChild))
+	assert.Equal(t, as[2].FirstChild, domutil.GetNearestCommonAncestor(as[2].FirstChild))
 }
 
 func Test_DomUtil_MakeAllLinksAbsolute(t *testing.T) {

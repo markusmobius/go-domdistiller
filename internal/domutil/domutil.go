@@ -100,50 +100,38 @@ func GetNearestCommonAncestor(nodes ...*html.Node) *html.Node {
 // GetAncestors returns all ancestor of the `nodes` and also the nearest common ancestor.
 func GetAncestors(nodes ...*html.Node) (map[*html.Node]int, *html.Node) {
 	// Find all ancestors
-	ancestors := make(map[*html.Node]int)
+	ancestorList := []*html.Node{}
+	ancestorCount := make(map[*html.Node]int)
+	saveAncestor := func(ancestor *html.Node) {
+		if _, exist := ancestorCount[ancestor]; !exist {
+			ancestorList = append(ancestorList, ancestor)
+		}
+		ancestorCount[ancestor]++
+	}
+
 	for _, node := range nodes {
 		// Include the node itself to list of ancestor
-		ancestors[node]++
+		saveAncestor(node)
 
 		// Save parents of node to list ancestor
 		parent := node.Parent
 		for parent != nil {
-			ancestors[parent]++
+			saveAncestor(parent)
 			parent = parent.Parent
 		}
 	}
 
-	// Find common ancestor
-	nNodes := len(nodes)
-	commonAncestors := make(map[*html.Node]struct{})
-	for node, count := range ancestors {
-		if count == nNodes {
-			commonAncestors[node] = struct{}{}
-		}
-	}
-
-	// If there are no common ancestor found, stop
-	if len(commonAncestors) == 0 {
-		return nil, nil
-	}
-
 	// Find the nearest ancestor
+	nNodes := len(nodes)
 	var nearestAncestor *html.Node
-	for node := range commonAncestors {
-		childIsAncestor := false
-		for child := node.FirstChild; child != nil; child = child.NextSibling {
-			if _, exist := commonAncestors[child]; exist {
-				childIsAncestor = true
-				break
-			}
-		}
-
-		if !childIsAncestor {
+	for _, node := range ancestorList {
+		if ancestorCount[node] == nNodes {
 			nearestAncestor = node
+			break
 		}
 	}
 
-	return ancestors, nearestAncestor
+	return ancestorCount, nearestAncestor
 }
 
 // MakeAllLinksAbsolute makes all anchors and video posters absolute.
