@@ -26,6 +26,8 @@
 
 package webdoc
 
+import "fmt"
+
 // Tag represents HTML tags that need to be preserved over.
 type Tag struct {
 	BaseElement
@@ -50,4 +52,14 @@ func (t *Tag) GenerateOutput(textOnly bool) string {
 		return "<" + t.Name + ">"
 	}
 	return "</" + t.Name + ">"
+}
+
+func (t *Tag) String() string {
+	tp := "tag_start"
+	if t.Type == TagEnd {
+		tp = "tag_end"
+	}
+
+	return fmt.Sprintf("ELEMENT %q: name=%q, type=%s, is_content=%v",
+		t.ElementType(), t.Name, tp, t.isContent)
 }

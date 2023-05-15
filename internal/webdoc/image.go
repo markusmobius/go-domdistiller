@@ -27,6 +27,7 @@
 package webdoc
 
 import (
+	"fmt"
 	nurl "net/url"
 
 	"github.com/go-shiori/dom"
@@ -96,4 +97,9 @@ func (i *Image) cloneAndProcessNode() *html.Node {
 	domutil.MakeAllSrcSetAbsolute(cloned, i.PageURL)
 	domutil.StripAttributes(cloned)
 	return cloned
+}
+
+func (i *Image) String() string {
+	return fmt.Sprintf("ELEMENT %q: html=%q, is_content=%v",
+		i.ElementType(), dom.OuterHTML(i.Element), i.isContent)
 }

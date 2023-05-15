@@ -27,6 +27,7 @@
 package webdoc
 
 import (
+	"fmt"
 	nurl "net/url"
 
 	"github.com/go-shiori/dom"
@@ -76,4 +77,9 @@ func (t *Table) GetImageURLs() []string {
 	}
 
 	return imgURLs
+}
+
+func (t *Table) String() string {
+	return fmt.Sprintf("ELEMENT %q: html=%q, is_content=%v",
+		t.ElementType(), dom.OuterHTML(t.Element), t.isContent)
 }

@@ -27,6 +27,7 @@
 package webdoc
 
 import (
+	"fmt"
 	nurl "net/url"
 
 	"github.com/go-shiori/dom"
@@ -154,4 +155,9 @@ func (t Text) LastNonWhitespaceTextNode() *html.Node {
 
 func (t Text) GetTextNodes() []*html.Node {
 	return t.TextNodes[t.Start:t.End]
+}
+
+func (t *Text) String() string {
+	return fmt.Sprintf("ELEMENT %q: text=%q, labels=%v, is_content=%v",
+		t.ElementType(), t.Text, t.Labels, t.isContent)
 }

@@ -33,6 +33,7 @@ type Element interface {
 	IsContent() bool
 	SetIsContent(bool)
 	ElementType() string
+	String() string
 }
 
 // BaseElement is base of any other element.

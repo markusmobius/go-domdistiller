@@ -27,6 +27,8 @@
 package webdoc
 
 import (
+	"fmt"
+
 	"github.com/go-shiori/dom"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"golang.org/x/net/html"
@@ -71,4 +73,9 @@ func (e *Embed) GenerateOutput(textOnly bool) string {
 	}
 
 	return dom.OuterHTML(embed)
+}
+
+func (e *Embed) String() string {
+	return fmt.Sprintf("ELEMENT %q: type=%q id=%q, is_content=%v",
+		e.ElementType(), e.Type, e.ID, e.isContent)
 }

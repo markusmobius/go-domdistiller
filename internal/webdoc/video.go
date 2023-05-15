@@ -27,6 +27,7 @@
 package webdoc
 
 import (
+	"fmt"
 	nurl "net/url"
 
 	"github.com/go-shiori/dom"
@@ -79,4 +80,9 @@ func (v *Video) GenerateOutput(textOnly bool) string {
 	domutil.MakeAllSrcAttributesAbsolute(vNode, v.PageURL)
 	domutil.StripAttributes(vNode)
 	return dom.OuterHTML(vNode)
+}
+
+func (v *Video) String() string {
+	return fmt.Sprintf("ELEMENT %q: html=%q, is_content=%v",
+		v.ElementType(), dom.OuterHTML(v.Element), v.isContent)
 }
