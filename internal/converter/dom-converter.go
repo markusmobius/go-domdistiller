@@ -191,9 +191,13 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 			linkChildNodes := dom.ChildNodes(node)
 			if len(linkChildNodes) == 1 && linkChildNodes[0].Type == html.TextNode {
 				textNode := linkChildNodes[0]
-				textNode.Parent = node.Parent
-				textNode.PrevSibling = node.PrevSibling
-				textNode.NextSibling = node.NextSibling
+
+				// Replace node with the text node
+				dom.DetachChild(textNode)
+				node.Parent.InsertBefore(textNode, node)
+				dom.DetachChild(node)
+
+				// Save the text
 				dc.builder.AddTextNode(textNode)
 				return false
 			}
