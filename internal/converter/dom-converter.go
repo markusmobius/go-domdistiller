@@ -250,7 +250,7 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 }
 
 func (dc *DomConverter) logTableInfo(table *html.Node, tableType tableclass.Type) {
-	if dc.logger == nil {
+	if dc.logger == nil || dc.logger.InternallyNil() {
 		return
 	}
 

@@ -178,7 +178,10 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	}
 
 	// Prepare logger
-	logger := newDistillerLogger(opts.LogFlags)
+	var logger *distillerLogger
+	if opts.LogFlags != LogNothing {
+		logger = newDistillerLogger(opts.LogFlags)
+	}
 
 	// Start extractor
 	ce := extractor.NewContentExtractor(doc, opts.OriginalURL, logger)
@@ -230,7 +233,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	timingInfo.TotalTime = time.Now().Sub(distillerStart)
 	result.TimingInfo = *timingInfo
 
-	if logger.hasFlag(LogTiming) {
+	if logger != nil && !logger.InternallyNil() && logger.hasFlag(LogTiming) {
 		for _, entry := range ce.TimingInfo.OtherTimes {
 			logger.PrintTimingInfo("Timing:", entry.Name, "=", entry.Time)
 		}

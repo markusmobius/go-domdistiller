@@ -28,6 +28,7 @@ package logutil
 
 // Logger is the base interface for logging process of distiller.
 type Logger interface {
+	InternallyNil() bool
 	IsLogExtraction() bool
 	IsLogVisibility() bool
 	IsLogPagination() bool

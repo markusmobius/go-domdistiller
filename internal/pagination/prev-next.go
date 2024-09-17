@@ -432,7 +432,7 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 }
 
 func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string) {
-	if pnf.logger == nil || !pnf.logger.IsLogPagination() {
+	if pnf.logger == nil || pnf.logger.InternallyNil() || !pnf.logger.IsLogPagination() {
 		return
 	}
 
@@ -465,13 +465,13 @@ func (pnf *PrevNextFinder) appendDebugStrForLink(link *html.Node, message string
 }
 
 func (pnf *PrevNextFinder) printLog(args ...interface{}) {
-	if pnf.logger != nil {
+	if pnf.logger != nil && !pnf.logger.InternallyNil() {
 		pnf.logger.PrintPaginationInfo(args...)
 	}
 }
 
 func (pnf *PrevNextFinder) printDebugInfo(findNext bool, pagingHref string, allLinks []*html.Node) {
-	if pnf.logger == nil || !pnf.logger.IsLogPagination() {
+	if pnf.logger == nil || pnf.logger.InternallyNil() || !pnf.logger.IsLogPagination() {
 		return
 	}
 

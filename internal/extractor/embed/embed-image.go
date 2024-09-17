@@ -305,7 +305,7 @@ func (ie *ImageExtractor) createFigCaption(base *html.Node) *html.Node {
 }
 
 func (ie *ImageExtractor) printLog(args ...interface{}) {
-	if ie.logger != nil {
+	if ie.logger != nil && !ie.logger.InternallyNil() {
 		ie.logger.PrintVisibilityInfo(args...)
 	}
 }

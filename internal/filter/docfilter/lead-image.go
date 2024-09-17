@@ -168,7 +168,7 @@ func (f *LeadImageFinder) getLeadHeuristics(firstContent *html.Node) []scorer.Im
 }
 
 func (f *LeadImageFinder) logFinalScore(node *html.Node, score int) {
-	if f.logger == nil {
+	if f.logger == nil || f.logger.InternallyNil() {
 		return
 	}
 
