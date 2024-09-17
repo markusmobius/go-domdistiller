@@ -85,7 +85,7 @@ func getDocumentTitle(root *html.Node, wc stringutil.WordCounter) string {
 		if wc.Count(curTitle) < 3 {
 			curTitle = rxTitleRemove1stPart.ReplaceAllString(origTitle, "$1")
 		}
-	} else if strings.Index(curTitle, ": ") != -1 {
+	} else if strings.Contains(curTitle, ": ") {
 		// Check if we have an heading containing this exact string, so
 		// we could assume it's the full title.
 		headings := []*html.Node{}

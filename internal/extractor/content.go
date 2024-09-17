@@ -66,7 +66,7 @@ func NewContentExtractor(root *html.Node, pageURL *nurl.URL, logger logutil.Logg
 	}
 	start := time.Now()
 	parser := markup.NewParser(document, timingInfo)
-	timingInfo.MarkupParsingTime = time.Now().Sub(start)
+	timingInfo.MarkupParsingTime = time.Since(start)
 
 	textContent := dom.TextContent(document)
 	wordCounter := stringutil.SelectWordCounter(textContent)
@@ -100,13 +100,13 @@ func (ce *ContentExtractor) ExtractContent() (*webdoc.Document, int) {
 		wordCount = ce.processDocument(webDocument)
 	}
 
-	ce.TimingInfo.DocumentConstructionTime = time.Now().Sub(start)
+	ce.TimingInfo.DocumentConstructionTime = time.Since(start)
 
 	start = time.Now()
 	docfilter.NewRelevantElements().Process(webDocument)
 	docfilter.NewLeadImageFinder(ce.logger).Process(webDocument)
 	docfilter.NewNestedElementRetainer().Process(webDocument)
-	ce.TimingInfo.ArticleProcessingTime = time.Now().Sub(start)
+	ce.TimingInfo.ArticleProcessingTime = time.Since(start)
 
 	ce.ImageURLs = webDocument.GetImageURLs()
 	return webDocument, wordCount

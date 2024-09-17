@@ -48,6 +48,6 @@ func (ti *TimingInfo) AddEntry(start time.Time, name string) {
 
 	ti.OtherTimes = append(ti.OtherTimes, TimingEntry{
 		Name: name,
-		Time: time.Now().Sub(start),
+		Time: time.Since(start),
 	})
 }

@@ -284,7 +284,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		positiveMatch := false
 		negativeMatch := false
 		parent := domutil.GetParentElement(link)
-		for parent != nil && (positiveMatch == false || negativeMatch == false) {
+		for parent != nil && (!positiveMatch || !negativeMatch) {
 			parentData := dom.GetAttribute(parent, "class") + " " + dom.GetAttribute(parent, "id")
 			if !positiveMatch && rxPagination.MatchString(parentData) {
 				linkObj.score += 25

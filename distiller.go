@@ -191,7 +191,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 	start := time.Now()
 	extractedText := extractedDocument.GenerateOutput(true)
 	extractedHTML := extractedDocument.GenerateOutput(false)
-	ce.TimingInfo.FormattingTime = time.Now().Sub(start)
+	ce.TimingInfo.FormattingTime = time.Since(start)
 
 	// Convert generated html string into node
 	container := dom.CreateElement("div")
@@ -230,7 +230,7 @@ func Apply(doc *html.Node, opts *Options) (*Result, error) {
 		timingInfo.AddEntry(paginationStart, "Pagination")
 	}
 
-	timingInfo.TotalTime = time.Now().Sub(distillerStart)
+	timingInfo.TotalTime = time.Since(distillerStart)
 	result.TimingInfo = *timingInfo
 
 	if logger != nil && !logger.InternallyNil() && logger.hasFlag(LogTiming) {
