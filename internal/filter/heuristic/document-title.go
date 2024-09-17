@@ -47,6 +47,7 @@ import (
 	"strings"
 
 	"github.com/markusmobius/go-domdistiller/internal/label"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
@@ -70,8 +71,6 @@ var (
 		regexp.MustCompile(`(?i) - [^\-]+$`),
 		regexp.MustCompile(`(?i)^[^\-]+ - `),
 	}
-
-	rxDtmRemoveCharacters = regexp.MustCompile(`(?i)[\?\!\.\-\:]+`)
 )
 
 // DocumentTitleMatch marks TextBlocks which contain parts of the HTML
@@ -112,7 +111,7 @@ func (f *DocumentTitleMatch) Process(doc *webdoc.TextDocument) bool {
 			continue
 		}
 
-		text = rxDtmRemoveCharacters.ReplaceAllString(text, "")
+		text = re2go.RemoveDtmCharacters(text)
 		text = strings.TrimSpace(text)
 		if _, exist := f.potentialTitles[text]; exist {
 			tb.AddLabels(label.Title)
