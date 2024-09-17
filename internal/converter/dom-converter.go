@@ -34,6 +34,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/extractor/embed"
 	"github.com/markusmobius/go-domdistiller/internal/logutil"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/tableclass"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 	"golang.org/x/net/html"
@@ -136,7 +137,7 @@ func (dc *DomConverter) visitElementNodeHandler(node *html.Node) bool {
 	// Skip unlikely candidates
 	tagName := dom.TagName(node)
 	if dc.hasFlag(SkipUnlikelies) {
-		if rxUnlikelyCandidates.MatchString(nodeData) && !rxOkMaybeItsACandidate.MatchString(nodeData) &&
+		if re2go.IsUnlikelyCandidates(nodeData) && !re2go.MaybeItsACandidate(nodeData) &&
 			!domutil.HasAncestor(node, "table") && tagName != "body" && tagName != "a" {
 			return false
 		}

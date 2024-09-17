@@ -1,19 +1,15 @@
 package converter
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"golang.org/x/net/html"
 )
 
 var (
-	rxUnlikelyCandidates   = regexp.MustCompile(`(?i)-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote`)
-	rxOkMaybeItsACandidate = regexp.MustCompile(`(?i)and|article|body|column|content|main|shadow`)
-	rxByline               = regexp.MustCompile(`(?i)byline|author|dateline|writtenby|p-author`)
-
 	unlikelyRoles = map[string]struct{}{
 		"menu":          {},
 		"menubar":       {},
@@ -41,7 +37,7 @@ func isByline(node *html.Node, matchString string) bool {
 	rel := dom.GetAttribute(node, "rel")
 	itemprop := dom.GetAttribute(node, "itemprop")
 	nodeText := dom.TextContent(node)
-	if (rel == "author" || strings.Contains(itemprop, "author") || rxByline.MatchString(matchString)) &&
+	if (rel == "author" || strings.Contains(itemprop, "author") || re2go.IsByline(matchString)) &&
 		isValidByline(nodeText) {
 		return true
 	}
