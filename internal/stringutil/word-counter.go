@@ -29,12 +29,11 @@ package stringutil
 import (
 	"math"
 	"regexp"
+
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 )
 
 var (
-	rxFullWordCounter   = regexp.MustCompile(`[\x{3040}-\x{A4CF}]`)
-	rxLetterWordCounter = regexp.MustCompile(`[\x{AC00}-\x{D7AF}]`)
-
 	rxWordMatcher1 = regexp.MustCompile(`(\S*[\w\x{00C0}-\x{1FFF}\x{AC00}-\x{D7AF}]\S*)`)
 	rxWordMatcher2 = regexp.MustCompile(`([\x{3040}-\x{A4CF}])`)
 	rxWordMatcher3 = regexp.MustCompile(`(\S*[\w\x{00C0}-\x{1FFF}]\S*)`)
@@ -81,9 +80,9 @@ func (c FastWordCounter) Count(text string) int {
 // the specified text.
 func SelectWordCounter(text string) WordCounter {
 	switch {
-	case rxFullWordCounter.MatchString(text):
+	case re2go.UseFullWordCounter(text):
 		return FullWordCounter{}
-	case rxLetterWordCounter.MatchString(text):
+	case re2go.UseLetterWordCounter(text):
 		return LetterWordCounter{}
 	default:
 		return FastWordCounter{}
