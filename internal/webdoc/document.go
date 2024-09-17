@@ -27,7 +27,7 @@
 package webdoc
 
 import (
-	"bytes"
+	"strings"
 )
 
 // Document is a simplified view of the underlying webpage. It contains the
@@ -45,7 +45,7 @@ func (doc *Document) AddElements(elements ...Element) {
 }
 
 func (doc *Document) GenerateOutput(textOnly bool) string {
-	buffer := bytes.NewBuffer(nil)
+	var buffer strings.Builder
 	for _, e := range doc.Elements {
 		if !e.IsContent() {
 			continue

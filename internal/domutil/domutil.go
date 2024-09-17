@@ -27,7 +27,6 @@
 package domutil
 
 import (
-	"bytes"
 	nurl "net/url"
 	"regexp"
 	"strings"
@@ -354,13 +353,15 @@ func makeSrcSetAbsolute(node *html.Node, pageURL *nurl.URL) {
 // `dom.TextContent` is the latter will skip <br> tag while this function will preserve
 // <br> as whitespace. NEED-COMPUTE-CSS
 func InnerText(node *html.Node) string {
-	var buffer bytes.Buffer
+	var buffer strings.Builder
 	var finder func(*html.Node)
 
 	finder = func(n *html.Node) {
 		switch n.Type {
 		case html.TextNode:
-			buffer.WriteString(" " + n.Data + " ")
+			buffer.WriteString(" ")
+			buffer.WriteString(n.Data)
+			buffer.WriteString(" ")
 
 		case html.ElementNode:
 			if n.Data == "br" {

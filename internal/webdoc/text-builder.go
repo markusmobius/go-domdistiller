@@ -27,14 +27,14 @@
 package webdoc
 
 import (
-	"bytes"
+	"strings"
 
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"golang.org/x/net/html"
 )
 
 type TextBuilder struct {
-	textBuffer             bytes.Buffer
+	textBuffer             strings.Builder
 	numWords               int
 	numAnchorWords         int
 	blockTagLevel          int

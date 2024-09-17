@@ -183,21 +183,24 @@ func (tb *TextBlock) ApplyToModel() {
 }
 
 func (tb *TextBlock) String() string {
-	str := "["
-	str += fmt.Sprintf("%d/%d;", tb.OffsetBlocksStart(), tb.OffsetBlocksEnd())
-	str += fmt.Sprintf("tl=%d;", tb.TagLevel)
-	str += fmt.Sprintf("nw=%d;", tb.NumWords)
-	str += fmt.Sprintf("ld=%.3f;", tb.LinkDensity)
-	str += "]\t"
+	var sb strings.Builder
+	sb.WriteString("[")
+	sb.WriteString(fmt.Sprintf("%d/%d;", tb.OffsetBlocksStart(), tb.OffsetBlocksEnd()))
+	sb.WriteString(fmt.Sprintf("tl=%d;", tb.TagLevel))
+	sb.WriteString(fmt.Sprintf("nw=%d;", tb.NumWords))
+	sb.WriteString(fmt.Sprintf("ld=%.3f;", tb.LinkDensity))
+	sb.WriteString("]\t")
 
 	if tb.isContent {
-		str += "CONTENT,"
+		sb.WriteString("CONTENT,")
 	} else {
-		str += "boilerplate,"
+		sb.WriteString("boilerplate,")
 	}
 
-	str += tb.labelsDebugString() + "\n" + tb.Text
-	return str
+	sb.WriteString(tb.labelsDebugString())
+	sb.WriteString("\n")
+	sb.WriteString(tb.Text)
+	return sb.String()
 }
 
 func (tb *TextBlock) calcLinkDensity() float64 {
@@ -225,9 +228,11 @@ func (tb TextBlock) lastText() *Text {
 }
 
 func (tb *TextBlock) labelsDebugString() string {
-	labels := []string{}
+	var i int
+	labels := make([]string, len(tb.Labels))
 	for label := range tb.Labels {
-		labels = append(labels, label)
+		labels[i] = label
+		i++
 	}
 
 	sort.Strings(labels)
