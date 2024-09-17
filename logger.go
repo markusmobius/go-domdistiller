@@ -26,7 +26,11 @@
 
 package distiller
 
-import "github.com/sirupsen/logrus"
+import (
+	"os"
+
+	"github.com/rs/zerolog"
+)
 
 // LogFlag is enum to specify logging level.
 type LogFlag uint
@@ -53,14 +57,17 @@ const (
 
 // distillerLogger is the main logger for dom-distiller
 type distillerLogger struct {
-	*logrus.Logger
+	log   zerolog.Logger
 	flags LogFlag
 }
 
 func newDistillerLogger(flags LogFlag) *distillerLogger {
 	return &distillerLogger{
-		Logger: logrus.New(),
-		flags:  flags,
+		log: zerolog.New(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: "2006-01-02 15:04",
+		}).With().Timestamp().Logger(),
+		flags: flags,
 	}
 }
 
@@ -91,6 +98,6 @@ func (l *distillerLogger) hasFlag(flag LogFlag) bool {
 
 func (l *distillerLogger) print(flag LogFlag, args ...interface{}) {
 	if !l.InternallyNil() && l.hasFlag(flag) {
-		l.Println(args...)
+		l.log.Println(args...)
 	}
 }
