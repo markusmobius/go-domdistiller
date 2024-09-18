@@ -1,6 +1,4 @@
-# Go-DomDistiller
-
-[![Go Reference](https://pkg.go.dev/badge/github.com/markusmobius/go-domdistiller.svg)](https://pkg.go.dev/github.com/markusmobius/go-domdistiller)
+# Go-DomDistiller [![Go Reference](https://pkg.go.dev/badge/github.com/markusmobius/go-domdistiller.svg)](https://pkg.go.dev/github.com/markusmobius/go-domdistiller)
 
 > This main branch is the development version for Go-DomDistiller which incorporates insights from the readability package as well as other improvements. Check the [stable branch][5] for the stable version that is a faithful port of the original DOM Distiller (the stable branch only receives bug fixes).
 
@@ -45,17 +43,8 @@ The pros of Dom Distiller :
 
 The pros of Readability :
 
-- faster extraction speed;
 - better than DOM Distiller at extracting wiki and documentation pages.
-
-Here is the benchmark result between DOM Distiller and Readability :
-
-```
-BenchmarkReadability-8                  	1	22270423614 ns/op	5134614848 B/op	21071083 allocs/op
-BenchmarkDistillerWithoutPagination-8   	1	24248745284 ns/op	7987711256 B/op	30309028 allocs/op
-BenchmarkDistillerPageNumberPagination-8	1	33292305569 ns/op	8080458848 B/op	32918938 allocs/op
-BenchmarkDistillerPrevNextPagination-8  	1	47737605918 ns/op	8378848776 B/op	36243299 allocs/op
-```
+- the original library in Readability.js is still actively maintained while Dom-Distiller now has been archived.
 
 ## Installation
 
@@ -71,19 +60,19 @@ Dom Distiller has four functions :
 
 - `Apply(doc *html.Node, opts *Options) (*Result, error)`
 
-	This function will apply distiller to the specified HTML node.
+  This function will apply distiller to the specified HTML node.
 
 - `ApplyForReader(r io.Reader, opts *Options) (*Result, error)`
 
-	This function parses input that received from the specified reader into a HTML node then pass it into the `Apply` function.
+  This function parses input that received from the specified reader into a HTML node then pass it into the `Apply` function.
 
 - `ApplyForFile(path string, opts *Options) (*Result, error)`
 
-	This function open the file at specified path then pass it into the `ApplyForReader` function.
+  This function open the file at specified path then pass it into the `ApplyForReader` function.
 
 - `ApplyForURL(url string, timeout time.Duration, opts *Options) (*Result, error)`
 
-	This function download the web page at specified URL then pass it into the `ApplyForReader` function.
+  This function download the web page at specified URL then pass it into the `ApplyForReader` function.
 
 Each function accept custom `Option` which is a struct that defined like this :
 
@@ -106,6 +95,7 @@ type Options struct {
 
 There are several flags available for `LogFlags` :
 
+- `LogNothing` will make distiller completely disable the log.
 - `LogExtraction` will make distiller print info of each process when extracting article.
 - `LogVisibility` will make distiller print info on why an element is visible.
 - `LogPagination` will make distiller print info of pagination process.
@@ -127,7 +117,7 @@ opts := &distiller.Options{	LogFlags: distiller.LogEverything }
 
 There are two values available for `PaginationAlgo` :
 
-- `PrevNext` is the algorithm to find pagination links that works by scoring  each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow. 
+- `PrevNext` is the algorithm to find pagination links that works by scoring each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow.
 - `PageNumber` is algorithm to find pagination links that works by collecting groups of adjacent plain text numbers and outlinks with digital anchor text. It's a lot faster than PrevNext, but also less accurate.
 
 The distillation result is defined as struct like this :
@@ -263,7 +253,6 @@ func main() {
 Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/licenses/mit/) which means you can use and modify it however you want. However, if you make an enhancement for it, if possible please send a pull request.
 
 We are indebted to the Chromium authors for the amazing DOM Distiller. We are equally indebted to Christian Kohlschütter who wrote a content parser called Boilerpipe in 2009 which is based on his PhD thesis and which is also the basis for DOM Distiller (the original Boilerpipe still produces amazing results for most pages). Boilerpipe is licensed under the Apache 2.0 license and DOM Distiller has a BSD-style license. Since our work is derived directly from DOM Distiller and indirectly from Boilerpipe we have included the respective copyright notices at the top of each file as well as the license files for both prior projects.
-
 
 [0]: https://chromium.googlesource.com/chromium/dom-distiller
 [1]: https://github.com/mozilla/readability
