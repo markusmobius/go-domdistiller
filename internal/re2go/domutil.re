@@ -27,12 +27,9 @@ func TidyUpPunctuation(input string) string {
 		nonSpace = [^\t\n\f\r ];
 
 		quant1      = {space}+;
-		quant2      = {space}+([.?!,;]){space}*;
 		punctuation = {space}+([.?!,;]){space}*({nonSpace}*);
 
-		{quant1} { continue }
-		{quant2} { continue }
-
+		{quant1}      { continue }
 		{punctuation} {
 			before := input[start:yypmatch[0]]
 			submatch1 := input[yypmatch[2]:yypmatch[3]]
