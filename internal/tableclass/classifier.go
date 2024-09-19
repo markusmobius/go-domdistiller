@@ -288,7 +288,7 @@ func (c *Classifier) getRowAndColumnCount(t *html.Node) (int, int) {
 }
 
 func (c *Classifier) logAndReturn(tableType Type, reason Reason) (Type, Reason) {
-	if c.logger != nil {
+	if c.logger != nil && !c.logger.InternallyNil() {
 		c.logger.PrintVisibilityInfo(reason, "=>", tableType)
 	}
 	return tableType, reason

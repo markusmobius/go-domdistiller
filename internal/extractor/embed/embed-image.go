@@ -285,11 +285,8 @@ func (ie *ImageExtractor) imageSrcIsValid(src string) bool {
 	// it will be too small therefore it's not a valid image.
 	b64starts := strings.Index(src, "base64") + 7
 	b64length := len(src) - b64starts
-	if b64length < 133 {
-		return false
-	}
 
-	return true
+	return b64length >= 133
 }
 
 func (ie *ImageExtractor) createFigCaption(base *html.Node) *html.Node {
@@ -305,7 +302,7 @@ func (ie *ImageExtractor) createFigCaption(base *html.Node) *html.Node {
 }
 
 func (ie *ImageExtractor) printLog(args ...interface{}) {
-	if ie.logger != nil {
+	if ie.logger != nil && !ie.logger.InternallyNil() {
 		ie.logger.PrintVisibilityInfo(args...)
 	}
 }

@@ -27,19 +27,17 @@
 package domutil
 
 import (
-	"bytes"
 	nurl "net/url"
 	"regexp"
 	"strings"
 
 	"github.com/go-shiori/dom"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"golang.org/x/net/html"
 )
 
 var (
-	rxPunctuation      = regexp.MustCompile(`\s+([.?!,;])\s*(\S*)`)
-	rxTempNewline      = regexp.MustCompile(`\s*\|\\/\|\s*`)
 	rxDisplay          = regexp.MustCompile(`(?i)display:\s*([\w-]+)\s*(?:;|$)`)
 	rxVisibilityHidden = regexp.MustCompile(`(?i)visibility:\s*(:?hidden|collapse)`)
 	rxSrcsetURL        = regexp.MustCompile(`(?i)(\S+)(\s+[\d.]+[xw])?(\s*(?:,|$))`)
@@ -354,13 +352,15 @@ func makeSrcSetAbsolute(node *html.Node, pageURL *nurl.URL) {
 // `dom.TextContent` is the latter will skip <br> tag while this function will preserve
 // <br> as whitespace. NEED-COMPUTE-CSS
 func InnerText(node *html.Node) string {
-	var buffer bytes.Buffer
+	var buffer strings.Builder
 	var finder func(*html.Node)
 
 	finder = func(n *html.Node) {
 		switch n.Type {
 		case html.TextNode:
-			buffer.WriteString(" " + n.Data + " ")
+			buffer.WriteString(" ")
+			buffer.WriteString(n.Data)
+			buffer.WriteString(" ")
 
 		case html.ElementNode:
 			if n.Data == "br" {
@@ -381,8 +381,8 @@ func InnerText(node *html.Node) string {
 	finder(node)
 	text := buffer.String()
 	text = strings.Join(strings.Fields(text), " ")
-	text = rxPunctuation.ReplaceAllString(text, "$1 $2")
-	text = rxTempNewline.ReplaceAllString(text, "\n")
+	text = re2go.TidyUpPunctuation(text)
+	text = re2go.FixTempNewline(text)
 	return text
 }
 

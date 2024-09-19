@@ -47,7 +47,10 @@ type TwitterExtractor struct {
 }
 
 func NewTwitterExtractor(pageURL *nurl.URL, logger logutil.Logger) *TwitterExtractor {
-	return &TwitterExtractor{PageURL: pageURL}
+	return &TwitterExtractor{
+		PageURL: pageURL,
+		logger:  logger,
+	}
 }
 
 func (te *TwitterExtractor) RelevantTagNames() []string {
@@ -168,7 +171,7 @@ func (te *TwitterExtractor) getTweetIdFromURL(tweetURL string) string {
 }
 
 func (te *TwitterExtractor) printLog(args ...interface{}) {
-	if te.logger != nil {
+	if te.logger != nil && !te.logger.InternallyNil() {
 		te.logger.PrintVisibilityInfo(args...)
 	}
 }

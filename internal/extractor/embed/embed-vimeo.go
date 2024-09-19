@@ -130,7 +130,7 @@ func (ve *VimeoExtractor) getDataFromSrcURL(srcURL string) (string, map[string]s
 }
 
 func (ve *VimeoExtractor) printLog(args ...interface{}) {
-	if ve.logger != nil {
+	if ve.logger != nil && !ve.logger.InternallyNil() {
 		ve.logger.PrintVisibilityInfo(args...)
 	}
 }

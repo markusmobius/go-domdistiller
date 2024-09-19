@@ -151,7 +151,7 @@ func (ye *YouTubeExtractor) getDataFromSrcURL(srcURL string) (string, map[string
 }
 
 func (ye *YouTubeExtractor) printLog(args ...interface{}) {
-	if ye.logger != nil {
+	if ye.logger != nil && !ye.logger.InternallyNil() {
 		ye.logger.PrintVisibilityInfo(args...)
 	}
 }

@@ -28,16 +28,23 @@ package stringutil
 
 import (
 	"math"
-	"regexp"
+	"strings"
+	"unicode"
+
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
+	"golang.org/x/text/unicode/rangetable"
 )
 
 var (
-	rxFullWordCounter   = regexp.MustCompile(`[\x{3040}-\x{A4CF}]`)
-	rxLetterWordCounter = regexp.MustCompile(`[\x{AC00}-\x{D7AF}]`)
+	// The following range includes broader alphabetical letters and Hangul Syllables.
+	rtMatcher1 = createRangeTable([]rune("azAZ09__\u00C0\u1FFF\uAC00\uD7AF"))
 
-	rxWordMatcher1 = regexp.MustCompile(`(\S*[\w\x{00C0}-\x{1FFF}\x{AC00}-\x{D7AF}]\S*)`)
-	rxWordMatcher2 = regexp.MustCompile(`([\x{3040}-\x{A4CF}])`)
-	rxWordMatcher3 = regexp.MustCompile(`(\S*[\w\x{00C0}-\x{1FFF}]\S*)`)
+	// The following range includes Hiragana, Katakana, and CJK Unified Ideographs.
+	// Hangul Syllables are not included.
+	rtMatcher2 = createRangeTable([]rune("\u3040\uA4CF"))
+
+	// The following range includes broader alphabetical letters.
+	rtMatcher3 = createRangeTable([]rune("azAZ09__\u00C0\u1FFF"))
 )
 
 // WordCounter is object for counting the number of words. For some languages,
@@ -54,38 +61,102 @@ type LetterWordCounter struct{}
 type FastWordCounter struct{}
 
 func (c FullWordCounter) Count(text string) int {
-	// The following range includes broader alphabetical letters and Hangul Syllables.
-	matches := rxWordMatcher1.FindAllString(text, -1)
-	count := len(matches)
+	// Count alphabetical letters and Hangul Syllables.
+	var nMatcher1 int
+	for _, word := range strings.Fields(text) {
+		if containRune(word, rtMatcher1) {
+			nMatcher1++
+		}
+	}
 
-	// The following range includes Hiragana, Katakana, and CJK Unified Ideographs.
-	// Hangul Syllables are not included.
-	matches = rxWordMatcher2.FindAllString(text, -1)
-	count += int(math.Ceil(float64(len(matches)) * 0.55))
+	// Count Hiragana, Katakana, and CJK Unified Ideographs.
+	var nMatcher2 int
+	for _, r := range text {
+		if unicode.Is(rtMatcher2, r) {
+			nMatcher2++
+		}
+	}
+
+	count := nMatcher1 + int(math.Ceil(float64(nMatcher2)*0.55))
 	return count
 }
 
 func (c LetterWordCounter) Count(text string) int {
-	// The following range includes broader alphabetical letters and Hangul Syllables.
-	matches := rxWordMatcher1.FindAllString(text, -1)
-	return len(matches)
+	// Count alphabetical letters and Hangul Syllables.
+	var count int
+	for _, word := range strings.Fields(text) {
+		if containRune(word, rtMatcher1) {
+			count++
+		}
+	}
+	return count
 }
 
 func (c FastWordCounter) Count(text string) int {
-	// The following range includes broader alphabetical letters.
-	matches := rxWordMatcher3.FindAllString(text, -1)
-	return len(matches)
+	// Count broader alphabetical letters.
+	var count int
+	for _, word := range strings.Fields(text) {
+		if containRune(word, rtMatcher3) {
+			count++
+		}
+	}
+	return count
 }
 
 // SelectWordCounter picks the most suitable WordCounter depending on
 // the specified text.
 func SelectWordCounter(text string) WordCounter {
 	switch {
-	case rxFullWordCounter.MatchString(text):
+	case re2go.UseFullWordCounter(text):
 		return FullWordCounter{}
-	case rxLetterWordCounter.MatchString(text):
+	case re2go.UseLetterWordCounter(text):
 		return LetterWordCounter{}
 	default:
 		return FastWordCounter{}
 	}
+}
+
+// =================================================================================
+// Functions below these point are functions that doesn't exist in original code of
+// Dom-Distiller, added to avoid using regex.
+// =================================================================================
+
+func createRangeTable(runePairs []rune) *unicode.RangeTable {
+	// Make sure rune pairs are even
+	nRunePairs := len(runePairs)
+	if nRunePairs%2 != 0 {
+		return nil
+	}
+
+	// Calculate total rune count
+	var count int
+	for i := 0; i < nRunePairs; i += 2 {
+		start, end := runePairs[i], runePairs[i+1]
+		if end < start {
+			start, end = end, start
+			runePairs[i], runePairs[i+1] = runePairs[i+1], runePairs[i]
+		}
+		count += int(end-start) + 1
+	}
+
+	// Convert rune pair to list of rune
+	var cursor int
+	runes := make([]rune, count)
+	for i := 0; i < nRunePairs; i += 2 {
+		for r := runePairs[i]; r <= runePairs[i+1]; r++ {
+			runes[cursor] = r
+			cursor++
+		}
+	}
+
+	return rangetable.New(runes...)
+}
+
+func containRune(s string, rt *unicode.RangeTable) bool {
+	for _, r := range s {
+		if unicode.Is(rt, r) {
+			return true
+		}
+	}
+	return false
 }

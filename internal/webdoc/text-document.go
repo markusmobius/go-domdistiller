@@ -42,7 +42,9 @@
 
 package webdoc
 
-import "bytes"
+import (
+	"strings"
+)
 
 // TextDocument is a text document, consisting of one or more TextBlock.
 type TextDocument struct {
@@ -72,9 +74,10 @@ func (td *TextDocument) CountWordsInContent() int {
 
 // DebugString returns detailed debugging information about the contained TextBlocks.
 func (td *TextDocument) DebugString() string {
-	buffer := bytes.NewBuffer(nil)
+	var buffer strings.Builder
 	for _, tb := range td.TextBlocks {
-		buffer.WriteString(tb.String() + "\n")
+		buffer.WriteString(tb.String())
+		buffer.WriteString("\n")
 	}
 	return buffer.String()
 }

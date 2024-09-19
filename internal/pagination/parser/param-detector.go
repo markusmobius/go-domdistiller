@@ -69,7 +69,7 @@ func DetectParamInfo(adjacentNumberGroups *info.MonotonicPageInfoGroups, docURL 
 
 	// For now, if there're multiple page patterns, we take the first one.
 	// If this doesn't work for most sites, we might have to return nothing.
-	if detectionState.hasMultiPagePatterns && logger != nil {
+	if detectionState.hasMultiPagePatterns && logger != nil && !logger.InternallyNil() {
 		logger.PrintPaginationInfo("Detected multiple page pattern")
 	}
 

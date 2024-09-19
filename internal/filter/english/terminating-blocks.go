@@ -43,27 +43,13 @@
 package english
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/markusmobius/go-domdistiller/internal/label"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"github.com/markusmobius/go-domdistiller/internal/webdoc"
 )
-
-var rxTerminatingBlocks = regexp.MustCompile(`(?i)(` +
-	`^(comments|© reuters|please rate this|post a comment|` +
-	`\d+\s+(comments|users responded in)` +
-	`)` +
-	`|what you think\.\.\.` +
-	`|add your comment` +
-	`|add comment` +
-	`|reader views` +
-	`|have your say` +
-	`|reader comments` +
-	`|rätta artikeln` +
-	`|^thanks for your comments - this feedback is now closed$` +
-	`)`)
 
 // TerminatingBlocksFinder finds blocks which are potentially indicating the end of
 // an article text and marks them with label.StrictlyNotContent.
@@ -93,7 +79,7 @@ func (f *TerminatingBlocksFinder) isTerminating(tb *webdoc.TextBlock) bool {
 
 	text := strings.TrimSpace(tb.Text)
 	if stringutil.CharCount(text) >= 8 {
-		return rxTerminatingBlocks.MatchString(text)
+		return re2go.IsTerminatingBlocks(text)
 	} else if tb.LinkDensity == 1 {
 		return text == "Comment"
 	} else if text == "Shares" {

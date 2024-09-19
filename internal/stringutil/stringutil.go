@@ -58,7 +58,7 @@ func IsStringAllDigit(str string) bool {
 
 // EqualsIgnoreCase checks if two string is similar in case-insensitive mode.
 func EqualsIgnoreCase(str1, str2 string) bool {
-	return strings.ToLower(str1) == strings.ToLower(str2)
+	return strings.EqualFold(str1, str2)
 }
 
 // HasPrefixIgnoreCase checks if str is stared with prefix in case-insensitive mode.

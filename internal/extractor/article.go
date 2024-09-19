@@ -134,7 +134,7 @@ func (ae *ArticleExtractor) Extract(doc *webdoc.TextDocument, wc stringutil.Word
 }
 
 func (ae *ArticleExtractor) printArticleLog(doc *webdoc.TextDocument, changed bool, header string) {
-	if ae.logger == nil {
+	if ae.logger == nil || ae.logger.InternallyNil() {
 		return
 	}
 

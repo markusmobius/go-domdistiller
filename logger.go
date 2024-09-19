@@ -26,12 +26,19 @@
 
 package distiller
 
-import "github.com/sirupsen/logrus"
+import (
+	"os"
+
+	"github.com/rs/zerolog"
+)
 
 // LogFlag is enum to specify logging level.
 type LogFlag uint
 
 const (
+	// LogNothing will disable the logger.
+	LogNothing LogFlag = 0
+
 	// If LogEverything is set DistillerLogger will enable all logs.
 	LogEverything LogFlag = LogExtraction | LogVisibility | LogPagination | LogTiming
 
@@ -50,16 +57,21 @@ const (
 
 // distillerLogger is the main logger for dom-distiller
 type distillerLogger struct {
-	*logrus.Logger
+	log   zerolog.Logger
 	flags LogFlag
 }
 
 func newDistillerLogger(flags LogFlag) *distillerLogger {
 	return &distillerLogger{
-		Logger: logrus.New(),
-		flags:  flags,
+		log: zerolog.New(zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: "2006-01-02 15:04",
+		}).With().Timestamp().Logger(),
+		flags: flags,
 	}
 }
+
+func (l *distillerLogger) InternallyNil() bool { return l == nil }
 
 func (l *distillerLogger) IsLogExtraction() bool { return l.hasFlag(LogExtraction) }
 
@@ -78,11 +90,14 @@ func (l *distillerLogger) PrintPaginationInfo(args ...interface{}) { l.print(Log
 func (l *distillerLogger) PrintTimingInfo(args ...interface{}) { l.print(LogTiming, args...) }
 
 func (l *distillerLogger) hasFlag(flag LogFlag) bool {
+	if l.InternallyNil() {
+		return false
+	}
 	return l.flags&flag != 0
 }
 
 func (l *distillerLogger) print(flag LogFlag, args ...interface{}) {
-	if l.hasFlag(flag) {
-		l.Println(args...)
+	if !l.InternallyNil() && l.hasFlag(flag) {
+		l.log.Println(args...)
 	}
 }
