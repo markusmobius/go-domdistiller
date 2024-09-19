@@ -162,5 +162,10 @@ func containRune(s string, rt *unicode.RangeTable) bool {
 }
 
 func spaceRunes(r rune) bool {
-	return unicode.Is(unicode.Space, r) && r != '\u00a0'
+	switch r {
+	case '\t', '\n', '\v', '\f', '\r', ' ':
+		return true
+	default:
+		return false
+	}
 }
