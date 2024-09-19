@@ -63,7 +63,7 @@ type FastWordCounter struct{}
 func (c FullWordCounter) Count(text string) int {
 	// Count alphabetical letters and Hangul Syllables.
 	var nMatcher1 int
-	for _, word := range strings.Fields(text) {
+	for _, word := range strings.FieldsFunc(text, spaceRunes) {
 		if containRune(word, rtMatcher1) {
 			nMatcher1++
 		}
@@ -84,7 +84,7 @@ func (c FullWordCounter) Count(text string) int {
 func (c LetterWordCounter) Count(text string) int {
 	// Count alphabetical letters and Hangul Syllables.
 	var count int
-	for _, word := range strings.Fields(text) {
+	for _, word := range strings.FieldsFunc(text, spaceRunes) {
 		if containRune(word, rtMatcher1) {
 			count++
 		}
@@ -95,7 +95,7 @@ func (c LetterWordCounter) Count(text string) int {
 func (c FastWordCounter) Count(text string) int {
 	// Count broader alphabetical letters.
 	var count int
-	for _, word := range strings.Fields(text) {
+	for _, word := range strings.FieldsFunc(text, spaceRunes) {
 		if containRune(word, rtMatcher3) {
 			count++
 		}
@@ -159,4 +159,13 @@ func containRune(s string, rt *unicode.RangeTable) bool {
 		}
 	}
 	return false
+}
+
+func spaceRunes(r rune) bool {
+	switch r {
+	case '\t', '\n', '\v', '\f', '\r', ' ':
+		return true
+	default:
+		return false
+	}
 }
