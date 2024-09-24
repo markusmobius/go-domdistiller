@@ -42,6 +42,7 @@ import (
 	"github.com/markusmobius/go-domdistiller/data"
 	"github.com/markusmobius/go-domdistiller/internal/domutil"
 	"github.com/markusmobius/go-domdistiller/internal/logutil"
+	"github.com/markusmobius/go-domdistiller/internal/re2go"
 	"github.com/markusmobius/go-domdistiller/internal/stringutil"
 	"golang.org/x/net/html"
 )
@@ -142,7 +143,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			continue
 		}
 
-		if findNext && !rxNumber.MatchString(linkHref[lenPrefix:]) {
+		if findNext && !containsNumber(linkHref[lenPrefix:]) {
 			pnf.appendDebugStrForLink(link, "ignored: not prefix + number")
 			continue
 		}
@@ -186,7 +187,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 
 		// If the linkText contains banned text, skip it, and also ban other anchors with the
 		// same link URL.
-		if rxExtraneous.MatchString(linkText) {
+		if re2go.IsExtraneousToPagination(linkText) {
 			pnf.appendDebugStrForLink(link, "ignored: one of extra")
 			bannedURLs[linkHref] = struct{}{}
 			continue
@@ -204,7 +205,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				remainingLinkHref = linkHref[len(folderURL):]
 			}
 
-			if !rxNumber.MatchString(remainingLinkHref) {
+			if !containsNumber(remainingLinkHref) {
 				pnf.appendDebugStrForLink(link, "ignored: no number beyond folder url "+folderURL)
 				continue
 			}
@@ -233,8 +234,8 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		// existence of various paging-related words.
 		linkData := linkText + " " + dom.GetAttribute(link, "class") + " " + dom.GetAttribute(link, "id")
 
-		if (findNext && rxNextLink.MatchString(linkData)) ||
-			(!findNext && rxPrevLink.MatchString(linkData)) {
+		if (findNext && re2go.IsNextPaginationLink(linkData)) ||
+			(!findNext && re2go.IsPrevPaginationLink(linkData)) {
 			linkObj.score += 50
 
 			pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -242,7 +243,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				linkObj.score, pnf.rxDebugName(findNext)))
 		}
 
-		if rxPagination.MatchString(linkData) {
+		if re2go.IsMightBePagination(linkData) {
 			linkObj.score += 25
 
 			pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -250,13 +251,13 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 				linkObj.score))
 		}
 
-		if rxFirstLast.MatchString(linkData) {
+		if re2go.ContainsFirstLast(linkData) {
 			// -65 is enough to negate any bonuses gotten from a > or » in the text.
 			// If we already matched on "next", last is probably fine.
 			// If we didn't, then it's bad.  Penalize.
 			// Same for "prev".
-			if (findNext && !rxNextLink.MatchString(linkText)) ||
-				(!findNext && !rxPrevLink.MatchString(linkText)) {
+			if (findNext && !re2go.IsNextPaginationLink(linkText)) ||
+				(!findNext && !re2go.IsPrevPaginationLink(linkText)) {
 				linkObj.score -= 65
 
 				pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -265,14 +266,14 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			}
 		}
 
-		if rxNegative.MatchString(linkData) || rxExtraneous.MatchString(linkData) {
+		if re2go.IsNegativeToBePagination(linkData) || re2go.IsExtraneousToPagination(linkData) {
 			linkObj.score -= 50
 			pnf.appendDebugStrForLink(link,
 				fmt.Sprintf("score %d, has negative or extra regex", linkObj.score))
 		}
 
-		if (findNext && rxPrevLink.MatchString(linkData)) ||
-			(!findNext && rxNextLink.MatchString(linkData)) {
+		if (findNext && re2go.IsPrevPaginationLink(linkData)) ||
+			(!findNext && re2go.IsNextPaginationLink(linkData)) {
 			linkObj.score -= 200
 
 			pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -286,7 +287,7 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 		parent := domutil.GetParentElement(link)
 		for parent != nil && (!positiveMatch || !negativeMatch) {
 			parentData := dom.GetAttribute(parent, "class") + " " + dom.GetAttribute(parent, "id")
-			if !positiveMatch && rxPagination.MatchString(parentData) {
+			if !positiveMatch && re2go.IsMightBePagination(parentData) {
 				linkObj.score += 25
 				positiveMatch = true
 				pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -297,10 +298,10 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 			// TODO(kuan): to get 1st page for prev page link, this can't be applied; however,
 			// the non-application might be the cause of recursive prev page being returned,
 			// i.e. for page 1, it may incorrectly return page 3 for prev page link.
-			if !negativeMatch && rxNegative.MatchString(parentData) {
+			if !negativeMatch && re2go.IsNegativeToBePagination(parentData) {
 				// If this is just something like "footer", give it a negative.
 				// If it's something like "body-and-footer", leave it be.
-				if !rxPositive.MatchString(parentData) {
+				if !re2go.IsPositiveToBePagination(parentData) {
 					linkObj.score -= 25
 					negativeMatch = true
 					pnf.appendDebugStrForLink(link, fmt.Sprintf(
@@ -314,14 +315,14 @@ func (pnf *PrevNextFinder) FindOutlink(root *html.Node, pageURL *nurl.URL, findN
 
 		// If the URL looks like it has paging in it, add to the score.
 		// Things like /page/2/, /pagenum/2, ?p=3, ?page=11, ?pagination=34.
-		if rxLinkPagination.MatchString(linkHref) || rxPagination.MatchString(linkHref) {
+		if re2go.IsMightBeLinkPagination(linkHref) || re2go.IsMightBePagination(linkHref) {
 			linkObj.score += 25
 			pnf.appendDebugStrForLink(link, fmt.Sprintf(
 				"score %d, has paging info", linkObj.score))
 		}
 
 		// If the URL contains negative values, give a slight decrease.
-		if rxExtraneous.MatchString(linkHref) {
+		if re2go.IsExtraneousToPagination(linkHref) {
 			linkObj.score -= 15
 			pnf.appendDebugStrForLink(link, fmt.Sprintf(
 				"score %d, has extra regex", linkObj.score))
@@ -415,13 +416,13 @@ func (pnf *PrevNextFinder) getPageDiff(pageURL, linkHref string, skip int) (int,
 	}
 
 	var urlAsNumber int
-	if str := rxNumberAtStart.FindString(pageURL[commonLen:]); str != "" {
-		urlAsNumber, _ = strconv.Atoi(str)
+	if num, ok := getStartingNumber(pageURL[commonLen:]); ok {
+		urlAsNumber = num
 	}
 
 	var linkAsNumber int
-	if str := rxNumberAtStart.FindString(linkHref[commonLen:]); str != "" {
-		linkAsNumber, _ = strconv.Atoi(str)
+	if num, ok := getStartingNumber(linkHref[commonLen:]); ok {
+		linkAsNumber = num
 	}
 
 	if urlAsNumber > 0 && linkAsNumber > 0 {
