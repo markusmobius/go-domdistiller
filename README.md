@@ -69,21 +69,14 @@ Trafilatura:
 
 The benchmark that compares these extractors is available in [this repository][benchmark]. Here is its benchmark result:
 
-```
-goos: linux
-goarch: amd64
-pkg: github.com/markusmobius/content-extractor-benchmark
-cpu: Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz
-Benchmark/Readability-8         	       1	4212 ms/op	4412 MB/op	15261650 allocs/op
-Benchmark/DomDistiller-8        	       1	3794 ms/op	4144 MB/op	13552246 allocs/op
-Benchmark/DomDistiller+PaginationPrevNext-8         	       1	5263 ms/op	4598 MB/op	22744038 allocs/op
-Benchmark/DomDistiller+PaginationPageNumber-8       	       1	4156 ms/op	4222 MB/op	15669698 allocs/op
-Benchmark/Trafilatura-8                                	       1	6609 ms/op	3585 MB/op	33628972 allocs/op
-Benchmark/Trafilatura+Fallback-8                       	       1	12934 ms/op	8781 MB/op	55338023 allocs/op
-Benchmark/Trafilatura+Precision-8                      	       1	13644 ms/op	8763 MB/op	57549026 allocs/op
-Benchmark/Trafilatura+Recall-8                         	       1	10083 ms/op	5454 MB/op	43626869 allocs/op
-PASS
-```
+|             Extractor             | Time (ms/op) | Memory (MB/op) | Mem Allocation (allocs/op) |
+| :-------------------------------: | :----------: | :------------: | :------------------------: |
+|            Readability            |    4,212     |     4,412      |         15,261,650         |
+|           DomDistiller            |    3,794     |     4,144      |         13,552,246         |
+|  DomDistiller+PaginationPrevNext  |    5,263     |     4,598      |         22,744,038         |
+| DomDistiller+PaginationPageNumber |    4,156     |     4,222      |         15,669,698         |
+|            Trafilatura            |    6,609     |     3,585      |         33,628,972         |
+|       Trafilatura+Fallback        |    12,934    |     8,781      |         55,338,023         |
 
 And here is its performance comparison result:
 
