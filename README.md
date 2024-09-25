@@ -67,16 +67,16 @@ Trafilatura:
 - CON: slower than the other extractors, mostly because it also looks for language and publish date.
 - CON: doesn't really good at extracting images.
 
-The benchmark that compares these extractors is available in [this repository][benchmark]. Here is its benchmark result:
+The benchmark that compares these extractors is available in [this repository][benchmark]. It uses each extractor to process 983 web pages in single thread. Here is its benchmark result:
 
-|             Extractor             | Time (ms/op) | Memory (MB/op) | Mem Allocation (allocs/op) |
-| :-------------------------------: | :----------: | :------------: | :------------------------: |
-|            Readability            |    4,212     |     4,412      |         15,261,650         |
-|           DomDistiller            |    3,794     |     4,144      |         13,552,246         |
-|  DomDistiller+PaginationPrevNext  |    5,263     |     4,598      |         22,744,038         |
-| DomDistiller+PaginationPageNumber |    4,156     |     4,222      |         15,669,698         |
-|            Trafilatura            |    6,609     |     3,585      |         33,628,972         |
-|       Trafilatura+Fallback        |    12,934    |     8,781      |         55,338,023         |
+|             Extractor             | Time (ms) | Memory (MB) | Mem Allocation (allocs) |
+| :-------------------------------: | :-------: | :---------: | :---------------------: |
+|            Readability            |   4,212   |    4,412    |       15,261,650        |
+|           DomDistiller            |   3,794   |    4,144    |       13,552,246        |
+|  DomDistiller+PaginationPrevNext  |   5,263   |    4,598    |       22,744,038        |
+| DomDistiller+PaginationPageNumber |   4,156   |    4,222    |       15,669,698        |
+|            Trafilatura            |   6,609   |    3,585    |       33,628,972        |
+|       Trafilatura+Fallback        |  12,934   |    8,781    |       55,338,023        |
 
 And here is its performance comparison result:
 
