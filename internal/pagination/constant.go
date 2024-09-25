@@ -26,7 +26,12 @@
 
 package pagination
 
-import "regexp"
+import (
+	"regexp"
+	"strconv"
+	"strings"
+	"unicode"
+)
 
 const (
 	// If the numeric value of a link's anchor text is greater than this number,
@@ -35,22 +40,37 @@ const (
 )
 
 var (
-	rxNumber        = regexp.MustCompile(`\d`)
-	rxNumberAtStart = regexp.MustCompile(`^\d+`)
-
-	// Regex for page number finder
+	// Regex for page number finder. If you are looking for regex for prev next finder,
+	// they are compiled to re2go because it's quite slow.
 	rxLinkNumberCleaner    = regexp.MustCompile(`[()\[\]{}]`)
 	rxInvalidParentWrapper = regexp.MustCompile(`(?i)(body)|(html)`)
 	rxTerms                = regexp.MustCompile(`(?i)(\S*[\w\x{00C0}-\x{1FFF}\x{2C00}-\x{D7FF}]\S*)`)
 	rxSurroundingDigits    = regexp.MustCompile(`(?i)^[\W_]*(\d+)[\W_]*$`)
-
-	// Regex for prev next finder
-	rxNextLink       = regexp.MustCompile(`(?i)(next|weiter|continue|>([^\|]|$)|»([^\|]|$))`)
-	rxPrevLink       = regexp.MustCompile(`(?i)(prev|early|old|new|<|«)`)
-	rxPositive       = regexp.MustCompile(`(?i)article|body|content|entry|hentry|main|page|pagination|post|text|blog|story`)
-	rxNegative       = regexp.MustCompile(`(?i)combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|shoutbox|sidebar|sponsor|shopping|tags|tool|widget`)
-	rxExtraneous     = regexp.MustCompile(`(?i)print|archive|comment|discuss|e[\-]?mail|share|reply|all|login|sign|single|as one|article|post|篇`)
-	rxPagination     = regexp.MustCompile(`(?i)pag(e|ing|inat)`)
-	rxLinkPagination = regexp.MustCompile(`(?i)p(a|g|ag)?(e|ing|ination)?(=|\/)[0-9]{1,2}$`)
-	rxFirstLast      = regexp.MustCompile(`(?i)(first|last)`)
 )
+
+func containsNumber(s string) bool {
+	for _, r := range s {
+		if unicode.IsDigit(r) {
+			return true
+		}
+	}
+	return false
+}
+
+func getStartingNumber(s string) (int, bool) {
+	var b strings.Builder
+	for _, r := range s {
+		if !unicode.IsDigit(r) {
+			break
+		}
+		b.WriteRune(r)
+	}
+
+	str := b.String()
+	if str == "" {
+		return 0, false
+	}
+
+	i, err := strconv.Atoi(b.String())
+	return i, err == nil
+}

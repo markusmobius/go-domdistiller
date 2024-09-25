@@ -310,7 +310,7 @@ func (pnf *PageNumberFinder) findAndAddClosestValidLeafNodes(start *html.Node, c
 func (pnf *PageNumberFinder) addNonLinkTextIfValid(text string) bool {
 	// If the text does not contain valid number(s); if necessary, current group of adjacent
 	// numbers should be closed, adding a new group if possible.
-	if !rxNumber.MatchString(text) {
+	if !containsNumber(text) {
 		pnf.adjacentNumberGroups.AddGroup()
 		return false
 	}
