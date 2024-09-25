@@ -30,21 +30,69 @@ The stable branch is the faithful port of original DOM Distiller which only rece
 
 Both should be stable enough to use, but if you want to replicate the DOM Distiller results as closely as possible you you may prefer to use the stable branch.
 
-## Comparison with Go-Readability
+## Comparison with other extractors
 
-Since Readability and DOM Distiller work using different algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. In practice we use both of them on every HTML file and then use some kind of scoring to find out which extraction result is more suitable for our use case.
+As far as we know, currently there are three content extractors built for Go:
 
-The pros of Dom Distiller :
+- Go-DomDistiller
+- [Go-Readability][2]
+- [Go-Trafilatura][9]
 
-- better at extracting images;
-- better at extracting article's metadata;
-- able to find next page in sites that separated its article to several partial pages;
-- suitable for processing news articles.
+Since every extractors use its own algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. Here is the short summary of pros and cons for each extractor:
 
-The pros of Readability :
+Dom Distiller:
 
-- better than DOM Distiller at extracting wiki and documentation pages.
-- the original library in Readability.js is still actively maintained while Dom-Distiller now has been archived.
+- Very fast.
+- Good at extracting images from article.
+- Able to find next page in sites that separated its article to several partial pages.
+- Since the original library was embedded in Chromium browser, its tests are pretty thorough.
+- CON: has a huge codebase, mostly because it mimics the original Java code.
+- CON: the original library is not maintained anymore and has been archived.
+
+Readability:
+
+- Fast, although not as fast as Dom Distiller.
+- Better than DOM Distiller at extracting wiki and documentation pages.
+- The original library in Readability.js is still actively used and maintained by Firefox.
+- The codebase is pretty small.
+- CON: the unit tests are not as thorough as the other extractors.
+
+Trafilatura:
+
+- Has the best accuracy compared to other extractors.
+- Better at extracting web page's metadata, including its language and publish date.
+- Its unit tests are thorough and focused on removing noise while making sure the real contents are still captured.
+- Designed to be used in academic domain e.g. natural language processing.
+- Actively maintained with new release almost every month.
+- CON: slower than the other extractors, mostly because it also looks for language and publish date.
+- CON: doesn't really good at extracting images.
+
+The benchmark that compares these extractors is available in [this repository][benchmark]. Here is its benchmark result:
+
+```
+goos: linux
+goarch: amd64
+pkg: github.com/markusmobius/content-extractor-benchmark
+cpu: Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz
+Benchmark/Readability-8         	       1	4212 ms/op	4412 MB/op	15261650 allocs/op
+Benchmark/DomDistiller-8        	       1	3794 ms/op	4144 MB/op	13552246 allocs/op
+Benchmark/DomDistiller+PaginationPrevNext-8         	       1	5263 ms/op	4598 MB/op	22744038 allocs/op
+Benchmark/DomDistiller+PaginationPageNumber-8       	       1	4156 ms/op	4222 MB/op	15669698 allocs/op
+Benchmark/Trafilatura-8                                	       1	6609 ms/op	3585 MB/op	33628972 allocs/op
+Benchmark/Trafilatura+Fallback-8                       	       1	12934 ms/op	8781 MB/op	55338023 allocs/op
+Benchmark/Trafilatura+Precision-8                      	       1	13644 ms/op	8763 MB/op	57549026 allocs/op
+Benchmark/Trafilatura+Recall-8                         	       1	10083 ms/op	5454 MB/op	43626869 allocs/op
+PASS
+```
+
+And here is its performance comparison result:
+
+|            Package             | Precision | Recall | Accuracy | F-Score |
+| :----------------------------: | :-------: | :----: | :------: | :-----: |
+|        `go-readability`        |   0.870   | 0.881  |  0.875   |  0.875  |
+|       `go-domdistiller`        |   0.871   | 0.864  |  0.868   |  0.867  |
+|        `go-trafilatura`        |   0.909   | 0.886  |  0.899   |  0.897  |
+| `go-trafilatura` with fallback |   0.911   | 0.902  |  0.907   |  0.906  |
 
 ## Installation
 
@@ -263,4 +311,6 @@ We are indebted to the Chromium authors for the amazing DOM Distiller. We are eq
 [6]: https://github.com/markusmobius/go-domdistiller/blob/main/CHANGELOG.md
 [7]: https://github.com/markusmobius/go-domdistiller/blob/main/IMPROVEMENTS.md
 [8]: https://www.microsoft.com/en-us/research/project/project-ratio/
+[9]: https://github.com/markusmobius/go-trafilatura
 [@RadhiFadlillah]: https://github.com/RadhiFadlillah
+[benchmark]: github.com/markusmobius/content-extractor-benchmark
