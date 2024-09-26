@@ -306,4 +306,4 @@ We are indebted to the Chromium authors for the amazing DOM Distiller. We are eq
 [8]: https://www.microsoft.com/en-us/research/project/project-ratio/
 [9]: https://github.com/markusmobius/go-trafilatura
 [@RadhiFadlillah]: https://github.com/RadhiFadlillah
-[benchmark]: github.com/markusmobius/content-extractor-benchmark
+[benchmark]: https://github.com/markusmobius/content-extractor-benchmark
