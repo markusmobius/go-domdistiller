@@ -2,8 +2,26 @@
 
 ## Released Suite Benchmark
 
+The [2026-09-29 shared FAST report](https://github.com/markusmobius/content-extractor-benchmark/blob/49c426d6135df81b7d492bea7e6aec8e6d77d80c/go_rust_shared_performance_2026_09_29.json)
+is authoritative for the current six-engine README comparison. Its published
+LF-byte SHA-256 is
+`382f869ae8f91c493c2c623c90a42a574f711ea584aead27387e907f3a24c523`.
+It uses Go/Rust Readability 0.6.0/0.6.5, DomDistiller 1.0.0/1.0.1 and
+Trafilatura 2.2.6/2.2.6 on 2,659 saved development pages. Source/build pins,
+all four measured passes after one warmup, metadata scores and differences
+remain in the report. Timings use `all_passes`, not a fastest-pass selection.
+
+DomDistiller extraction is Go 6.159 / Rust 3.400 ms/page, with pagination off.
+Parsing is a separate Go 11.283 / Rust 6.386 ms/page charge for the whole shared
+suite, including Trafilatura's separate noscript tree when needed. This is not
+a standalone reader measurement or an old/new version speedup. The Go release
+remains 1.0.0; runtime source, dependencies and benchmark data are unchanged.
+All six READMEs follow [AGENTS.md](AGENTS.md).
+
+## Historical Suite Benchmark: 2026-09-23
+
 The [2026-09-23 JSON](https://github.com/markusmobius/content-extractor-benchmark/blob/d433ab637f0a56c0926aa3698f470794a553472f/go_rust_shared_performance_2026_09_23.json)
-is authoritative for the current [README tables](README.md#current-quality-and-speed).
+records the historical comparison below, not the current README measurements.
 Its published-file SHA-256 (LF line endings) is `7d7be9839f1652606cb91850af5134b188f2508be25623df889372dab4a06cc6`.
 Read text scores at `quality[worker][engine].evaluations[corpus].overall.f1`,
 selected timings at `overall`, and all-four timings at `all_passes`.

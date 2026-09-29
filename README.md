@@ -32,30 +32,48 @@ Both should be stable enough to use, but if you want to replicate the DOM Distil
 
 ## Current Quality and Speed
 
-The [2026-09-28 benchmark](https://github.com/markusmobius/content-extractor-benchmark/blob/97c0f3f67261c275ceb2ab532ee05992dbce8cc7/README.md#results-2026-09-28) uses 2,659 saved
-development pages: 983 LegoNews, 181 ScrapingHub and 1,495 WCXB. Their F1
-scores use different rules and must not be averaged. Errors are listed in
-that order and remain in the denominators.
+The [2026-09-29 shared benchmark](https://github.com/markusmobius/content-extractor-benchmark/blob/ec719092d12f4d2a438dd29d9f4405aab6e0a321/README.md#results-2026-09-29)
+compares all six implementations on **2,659 saved pages**: 983 LegoNews,
+181 ScrapingHub and 1,495 WCXB. All six READMEs use this same comparison.
 
-| Implementation | LegoNews F1 | ScrapingHub F1 | WCXB F1 | Errors | Extraction ms/page |
-| --- | ---: | ---: | ---: | --- | ---: |
-| go-domdistiller-1.0.0 | 86.74080% | 92.74280% | 74.39696% | 0 / 0 / 0 | 4.794 |
-| rust-domdistiller-1.0.1 | 86.74080% | 92.74280% | 74.39696% | 0 / 0 / 0 | 2.682 |
+### Extraction Speed
 
-Timings are means of **all four measured passes** after one warmup, not best-of
-selection. Windows 11 / Ryzen AI 7 PRO 350; Go 1.27.1 and Rust 1.98.1 GNU with
-ThinLTO/mimalloc. Native extraction includes working copies, metadata and
-text rendering; file I/O, startup, IPC and scoring are excluded.
-Shared parsing is charged once per language/page: Go 7.308 and Rust 3.369 ms
-in this shared-input suite. Trafilatura fallback, comments and pagination are
-off; tables are on. Scored Go/Rust outputs match for this engine on all pages.
-These are not standalone request latencies or isolated old/new-version speedups.
+| Extractor | Go Version | Rust Version | Go ms/page | Rust ms/page | Go/Rust |
+| --- | --- | --- | ---: | ---: | ---: |
+| Readability | 0.6.0 | 0.6.5 | 4.755 | 3.945 | 1.21x |
+| DomDistiller | 1.0.0 | 1.0.1 | 6.159 | 3.400 | 1.81x |
+| Trafilatura FAST | 2.2.6 | 2.2.6 | 11.329 | 6.570 | 1.72x |
 
-[Disabled-mode JSON](https://github.com/markusmobius/content-extractor-benchmark/blob/97c0f3f67261c275ceb2ab532ee05992dbce8cc7/go_rust_shared_performance_2026_09_28.json),
-[native-Lxml JSON](https://github.com/markusmobius/content-extractor-benchmark/blob/97c0f3f67261c275ceb2ab532ee05992dbce8cc7/go_rust_lxml_performance_2026_09_28.json), and
-[release validation](https://github.com/markusmobius/content-extractor-benchmark/blob/97c0f3f67261c275ceb2ab532ee05992dbce8cc7/release_validation_2026_09_28.json)
-retain separate metadata scores, output differences, exact source/build pins,
-all pass totals and verification limits. Historical results use other protocols.
+Times are means of **all four measured passes after one warmup**. Go/Rust is
+Go time divided by Rust time, not an old/new release speedup. Measured versions
+are shown explicitly; later documentation-only releases are not new measurements.
+
+The run used Windows 11, Ryzen AI 7 PRO 350, Go 1.27.1 and Rust 1.98.1 GNU
+with ThinLTO/mimalloc. Extraction includes required working copies, metadata
+and text rendering. File I/O, startup, IPC, response serialization and scoring
+are excluded. Comments, pagination and Trafilatura external fallback are off;
+tables are on. Power and sleep checks passed.
+
+Parsing is separate: **Go 11.283 / Rust 6.386 ms/page**, charged once per
+language/page for the shared suite. It includes decoding, DOM construction and
+the separate Trafilatura noscript tree when needed. These are extraction-stage
+comparisons, not complete request latencies.
+
+### Text Quality
+
+Go and Rust have the same text scores for each engine. Errors are listed in
+LegoNews / ScrapingHub / WCXB order and remain in the scoring denominators.
+
+| Extractor | LegoNews F1 | ScrapingHub F1 | WCXB F1 | Errors |
+| --- | ---: | ---: | ---: | --- |
+| Readability | 87.82711% | 95.20557% | 78.47603% | 7 / 0 / 28 |
+| DomDistiller | 86.74080% | 92.74280% | 74.39696% | 0 / 0 / 0 |
+| Trafilatura FAST | 90.91534% | 96.15663% | 78.51703% | 4 / 0 / 10 |
+
+The corpora use different scoring rules; their F1 scores must not be averaged.
+Equal text scores do not imply identical metadata: Trafilatura differs on one
+title and one author field. The [full report](https://github.com/markusmobius/content-extractor-benchmark/blob/49c426d6135df81b7d492bea7e6aec8e6d77d80c/go_rust_shared_performance_2026_09_29.json)
+contains metadata scores, differences, every pass and source/build identities.
 
 ## Historical Comparison with Other Extractors
 
