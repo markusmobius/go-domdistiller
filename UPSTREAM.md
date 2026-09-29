@@ -1,5 +1,14 @@
 # Upstream Reference
 
+## README Format and Attribution
+
+The September 29 documentation update applies the approved nine-section README
+format and the full requirements in [AGENTS.md](AGENTS.md), including verified
+creator acknowledgments. `go-domdistiller` remains 1.0.0; runtime sources,
+dependencies, tags and historical benchmark evidence are unchanged. The
+Chromium license link uses the complete pinned notice because the inherited
+LICENSE-domdistiller.txt is empty.
+
 ## Released Suite Benchmark
 
 The [2026-09-29 shared FAST report](https://github.com/markusmobius/content-extractor-benchmark/blob/49c426d6135df81b7d492bea7e6aec8e6d77d80c/go_rust_shared_performance_2026_09_29.json)

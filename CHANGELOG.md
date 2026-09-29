@@ -2,11 +2,16 @@
 
 ### Documentation - 29 September 2026
 
+- Apply the approved nine-section README format, including the three shared
+	philosophy principles, a runnable supplied-HTML example and actual options.
+- Specify the full structure and required content in AGENTS.md, including
+	named credits for the Chromium Authors, Christian Kohlschuetter,
+	Radhi Fadlillah and Markus Mobius. Remove unrelated package policies.
 - Align the README's six-engine comparison with the September 29 shared
 	benchmark, including common units, measured versions and timing boundaries.
 - Add AGENTS.md with instructions for README, UPSTREAM, CHANGELOG and
 	coordinated release documentation.
-- Keep Go-DomDistiller 1.0.0, runtime source, dependencies and all measured data
+- Keep `go-domdistiller` 1.0.0, runtime source, dependencies and all measured data
 	unchanged. No new module version or benchmark run.
 
 ### Documentation - 23 September 2026

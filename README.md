@@ -1,354 +1,208 @@
-# Go-DomDistiller [![Go Reference](https://pkg.go.dev/badge/github.com/markusmobius/go-domdistiller.svg)](https://pkg.go.dev/github.com/markusmobius/go-domdistiller)
+# go-domdistiller
 
-> This main branch is the development version for Go-DomDistiller which incorporates insights from the readability package as well as other improvements. Check the [stable branch][5] for the stable version that is a faithful port of the original DOM Distiller (the stable branch only receives bug fixes).
+`go-domdistiller` extracts article text, HTML, images, metadata and pagination
+links from web pages. It is a native Go port of
+[chromium/dom-distiller](https://chromium.googlesource.com/chromium/dom-distiller),
+with additional extraction heuristics on the main branch.
 
-Go-DomDistiller is a Go package that finds the main readable content and the metadata from a HTML page. It works by removing clutter like buttons, ads, background images, scripts, etc.
+## Philosophy
 
-This package is based on [DOM Distiller][0] which is part of the Chromium project that is built using Java language. Unlike DOM distiller there are no dependencies on Chromium or GWT which makes it useful to run as a standalone program on a server.
+Our extractor packages share three principles:
 
-The structure of this package follows the structure of the original Java code. This way, any improvements from Chromium (hopefully) can be implemented easily here.
+1. **Bring your own HTML.** Keep page acquisition separate from extraction.
+	The primary workflow uses HTML supplied by the caller, who controls fetching,
+	caching, rendering, retries and scheduling.
+2. **Stay close to upstream.** Preserve the algorithms and behavior of each
+	package's declared upstream reference as closely as possible. Document
+	deliberate differences and compatibility limits in [UPSTREAM.md](UPSTREAM.md)
+	rather than claiming exact equivalence on every page.
+3. **Provide very fast Go and Rust packages.** Run extraction natively, without
+	a Python or Java runtime. Improve throughput and allocation efficiency while
+	preserving intended behavior, and substantiate performance with reproducible
+	benchmarks that report quality alongside speed.
 
-The port has been [completed][6] and we have used it to process millions of web pages, so it should be stable enough to use.
+## Overview
 
-## Motivations
+The current `go-domdistiller` release is **v1.0.0**. It accepts an HTML tree,
+an `io.Reader`, a file or a URL. Reader and tree extraction do not fetch pages;
+the explicit URL helper downloads the page before extracting it.
 
-We are doing computational social science research on news production and consumption as part of [Project Ratio][8]. We collect a lot of news web pages and extract the article inside it using headless Chrome running Readability.js and DOM Distiller. This works fine, but is unbearably slow.
+Results include the article node and plain text, title, available metadata,
+image URLs, word count and previous/next page links. Metadata depends on what
+the page provides; extraction does not run JavaScript or compute browser layout.
 
-After looking around, we found out that [Readability.js][1] has been [ported to Go][2] by [@RadhiFadlillah] and it has impressive performance. With that said, we decided to ask him to port DOM Distiller to Go language as well. The port was completely done by Radhi.
+The corresponding Rust package,
+[rust-domdistiller](https://github.com/markusmobius/rust-domdistiller), uses
+`go-domdistiller` as its behavioral reference.
 
-## Limitations
+## Installation
 
-The algorithm in the original DOM Distiller incorporates some render-level information in both the classification and tree transduction steps. For example, any elements that are hidden from display are not considered as content, images that are too small are not considered as lead images, etc. These render-level checks are a small part of DOM Distiller's strategy.
+```sh
+go get github.com/markusmobius/go-domdistiller@v1.0.0
+```
 
-Unfortunately it's impossible to do that on the server side without running a full headless browser which we don't want to do (we also only want to rely on the HTML without having to download all the style sheets). Therefore, while porting the original code, we exclude parts where we need to compute the stylesheets. These omissions are marked with [`NEED-COMPUTE-CSS`][3].
+Import the package as `distiller`. See [go.mod](go.mod) for the module's Go and
+dependency requirements and [CHANGELOG.md](CHANGELOG.md) for release changes.
 
-Fortunately, according to [research][4] by Mohammad Ghasemisharif et al. (2018) they expect that this modification has minimal effects on extraction results, so we feel confident going forward with the port.
+## Usage
 
-## Comparison with the stable branch
+Extract text from HTML already held in memory:
 
-The stable branch is the faithful port of original DOM Distiller which only receives bug fixes, while the main branch adds some [insights][7] from Go-Readability.
+```go
+package main
 
-Both should be stable enough to use, but if you want to replicate the DOM Distiller results as closely as possible you you may prefer to use the stable branch.
+import (
+	"fmt"
+	"net/url"
+	"strings"
+
+	distiller "github.com/markusmobius/go-domdistiller"
+)
+
+func main() {
+	pageURL, err := url.Parse("https://example.org/research")
+	if err != nil {
+		panic(err)
+	}
+
+	source := `<html><head><title>Research results</title></head><body><article>
+<h1>Research results</h1>
+<p>The research team compared several methods for extracting articles from saved
+web pages. Every method received the same original HTML, and the evaluation
+kept the reference text separate from the input supplied to each extractor.</p>
+<p>The report records the complete experiment, including errors and repeated
+measurements. Its results describe this collection of pages and do not promise
+the same quality or execution time for every website.</p>
+</article></body></html>`
+
+	result, err := distiller.ApplyForReader(strings.NewReader(source), &distiller.Options{
+		OriginalURL:    pageURL,
+		SkipPagination: true,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(result.Text)
+}
+```
+
+| Entry Point | Input |
+| --- | --- |
+| `Apply` | An existing `*html.Node` |
+| `ApplyForReader` | HTML from an `io.Reader` |
+| `ApplyForFile` | A local HTML file path |
+| `ApplyForURL` | A URL to download, with a caller-supplied timeout |
+
+Each returns `(*Result, error)`. Use `result.Text` for plain text and
+`result.Node` for the extracted HTML tree. `MarkupInfo`, `ContentImages` and
+`PaginationInfo` expose metadata, article images and pagination links.
+Full types and signatures are in the
+[go-domdistiller API reference](https://pkg.go.dev/github.com/markusmobius/go-domdistiller).
+
+## Options
+
+Pass `nil` for default options, or supply `distiller.Options`:
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `OriginalURL` | Unset | Supplies page context for relative links and pagination. `ApplyForURL` sets it from its URL argument. |
+| `SkipPagination` | `false` | Set to `true` to omit pagination detection when only the current article is needed. |
+| `PaginationAlgo` | `PrevNext` | Select `PrevNext` for scored previous/next links or `PageNumber` for groups of numbered page links. |
+| `LogFlags` | `LogNothing` | Enable extraction, visibility, pagination or timing logs; combine flags with bitwise OR or use `LogEverything`. |
+
+Pagination detection identifies links; it does not assemble a multi-page
+article. The comparison below disables pagination for `go-domdistiller` and
+`rust-domdistiller`.
 
 ## Current Quality and Speed
 
 The [2026-09-29 shared benchmark](https://github.com/markusmobius/content-extractor-benchmark/blob/ec719092d12f4d2a438dd29d9f4405aab6e0a321/README.md#results-2026-09-29)
-compares all six implementations on **2,659 saved pages**: 983 LegoNews,
-181 ScrapingHub and 1,495 WCXB. All six READMEs use this same comparison.
+compares the six packages below on **2,659 saved pages**: 983 LegoNews,
+181 ScrapingHub and 1,495 WCXB.
 
 ### Extraction Speed
 
-| Extractor | Go Version | Rust Version | Go ms/page | Rust ms/page | Go/Rust |
-| --- | --- | --- | ---: | ---: | ---: |
-| Readability | 0.6.0 | 0.6.5 | 4.755 | 3.945 | 1.21x |
-| DomDistiller | 1.0.0 | 1.0.1 | 6.159 | 3.400 | 1.81x |
-| Trafilatura FAST | 2.2.6 | 2.2.6 | 11.329 | 6.570 | 1.72x |
+| Go Package (Measured Version) | Rust Package (Measured Version) | Go ms/page | Rust ms/page | Go/Rust |
+| --- | --- | ---: | ---: | ---: |
+| `go-readabilityV2` 0.6.0 | `rust-readability-v2` 0.6.5 | 4.755 | 3.945 | 1.21x |
+| `go-domdistiller` 1.0.0 | `rust-domdistiller` 1.0.1 | 6.159 | 3.400 | 1.81x |
+| `go-trafilatura` 2.2.6 (FAST) | `rust-trafilatura` 2.2.6 (FAST) | 11.329 | 6.570 | 1.72x |
 
 Times are means of **all four measured passes after one warmup**. Go/Rust is
-Go time divided by Rust time, not an old/new release speedup. Measured versions
-are shown explicitly; later documentation-only releases are not new measurements.
+the named Go package's time divided by the named Rust package's time, not an
+old/new release speedup. Later documentation-only releases do not change the
+versions actually measured.
 
 The run used Windows 11, Ryzen AI 7 PRO 350, Go 1.27.1 and Rust 1.98.1 GNU
 with ThinLTO/mimalloc. Extraction includes required working copies, metadata
 and text rendering. File I/O, startup, IPC, response serialization and scoring
-are excluded. Comments, pagination and Trafilatura external fallback are off;
-tables are on. Power and sleep checks passed.
+are excluded. Comments and pagination are off; tables are on.
+`go-trafilatura` and `rust-trafilatura` use FAST with external fallback disabled.
+Power and sleep checks passed.
 
 Parsing is separate: **Go 11.283 / Rust 6.386 ms/page**, charged once per
 language/page for the shared suite. It includes decoding, DOM construction and
-the separate Trafilatura noscript tree when needed. These are extraction-stage
-comparisons, not complete request latencies.
+the separate `go-trafilatura` / `rust-trafilatura` noscript tree when needed.
+These are extraction-stage comparisons, not complete request latencies.
 
 ### Text Quality
 
-Go and Rust have the same text scores for each engine. Errors are listed in
-LegoNews / ScrapingHub / WCXB order and remain in the scoring denominators.
+Each named pair has equal text scores. Errors are listed in LegoNews /
+ScrapingHub / WCXB order and remain in the scoring denominators.
 
-| Extractor | LegoNews F1 | ScrapingHub F1 | WCXB F1 | Errors |
-| --- | ---: | ---: | ---: | --- |
-| Readability | 87.82711% | 95.20557% | 78.47603% | 7 / 0 / 28 |
-| DomDistiller | 86.74080% | 92.74280% | 74.39696% | 0 / 0 / 0 |
-| Trafilatura FAST | 90.91534% | 96.15663% | 78.51703% | 4 / 0 / 10 |
+| Go Package | Rust Package | LegoNews F1 | ScrapingHub F1 | WCXB F1 | Errors |
+| --- | --- | ---: | ---: | ---: | --- |
+| `go-readabilityV2` | `rust-readability-v2` | 87.82711% | 95.20557% | 78.47603% | 7 / 0 / 28 |
+| `go-domdistiller` | `rust-domdistiller` | 86.74080% | 92.74280% | 74.39696% | 0 / 0 / 0 |
+| `go-trafilatura` (FAST) | `rust-trafilatura` (FAST) | 90.91534% | 96.15663% | 78.51703% | 4 / 0 / 10 |
 
 The corpora use different scoring rules; their F1 scores must not be averaged.
-Equal text scores do not imply identical metadata: Trafilatura differs on one
-title and one author field. The [full report](https://github.com/markusmobius/content-extractor-benchmark/blob/49c426d6135df81b7d492bea7e6aec8e6d77d80c/go_rust_shared_performance_2026_09_29.json)
+Equal text scores do not imply identical metadata: `go-trafilatura` and
+`rust-trafilatura` differ on one title and one author field. The
+[full report](https://github.com/markusmobius/content-extractor-benchmark/blob/49c426d6135df81b7d492bea7e6aec8e6d77d80c/go_rust_shared_performance_2026_09_29.json)
 contains metadata scores, differences, every pass and source/build identities.
 
-## Historical Comparison with Other Extractors
+## Compatibility and Limitations
 
-As far as we know, currently there are three content extractors built for Go:
+- **Main and stable branches differ.** The `go-domdistiller` v1.0.0 release
+  identifies the main-branch implementation, including its
+  [documented improvements](IMPROVEMENTS.md). The separate
+  [go-domdistiller stable branch](https://github.com/markusmobius/go-domdistiller/tree/stable)
+  stays closer to the original `chromium/dom-distiller` algorithm.
+- **No browser rendering.** CSS/layout-dependent parts of `chromium/dom-distiller`
+  are omitted. Saved HTML may lack content generated by JavaScript.
+  `go-domdistiller` does not promise identical output to `chromium/dom-distiller`.
+- **Heuristic extraction.** Boilerplate can remain and article content can be
+  missed. Corpus scores do not guarantee results for an arbitrary page.
+- **Not a sanitizer.** Treat extracted HTML as untrusted and sanitize it before
+  displaying it in an application.
 
-- Go-DomDistiller
-- [Go-Readability][2]
-- [Go-Trafilatura][9]
+See [UPSTREAM.md](UPSTREAM.md) for source ancestry, compatibility boundaries,
+verification evidence and historical comparisons.
 
-Since every extractors use its own algorithms, their results are a bit different. In general they give satisfactory results, however we found out that there are some cases where DOM Distiller is better and vice versa. Here is the short summary of pros and cons for each extractor:
+## Development
 
-Dom Distiller:
+From a checkout with Go installed:
 
-- Very fast.
-- Good at extracting images from article.
-- Able to find next page in sites that separated its article to several partial pages.
-- Since the original library was embedded in Chromium browser, its tests are pretty thorough.
-- CON: has a huge codebase, mostly because it mimics the original Java code.
-- CON: the original library is not maintained anymore and has been archived.
-
-Readability:
-
-- Fast, although not as fast as Dom Distiller.
-- Better than DOM Distiller at extracting wiki and documentation pages.
-- The original library in Readability.js is still actively used and maintained by Firefox.
-- The codebase is pretty small.
-- CON: the unit tests are not as thorough as the other extractors.
-
-Trafilatura:
-
-- Has the best accuracy compared to other extractors.
-- Better at extracting web page's metadata, including its language and publish date.
-- Its unit tests are thorough and focused on removing noise while making sure the real contents are still captured.
-- Designed to be used in academic domain e.g. natural language processing.
-- Actively maintained with new release almost every month.
-- CON: slower than the other extractors, mostly because it also looks for language and publish date.
-- CON: doesn't really good at extracting images.
-
-The historical benchmark that compares these extractors is available in [this repository][benchmark]. It used each extractor to process 983 web pages in a single thread. These older rows are not the current released-suite results above:
-
-|             Extractor             | Time (ms) | Memory (MB) | Mem Allocation (allocs) |
-| :-------------------------------: | :-------: | :---------: | :---------------------: |
-|            Readability            |   4,212   |    4,412    |       15,261,650        |
-|           DomDistiller            |   3,794   |    4,144    |       13,552,246        |
-|  DomDistiller+PaginationPrevNext  |   5,263   |    4,598    |       22,744,038        |
-| DomDistiller+PaginationPageNumber |   4,156   |    4,222    |       15,669,698        |
-|            Trafilatura            |   6,609   |    3,585    |       33,628,972        |
-|       Trafilatura+Fallback        |  12,934   |    8,781    |       55,338,023        |
-
-And here is its performance comparison result:
-
-|            Package             | Precision | Recall | Accuracy | F-Score |
-| :----------------------------: | :-------: | :----: | :------: | :-----: |
-|        `go-readability`        |   0.870   | 0.881  |  0.875   |  0.875  |
-|       `go-domdistiller`        |   0.871   | 0.864  |  0.868   |  0.867  |
-|        `go-trafilatura`        |   0.909   | 0.886  |  0.899   |  0.897  |
-| `go-trafilatura` with fallback |   0.911   | 0.902  |  0.907   |  0.906  |
-
-## Installation
-
-To install the development version of this package, just run `go get` for main branch :
-
-```
-go get -u -v github.com/markusmobius/go-domdistiller@main
+```sh
+go test ./...
+go vet ./...
 ```
 
-## API Documentation
+Keep extraction, pagination and metadata changes covered by the existing tests.
+Documentation and release maintenance rules are in [AGENTS.md](AGENTS.md).
 
-Dom Distiller has four functions :
+## License and Credits
 
-- `Apply(doc *html.Node, opts *Options) (*Result, error)`
+`go-domdistiller` is [MIT-licensed](LICENSE). It incorporates work from
+`chromium/dom-distiller` under its
+[BSD and Apache terms](https://chromium.googlesource.com/chromium/dom-distiller/+/2a180397710719913340a12804affc65b789275e/LICENSE)
+and `kohlschutter/boilerpipe` under [Apache-2.0](LICENSE-boilerpipe.txt), with
+the inherited [notice](NOTICE-boilerpipe.txt).
 
-  This function will apply distiller to the specified HTML node.
-
-- `ApplyForReader(r io.Reader, opts *Options) (*Result, error)`
-
-  This function parses input that received from the specified reader into a HTML node then pass it into the `Apply` function.
-
-- `ApplyForFile(path string, opts *Options) (*Result, error)`
-
-  This function open the file at specified path then pass it into the `ApplyForReader` function.
-
-- `ApplyForURL(url string, timeout time.Duration, opts *Options) (*Result, error)`
-
-  This function download the web page at specified URL then pass it into the `ApplyForReader` function.
-
-Each function accept custom `Option` which is a struct that defined like this :
-
-```go
-type Options struct {
-	// Flags to specify which info to dump to log.
-	LogFlags LogFlag
-
-	// Original URL of the page, which is used in the heuristics in detecting
-	// next/prev page links. Will be ignored if Option is used in ApplyForURL.
-	OriginalURL *url.URL
-
-	// Set to true to skip process for finding pagination.
-	SkipPagination bool
-
-	// Algorithm to use for next page detection.
-	PaginationAlgo PaginationAlgo
-}
-```
-
-There are several flags available for `LogFlags` :
-
-- `LogNothing` will make distiller completely disable the log.
-- `LogExtraction` will make distiller print info of each process when extracting article.
-- `LogVisibility` will make distiller print info on why an element is visible.
-- `LogPagination` will make distiller print info of pagination process.
-- `LogTiming` will make distiller print info of duration of each process when extracting article.
-
-Since `LogFlag` is bit, you can use several flags using bitwise operator `OR` like this :
-
-```go
-opts := &distiller.Options{
-	LogFlags: distiller.LogExtraction | distiller.LogVisibility,
-}
-```
-
-Or if you want to log everything, you can use `LogEverything` flag :
-
-```go
-opts := &distiller.Options{	LogFlags: distiller.LogEverything }
-```
-
-There are two values available for `PaginationAlgo` :
-
-- `PrevNext` is the algorithm to find pagination links that works by scoring each anchor in documents using various heuristics on its href, text, class name and ID. It's quite accurate and used as default algorithm. Unfortunately it uses a lot of regular expressions, so it's a bit slow.
-- `PageNumber` is algorithm to find pagination links that works by collecting groups of adjacent plain text numbers and outlinks with digital anchor text. It's a lot faster than PrevNext, but also less accurate.
-
-The distillation result is defined as struct like this :
-
-```go
-type Result struct {
-	// URL is the URL of the processed page.
-	URL string
-
-	// Title is the title of the processed page.
-	Title string
-
-	// MarkupInfo is the metadata of the page. The metadata is extracted following three markup
-	// specifications: OpenGraphProtocol, IEReadingView and SchemaOrg. For now, OpenGraph protocol
-	// takes precedence because it uses specific meta tags and hence the fastest. The other
-	// specifications is used as fallback in case some metadata not found.
-	MarkupInfo data.MarkupInfo
-
-	// TimingInfo is the record of the time it takes to do each step in the process of content extraction.
-	TimingInfo data.TimingInfo
-
-	// PaginationInfo contains link to previous and next partial page. This is useful for long article or
-	// that may be partitioned into several partial pages by its webmaster.
-	PaginationInfo data.PaginationInfo
-
-	// WordCount is the count of words within document.
-	WordCount int
-
-	// Node is the *html.Node which contain the distilled content.
-	Node *html.Node
-
-	// Text is the string which contains the distilled content in text format.
-	Text string
-
-	// ContentImages is list of image URLs that used within the distilled content.
-	ContentImages []string
-}
-```
-
-The `MarkupInfo`, `TimingInfo` and `PaginationInfo` field are defined in `data` package `github.com/markusmobius/go-domdistiller/data` like this :
-
-```go
-type PaginationInfo struct {
-	NextPage string
-	PrevPage string
-}
-
-type MarkupArticle struct {
-	PublishedTime  string
-	ModifiedTime   string
-	ExpirationTime string
-	Section        string
-	Authors        []string
-}
-
-type MarkupInfo struct {
-	Title       string
-	Type        string
-	URL         string
-	Description string
-	Publisher   string
-	Copyright   string
-	Author      string
-	Article     MarkupArticle
-	Images      []MarkupImage
-}
-
-type MarkupImage struct {
-	Root      string
-	URL       string
-	SecureURL string
-	Type      string
-	Caption   string
-	Width     int
-	Height    int
-}
-```
-
-## Examples
-
-### Extracting web page from an URL
-
-```go
-package main
-
-import (
-	"fmt"
-	"time"
-
-	"github.com/go-shiori/dom"
-	distiller "github.com/markusmobius/go-domdistiller"
-)
-
-func main() {
-	url := "https://arstechnica.com/gadgets/2020/10/iphone-12-and-12-pro-double-review-playing-apples-greatest-hits/"
-
-	// Start distiller
-	result, err := distiller.ApplyForURL(url, time.Minute, nil)
-	if err != nil {
-		panic(err)
-	}
-
-	rawHTML := dom.OuterHTML(result.Node)
-	fmt.Println(rawHTML)
-}
-```
-
-### Extracting content from a HTML file
-
-```go
-package main
-
-import (
-	"fmt"
-
-	"github.com/go-shiori/dom"
-	distiller "github.com/markusmobius/go-domdistiller"
-)
-
-func main() {
-	result, err := distiller.ApplyForFile("example/sample.html", nil)
-	if err != nil {
-		panic(err)
-	}
-
-	rawHTML := dom.OuterHTML(result.Node)
-	fmt.Println(rawHTML)
-}
-```
-
-## Licenses
-
-Go-DomDistiller is distributed under [MIT license](https://choosealicense.com/licenses/mit/) which means you can use and modify it however you want. However, if you make an enhancement for it, if possible please send a pull request.
-
-We are indebted to the Chromium authors for the amazing DOM Distiller. We are equally indebted to Christian Kohlschütter who wrote a content parser called Boilerpipe in 2009 which is based on his PhD thesis and which is also the basis for DOM Distiller (the original Boilerpipe still produces amazing results for most pages). Boilerpipe is licensed under the Apache 2.0 license and DOM Distiller has a BSD-style license. Since our work is derived directly from DOM Distiller and indirectly from Boilerpipe we have included the respective copyright notices at the top of each file as well as the license files for both prior projects.
-
-[0]: https://chromium.googlesource.com/chromium/dom-distiller
-[1]: https://github.com/mozilla/readability
-[2]: https://github.com/go-shiori/go-readability
-[3]: https://github.com/markusmobius/go-domdistiller/search?q=NEED-COMPUTE-CSS
-[4]: https://arxiv.org/abs/1811.03661
-[5]: https://github.com/markusmobius/go-domdistiller/tree/stable
-[6]: https://github.com/markusmobius/go-domdistiller/blob/main/CHANGELOG.md
-[7]: https://github.com/markusmobius/go-domdistiller/blob/main/IMPROVEMENTS.md
-[8]: https://www.microsoft.com/en-us/research/project/project-ratio/
-[9]: https://github.com/markusmobius/go-trafilatura
-[@RadhiFadlillah]: https://github.com/RadhiFadlillah
-[benchmark]: https://github.com/markusmobius/content-extractor-benchmark
+Radhi Fadlillah implemented the original `go-domdistiller` port for Project Ratio.
+The Chromium Authors created `chromium/dom-distiller`, building on
+Christian Kohlschuetter's `kohlschutter/boilerpipe`. Markus Mobius maintains this
+package and holds its MIT copyright. These upstream creators and contributors made
+the port possible; their licenses and notices are retained.
